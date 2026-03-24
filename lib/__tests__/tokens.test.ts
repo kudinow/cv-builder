@@ -22,7 +22,7 @@ describe('getBalance', () => {
     const selectMock = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
-          data: { credits: 250 },
+          data: { tokens: 250 },
           error: null,
         }),
       }),

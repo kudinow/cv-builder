@@ -16,12 +16,12 @@ export async function getBalance(userId: string): Promise<number> {
   const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase
     .from('profiles')
-    .select('credits')
+    .select('tokens')
     .eq('id', userId)
     .single()
 
   if (error) return 0
-  return data.credits ?? 0
+  return data.tokens ?? 0
 }
 
 export async function spendTokens(

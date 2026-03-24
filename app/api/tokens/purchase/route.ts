@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       user_id: session.user.id,
       yookassa_payment_id: payment.id,
       amount: pkg.priceKopeks,
-      credits_added: pkg.tokens,
+      tokens_added: pkg.tokens,
       status: 'pending',
       description: `Пакет токенов «${pkg.name}»`,
     })

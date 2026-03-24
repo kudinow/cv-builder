@@ -5,10 +5,10 @@ async function fetchTokenBalance(userId: string): Promise<number> {
   const supabase = await createServerSupabaseClient()
   const { data } = await supabase
     .from("profiles")
-    .select("credits")
+    .select("tokens")
     .eq("id", userId)
     .single()
-  return data?.credits ?? 0
+  return data?.tokens ?? 0
 }
 
 async function hasMasterResumes(userId: string): Promise<boolean> {

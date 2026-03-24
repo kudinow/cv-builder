@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     // Add tokens: try the increment_tokens RPC first (atomic), then fall back to
     // a direct expression-based update using the Supabase JS client's sql template.
-    // The credits column is still named 'credits' (migration 002 not yet applied).
+    // Use atomic RPC to increment tokens.
     const { error: rpcError } = await supabase.rpc('increment_tokens', {
       p_user_id: userId,
       p_amount: tokensToAdd,
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
       const { data: profile, error: readErr } = await supabase
         .from('profiles')
-        .select('credits')
+        .select('tokens')
         .eq('id', userId)
         .single()
 
@@ -82,11 +82,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Ошибка начисления токенов' }, { status: 500 })
       }
 
-      const newBalance = (profile.credits ?? 0) + tokensToAdd
+      const newBalance = (profile.tokens ?? 0) + tokensToAdd
 
       const { error: writeErr } = await supabase
         .from('profiles')
-        .update({ credits: newBalance })
+        .update({ tokens: newBalance })
         .eq('id', userId)
 
       if (writeErr) {
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
         user_id: userId,
         yookassa_payment_id: payment.id,
         amount: pkg.priceKopeks,
-        credits_added: tokensToAdd,
+        tokens_added: tokensToAdd,
         status: 'succeeded',
         description: `Пакет токенов «${pkg.name}»`,
       })
