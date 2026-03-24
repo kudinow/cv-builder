@@ -6,6 +6,7 @@ import {
 } from "@/lib/openrouter";
 import { INTERVIEW_SYSTEM_PROMPT } from "@/lib/prompts/interview-system";
 import { INTERVIEW_LIMITS } from '@/lib/token-costs'
+import { addMessage, shouldForceFinalize } from '@/lib/interview-session'
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,9 +22,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { messages, resumeText, sessionId } = (await req.json()) as {
+    const { messages, sessionId } = (await req.json()) as {
       messages: ChatMessage[];
-      resumeText?: string;
       sessionId?: string;
     };
 
@@ -36,9 +36,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Load session from DB if sessionId is provided (security: use DB resume text, not client-sent)
+    let uploadedResumeText: string | undefined
+    if (sessionId) {
+      const { data: session } = await supabase
+        .from('interview_sessions')
+        .select('uploaded_resume_text, mode, message_count, ai_tokens_used, status')
+        .eq('id', sessionId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (!session || session.status === 'completed' || session.status === 'expired') {
+        return new Response(
+          JSON.stringify({ error: 'Сессия недействительна' }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        )
+      }
+
+      // Check if session has exceeded limits
+      if (shouldForceFinalize({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used })) {
+        return new Response(
+          JSON.stringify({ error: 'Лимит сообщений исчерпан', forceFinalize: true }),
+          { status: 429, headers: { "Content-Type": "application/json" } }
+        )
+      }
+
+      uploadedResumeText = session.uploaded_resume_text ?? undefined
+    }
+
     // Build the full message array with system prompt
-    const systemContent = resumeText
-      ? `${INTERVIEW_SYSTEM_PROMPT}\n\n## Загруженное резюме пользователя:\n${resumeText}\n\nПользователь загрузил существующее резюме. Начни с его анализа (сильные/слабые стороны), затем предложи улучшить или создать новое.`
+    const systemContent = uploadedResumeText
+      ? `${INTERVIEW_SYSTEM_PROMPT}\n\n## Загруженное резюме пользователя:\n${uploadedResumeText}\n\nПользователь загрузил существующее резюме. Начни с его анализа (сильные/слабые стороны), затем предложи улучшить или создать новое.`
       : INTERVIEW_SYSTEM_PROMPT;
 
     const fullMessages: ChatMessage[] = [
@@ -62,6 +90,10 @@ export async function POST(req: NextRequest) {
 
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
+
+    // Capture full assistant content and token usage for session persistence
+    let assistantContent = ""
+    let promptTokensUsed = 0
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -89,11 +121,16 @@ export async function POST(req: NextRequest) {
                 const parsed = JSON.parse(data);
                 const content = parsed.choices?.[0]?.delta?.content;
                 if (content) {
+                  assistantContent += content
                   controller.enqueue(
                     encoder.encode(
                       `data: ${JSON.stringify({ content })}\n\n`
                     )
                   );
+                }
+                // Capture token usage from final chunk (OpenRouter sends usage in last chunk)
+                if (parsed.usage?.total_tokens) {
+                  promptTokensUsed = parsed.usage.total_tokens
                 }
               } catch {
                 // Skip malformed chunks
@@ -104,6 +141,29 @@ export async function POST(req: NextRequest) {
           console.error("Stream error:", err);
         } finally {
           controller.close();
+
+          // After streaming completes, persist messages to session
+          if (sessionId && lastMessage?.role === 'user') {
+            const now = new Date().toISOString()
+            try {
+              // Save user message
+              await addMessage(sessionId, {
+                role: 'user',
+                content: lastMessage.content,
+                timestamp: now,
+              })
+              // Save assistant message with AI token usage
+              if (assistantContent) {
+                await addMessage(sessionId, {
+                  role: 'assistant',
+                  content: assistantContent,
+                  timestamp: new Date().toISOString(),
+                }, promptTokensUsed)
+              }
+            } catch (saveErr) {
+              console.error('[interview] Failed to save messages to session:', saveErr)
+            }
+          }
         }
       },
     });
