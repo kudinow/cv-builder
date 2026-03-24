@@ -2,69 +2,77 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { cn } from "@/lib/utils";
 
 const faqs = [
   {
-    q: "Чем это лучше, чем самому написать в ChatGPT?",
-    a: "ChatGPT — универсальный инструмент, который не знает правил рынка труда. ResumeAI использует формулы достижений из практики карьерных консультантов, автоматически анализирует требования вакансии и защищён от галлюцинаций — AI не придумает опыт, которого у вас нет.",
+    q: "Что такое токены?",
+    a: "Токены — внутренняя валюта ResumeAI. При регистрации вы получаете 50 бесплатных токенов. Каждая операция списывает определённое количество: создание резюме с нуля — 100 токенов, адаптация под вакансию — 40 токенов. Токены не сгорают.",
   },
   {
-    q: "AI не выдумает то, чего я не делал?",
-    a: "Нет. В алгоритм встроена защита от галлюцинаций — AI переформулирует и усиливает ваш реальный опыт, но никогда не добавляет вымышленные факты, навыки или достижения.",
+    q: "Как проходит AI-интервью?",
+    a: "После начала сессии AI задаёт вопросы в формате диалога — от базовой информации до глубоких вопросов про достижения. Интервью состоит из 5 фаз и занимает 15–20 минут. Сессию можно сохранить и продолжить позже — она хранится 72 часа.",
   },
   {
-    q: "Одной бесплатной адаптации хватит, чтобы оценить?",
-    a: "Да. Загрузите резюме, укажите вакансию — получите полный результат: адаптированное резюме, сопроводительное письмо и детальный разбор изменений. Без привязки карты.",
+    q: "Мои данные в безопасности?",
+    a: "Да. Все данные хранятся в зашифрованной базе данных (Supabase). Мы не передаём персональные данные третьим лицам и не используем их для обучения моделей. Вы можете удалить свои резюме в любой момент.",
   },
   {
-    q: "Что значит «формулы достижений»?",
-    a: "Это проверенные структуры из практики карьерных консультантов: «действие + результат + метрика». Вместо «занимался продажами» → «увеличил выручку на 40% за 6 месяцев». Именно так HR-специалисты ожидают видеть ваш опыт.",
+    q: "Могу ли я редактировать готовое резюме?",
+    a: "Да. После генерации резюме вы можете вносить правки в тексты прямо в интерфейсе. PDF генерируется с учётом ваших правок.",
   },
   {
-    q: "Подходит ли для моей профессии?",
-    a: "ResumeAI работает для любых специалистов: менеджеры, маркетологи, IT, финансы, HR, инженеры. Алгоритм анализирует конкретную вакансию и адаптирует резюме под её требования.",
+    q: "Что если меня не устроит результат?",
+    a: "Вы можете продолжить интервью, добавить больше информации или попросить AI переработать конкретные блоки. Если резюме создано с нуля, адаптацию можно сделать за 40 токенов — это быстрее, чем начинать заново.",
+  },
+  {
+    q: "Работает ли ResumeAI для любой профессии?",
+    a: "Да. Алгоритм адаптируется под любую сферу: IT, маркетинг, финансы, продажи, HR, инженерия, менеджмент. Вопросы интервью формулируются под конкретную целевую позицию.",
   },
 ];
 
 export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section
-      ref={ref}
-      className={cn(
-        "bg-[#0f172a] py-20 transition-all duration-700",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      )}
-    >
+    <section id="faq" className="scroll-mt-16 bg-[#0f172a] py-24">
       <div className="mx-auto max-w-3xl px-4">
-        <h2 className="text-center text-3xl font-extrabold text-white sm:text-4xl">
-          Частые вопросы
-        </h2>
+        {/* Header */}
+        <div className="mb-16 text-center">
+          <div className="mb-4 inline-flex rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm text-slate-400">
+            FAQ
+          </div>
+          <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
+            Частые вопросы
+          </h2>
+        </div>
 
-        <div className="mt-12 space-y-3">
+        {/* Accordion */}
+        <div className="space-y-3">
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-800 bg-[#1e293b]"
+              className={cn(
+                "overflow-hidden rounded-2xl border transition-all",
+                openIndex === i
+                  ? "border-indigo-500/30 bg-indigo-500/5"
+                  : "border-white/10 bg-white/5"
+              )}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="flex w-full items-center justify-between p-5 text-left"
+                className="flex w-full items-center justify-between px-6 py-5 text-left"
               >
                 <span className="pr-4 font-medium text-white">{faq.q}</span>
                 <ChevronDown
                   className={cn(
-                    "h-5 w-5 shrink-0 text-slate-400 transition-transform",
-                    openIndex === i && "rotate-180"
+                    "h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200",
+                    openIndex === i && "rotate-180 text-indigo-400"
                   )}
                 />
               </button>
               {openIndex === i && (
-                <div className="px-5 pb-5 text-sm leading-relaxed text-slate-400">
+                <div className="px-6 pb-5 text-sm leading-relaxed text-slate-400">
                   {faq.a}
                 </div>
               )}

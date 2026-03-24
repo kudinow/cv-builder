@@ -1,74 +1,77 @@
-"use client";
-
-import Link from "next/link";
-import { FileText, Zap, CheckCircle } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { MessageSquare, FileText, Zap } from "lucide-react";
 
 const steps = [
   {
-    num: "01",
+    number: "01",
+    icon: MessageSquare,
+    title: "AI-интервью",
+    description:
+      "Отвечаете на вопросы AI — он проведёт вас по пяти фазам: от базовых данных до глубокого извлечения достижений. Никаких бланков.",
+    detail: "15–20 минут",
+  },
+  {
+    number: "02",
     icon: FileText,
-    title: "Загрузите резюме и вакансию",
-    desc: "Прикрепите PDF резюме и ссылку на вакансию с hh.ru или текст описания",
+    title: "Готовое резюме",
+    description:
+      "На основе интервью AI собирает резюме по методике достижений: конкретные результаты с цифрами, релевантные навыки, сильный профиль.",
+    detail: "Формулы достижений",
   },
   {
-    num: "02",
+    number: "03",
     icon: Zap,
-    title: "AI адаптирует за 30 секунд",
-    desc: "Алгоритм анализирует требования вакансии, переформулирует опыт по формулам достижений и выделяет релевантные навыки",
-  },
-  {
-    num: "03",
-    icon: CheckCircle,
-    title: "Скачайте и откликайтесь",
-    desc: "Получите адаптированное резюме, сопроводительное письмо и список внесённых изменений",
+    title: "Адаптация под вакансию",
+    description:
+      "Вставьте текст вакансии — AI переработает резюме под конкретные требования и напишет сопроводительное письмо.",
+    detail: "40 токенов",
   },
 ];
 
 export function HowItWorksSection() {
-  const { ref, isVisible } = useScrollReveal();
-
   return (
-    <section
-      id="how-it-works"
-      ref={ref}
-      className={cn(
-        "scroll-mt-16 bg-[#0f172a] py-20 transition-all duration-700",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      )}
-    >
-      <div className="mx-auto max-w-6xl px-4 text-center">
-        <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-          Продающее резюме за 3 шага
-        </h2>
-
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
-          {steps.map((step) => (
-            <div
-              key={step.num}
-              className="rounded-xl border border-slate-800 bg-[#1e293b] p-6 text-left"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-sm font-bold text-blue-500">{step.num}</span>
-                <step.icon className="h-5 w-5 text-blue-400" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-white">{step.title}</h3>
-              <p className="text-sm leading-relaxed text-slate-400">{step.desc}</p>
-            </div>
-          ))}
+    <section id="how-it-works" className="scroll-mt-16 bg-[#0f172a] py-24">
+      <div className="mx-auto max-w-6xl px-4">
+        {/* Header */}
+        <div className="mb-16 text-center">
+          <div className="mb-4 inline-flex rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm text-slate-400">
+            Как это работает
+          </div>
+          <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
+            Три шага до сильного резюме
+          </h2>
         </div>
 
-        <Link
-          href="/adapt"
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "mt-12 bg-blue-600 px-8 text-base font-semibold text-white hover:bg-blue-700"
-          )}
-        >
-          Попробовать бесплатно →
-        </Link>
+        {/* Steps */}
+        <div className="relative grid gap-8 md:grid-cols-3">
+          {/* Connector line */}
+          <div className="absolute top-8 left-[16.66%] right-[16.66%] hidden h-px bg-gradient-to-r from-indigo-500/0 via-indigo-500/50 to-indigo-500/0 md:block" />
+
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={i} className="relative text-center">
+                {/* Number + icon */}
+                <div className="relative mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/30">
+                  <Icon className="h-7 w-7 text-white" />
+                  <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-indigo-400 border border-indigo-500/30">
+                    {step.number}
+                  </div>
+                </div>
+
+                <h3 className="mb-3 text-xl font-bold text-white">
+                  {step.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-slate-400">
+                  {step.description}
+                </p>
+                <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs text-slate-500">
+                  <span className="h-1 w-1 rounded-full bg-indigo-400" />
+                  {step.detail}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

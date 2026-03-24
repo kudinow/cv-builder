@@ -1,98 +1,92 @@
-"use client";
-
-import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { X, Check } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const rows = [
-  {
-    label: "Знает формулы достижений",
-    chatgpt: { text: "Генерирует шаблонные фразы", status: "bad" as const },
-    consultant: { text: "Да", status: "good" as const },
-    resumeai: { text: "Встроены в алгоритм", status: "good" as const },
-  },
-  {
-    label: "Анализирует вакансию",
-    chatgpt: { text: "Только если попросить", status: "bad" as const },
-    consultant: { text: "Да", status: "good" as const },
-    resumeai: { text: "Автоматически", status: "good" as const },
-  },
-  {
-    label: "Адаптация под каждый отклик",
-    chatgpt: { text: "Каждый раз заново промпт", status: "warn" as const },
-    consultant: { text: "1 резюме = 1 консультация", status: "bad" as const },
-    resumeai: { text: "30 секунд на вакансию", status: "good" as const },
-  },
-  {
-    label: "Сопроводительное письмо",
-    chatgpt: { text: "Отдельный запрос", status: "warn" as const },
-    consultant: { text: "Да, за доп. плату", status: "good" as const },
-    resumeai: { text: "Генерируется автоматически", status: "good" as const },
-  },
-  {
-    label: "Стоимость",
-    chatgpt: { text: "Бесплатно", status: "good" as const },
-    consultant: { text: "5 000–30 000₽", status: "bad" as const },
-    resumeai: { text: "от 499₽ за 3 адаптации", status: "good" as const },
-  },
-  {
-    label: "Антигаллюцинации",
-    chatgpt: { text: "Может выдумать опыт", status: "bad" as const },
-    consultant: { text: "Живой человек", status: "good" as const },
-    resumeai: { text: "Встроенная защита", status: "good" as const },
-  },
+const consultantItems = [
+  "5 000 — 15 000₽ за одно резюме",
+  "Ждать 3–7 рабочих дней",
+  "Нет доработок под каждую вакансию",
+  "Нет сопроводительных писем в цену",
+  "Один специалист — одна экспертиза",
 ];
 
-const statusIcon = { good: "✅", warn: "⚠️", bad: "❌" };
+const resumeAiItems = [
+  "от 499₽ за пакет токенов",
+  "Результат за 15–20 минут",
+  "Адаптация под каждую вакансию за 40 токенов",
+  "Сопроводительное письмо включено",
+  "Методика на основе тысяч успешных резюме",
+];
 
 export function ComparisonSection() {
-  const { ref, isVisible } = useScrollReveal();
-
   return (
-    <section
-      ref={ref}
-      className={cn(
-        "bg-[#1e293b] py-20 transition-all duration-700",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      )}
-    >
+    <section className="bg-[#0f172a] py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-center text-3xl font-extrabold text-white sm:text-4xl">
-          Почему ChatGPT не заменит карьерного консультанта
-        </h2>
-
-        <div className="mt-12 overflow-x-auto">
-          <table className="w-full min-w-[600px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-700">
-                <th className="pb-4 pr-4 text-slate-400"></th>
-                <th className="pb-4 pr-4 text-slate-400">ChatGPT</th>
-                <th className="pb-4 pr-4 text-slate-400">Консультант</th>
-                <th className="pb-4 pr-4 font-semibold text-blue-400">ResumeAI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.label} className="border-b border-slate-700/50">
-                  <td className="py-4 pr-4 font-medium text-white">{row.label}</td>
-                  <td className="py-4 pr-4 text-slate-400">
-                    {statusIcon[row.chatgpt.status]} {row.chatgpt.text}
-                  </td>
-                  <td className="py-4 pr-4 text-slate-400">
-                    {statusIcon[row.consultant.status]} {row.consultant.text}
-                  </td>
-                  <td className="py-4 pr-4 text-slate-300">
-                    {statusIcon[row.resumeai.status]} {row.resumeai.text}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Header */}
+        <div className="mb-16 text-center">
+          <div className="mb-4 inline-flex rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm text-slate-400">
+            Ценность
+          </div>
+          <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
+            Карьерный консультант или ResumeAI?
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-slate-400">
+            Одинаковое качество. В 10–30 раз дешевле. В 10 раз быстрее.
+          </p>
         </div>
 
-        <p className="mt-10 text-center text-lg font-medium text-slate-300">
-          Экспертиза карьерного консультанта. Скорость AI. Цена —{" "}
-          <span className="text-blue-400">166₽ за адаптацию.</span>
-        </p>
+        {/* Comparison grid */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Consultant */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
+            <div className="mb-6">
+              <div className="mb-1 text-sm text-slate-500">Карьерный консультант</div>
+              <div className="text-4xl font-extrabold text-white">
+                5 000–15 000₽
+              </div>
+              <div className="mt-1 text-sm text-slate-500">за одно резюме</div>
+            </div>
+            <ul className="space-y-3">
+              {consultantItems.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-400">
+                  <X className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ResumeAI */}
+          <div className="relative rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-8">
+            {/* Best value badge */}
+            <div className="absolute -top-3 right-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-indigo-500/30">
+              Выгоднее в 10–30×
+            </div>
+            <div className="mb-6">
+              <div className="mb-1 text-sm text-indigo-400">ResumeAI</div>
+              <div className="text-4xl font-extrabold text-white">от 499₽</div>
+              <div className="mt-1 text-sm text-slate-500">пакет токенов</div>
+            </div>
+            <ul className="space-y-3">
+              {resumeAiItems.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/register"
+              className={cn(
+                "mt-8 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-semibold text-white",
+                "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/25",
+                "transition-all hover:from-indigo-600 hover:to-purple-600"
+              )}
+            >
+              Попробовать бесплатно
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

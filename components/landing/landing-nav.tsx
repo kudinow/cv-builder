@@ -1,31 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function LandingNav() {
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#0f172a]/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <span className="text-lg font-bold text-white">
-          Resume<span className="text-blue-500">AI</span>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        {/* Logo */}
+        <span className="text-xl font-bold text-white tracking-tight">
+          Resume<span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">AI</span>
         </span>
-        <div className="flex items-center gap-6">
-          <a href="#how-it-works" className="hidden text-sm text-slate-400 hover:text-white sm:block">
-            Как это работает
+
+        {/* Nav links */}
+        <div className="hidden items-center gap-8 sm:flex">
+          <a href="#features" className="text-sm text-slate-400 transition-colors hover:text-white">
+            Возможности
           </a>
-          <a href="#pricing" className="hidden text-sm text-slate-400 hover:text-white sm:block">
-            Цены
+          <a href="#pricing" className="text-sm text-slate-400 transition-colors hover:text-white">
+            Тарифы
           </a>
+          <a href="#faq" className="text-sm text-slate-400 transition-colors hover:text-white">
+            FAQ
+          </a>
+        </div>
+
+        {/* CTA group */}
+        <div className="flex items-center gap-3">
           <Link
-            href="/adapt"
+            href="/login"
+            className="hidden text-sm text-slate-400 transition-colors hover:text-white sm:block"
+          >
+            Войти
+          </Link>
+          <Link
+            href="/register"
             className={cn(
-              buttonVariants({ size: "sm" }),
-              "bg-blue-600 text-white hover:bg-blue-700"
+              "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white",
+              "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/25",
+              "transition-all hover:from-indigo-600 hover:to-purple-600 hover:shadow-indigo-500/40"
             )}
           >
-            Попробовать бесплатно
+            Создать резюме
           </Link>
         </div>
       </div>
