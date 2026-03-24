@@ -4,7 +4,8 @@ import { createSession, getActiveSession } from '@/lib/interview-session'
 
 export async function POST(req: Request) {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -25,6 +26,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid mode' }, { status: 400 })
   }
 
-  const session = await createSession(user.id, mode, uploadedResumeText)
-  return NextResponse.json({ session }, { status: 201 })
+  const newSession = await createSession(user.id, mode, uploadedResumeText)
+  return NextResponse.json({ session: newSession }, { status: 201 })
 }

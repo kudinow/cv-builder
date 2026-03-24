@@ -69,7 +69,8 @@ export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenPro
       {/* Heading */}
       <div className="mb-10 text-center">
         <h1
-          className="mb-3 text-3xl font-bold sm:text-4xl gradient-brand-text"
+          className="mb-3 text-3xl font-bold sm:text-4xl"
+          style={{ color: "#f1f5f9" }}
         >
           Что вы хотите сделать?
         </h1>

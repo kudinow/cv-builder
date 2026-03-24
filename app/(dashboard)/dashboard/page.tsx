@@ -1,4 +1,6 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server"
+"use client"
+
+import { useEffect, useState } from "react"
 import { WizardScreen } from "@/components/wizard-screen"
 import { ResumeCard } from "@/components/resume-card"
 import { ActiveInterviewBanner } from "@/components/active-interview-banner"
@@ -11,93 +13,68 @@ interface MasterResume {
   adaptation_count: number
 }
 
-async function fetchTokenBalance(userId: string): Promise<number> {
-  const supabase = await createServerSupabaseClient()
-  const { data } = await supabase
-    .from("profiles")
-    .select("tokens")
-    .eq("id", userId)
-    .single()
-  return data?.tokens ?? 0
-}
+export default function DashboardPage() {
+  const [tokenBalance, setTokenBalance] = useState(0)
+  const [resumes, setResumes] = useState<MasterResume[]>([])
+  const [loading, setLoading] = useState(true)
 
-async function fetchMasterResumes(userId: string): Promise<MasterResume[]> {
-  const supabase = await createServerSupabaseClient()
+  useEffect(() => {
+    async function load() {
+      try {
+        const [balanceRes, resumesRes] = await Promise.all([
+          fetch("/api/tokens/balance").then(r => r.ok ? r.json() : { balance: 0 }),
+          fetch("/api/resumes").then(r => r.ok ? r.json() : { resumes: [] }),
+        ])
+        setTokenBalance(balanceRes.balance ?? 0)
 
-  // Fetch master resumes
-  const { data: masters } = await supabase
-    .from("resumes")
-    .select("id, title, target_position, created_at")
-    .eq("user_id", userId)
-    .eq("type", "master")
-    .is("parent_id", null)
-    .order("created_at", { ascending: false })
+        // Map resumes with adaptation count
+        const mapped = (resumesRes.resumes ?? []).map((r: Record<string, unknown>) => ({
+          id: r.id as string,
+          title: (r.title as string) ?? "Резюме без названия",
+          target_position: (r.target_position as string) ?? null,
+          created_at: r.created_at as string,
+          adaptation_count: Array.isArray(r.adaptations) && r.adaptations[0]
+            ? (r.adaptations[0] as { count: number }).count
+            : 0,
+        }))
+        setResumes(mapped)
+      } catch {
+        // Silently fail — show empty state
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
 
-  if (!masters || masters.length === 0) return []
-
-  // Fetch adaptation counts in one query
-  const masterIds = masters.map((r) => r.id)
-  const { data: adaptations } = await supabase
-    .from("resumes")
-    .select("parent_id")
-    .eq("type", "adaptation")
-    .in("parent_id", masterIds)
-
-  const countMap: Record<string, number> = {}
-  for (const a of adaptations ?? []) {
-    if (a.parent_id) countMap[a.parent_id] = (countMap[a.parent_id] ?? 0) + 1
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
+        />
+      </div>
+    )
   }
 
-  return masters.map((r) => ({
-    id: r.id,
-    title: r.title ?? "Резюме без названия",
-    target_position: r.target_position ?? null,
-    created_at: r.created_at,
-    adaptation_count: countMap[r.id] ?? 0,
-  }))
-}
-
-export default async function DashboardPage() {
-  const supabase = await createServerSupabaseClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const [tokenBalance, masterResumes] = await Promise.all([
-    fetchTokenBalance(user!.id),
-    fetchMasterResumes(user!.id),
-  ])
-
-  const hasResumes = masterResumes.length > 0
+  const hasResumes = resumes.length > 0
 
   return (
     <div>
-      {/* Active interview banner — client, fetches own data */}
       <ActiveInterviewBanner />
 
       {hasResumes ? (
-        /* ---- Returning user: resume grid ---- */
         <div>
-          {/* Page header */}
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h1
-                className="text-2xl font-bold"
-                style={{ color: "#f1f5f9" }}
-              >
+              <h1 className="text-2xl font-bold" style={{ color: "#f1f5f9" }}>
                 Мои резюме
               </h1>
               <p className="mt-1 text-sm" style={{ color: "#94a3b8" }}>
-                {masterResumes.length}{" "}
-                {masterResumes.length === 1
-                  ? "мастер-резюме"
-                  : masterResumes.length < 5
-                    ? "мастер-резюме"
-                    : "мастер-резюме"}
+                {resumes.length} мастер-резюме
               </p>
             </div>
-
-            {/* "+ Новое" button */}
             <a
               href="/dashboard/new"
               className="rounded-xl px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
@@ -110,9 +87,8 @@ export default async function DashboardPage() {
             </a>
           </div>
 
-          {/* Resume grid */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {masterResumes.map((resume) => (
+            {resumes.map((resume) => (
               <ResumeCard
                 key={resume.id}
                 id={resume.id}
@@ -126,11 +102,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       ) : (
-        /* ---- New user: wizard ---- */
-        <WizardScreen
-          hasMasterResumes={false}
-          tokenBalance={tokenBalance}
-        />
+        <WizardScreen hasMasterResumes={false} tokenBalance={tokenBalance} />
       )}
     </div>
   )

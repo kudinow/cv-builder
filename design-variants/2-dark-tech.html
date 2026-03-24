@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Вариант 2: Тёмный tech</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Space Grotesk', sans-serif; color: #e0e0e0; background: #0a0a0a; line-height: 1.6; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  nav .logo { font-size: 20px; font-weight: 700; background: linear-gradient(135deg, #06b6d4, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  nav .links { display: flex; gap: 12px; align-items: center; }
+  nav .links a { text-decoration: none; font-size: 14px; color: #888; font-weight: 500; }
+  .btn-cyan { background: linear-gradient(135deg, #06b6d4, #22d3ee); color: #0a0a0a; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 700; display: inline-block; transition: opacity 0.2s; }
+  .btn-cyan:hover { opacity: 0.85; }
+  .btn-ghost { border: 1px solid rgba(255,255,255,0.15); color: #ccc; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; transition: border-color 0.2s; }
+  .btn-ghost:hover { border-color: #06b6d4; color: #06b6d4; }
+  .btn-lg { padding: 16px 40px; font-size: 16px; }
+
+  /* Grid bg */
+  .hero-wrap { position: relative; overflow: hidden; }
+  .hero-wrap::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(6,182,212,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.05) 1px, transparent 1px); background-size: 60px 60px; }
+  .hero-wrap::after { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%); pointer-events: none; }
+
+  .hero { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 120px 60px 100px; text-align: center; }
+  .hero .badge { display: inline-block; border: 1px solid rgba(6,182,212,0.3); background: rgba(6,182,212,0.08); color: #22d3ee; font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-size: 56px; font-weight: 700; line-height: 1.1; letter-spacing: -1.5px; background: linear-gradient(180deg, #fff 40%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 18px; color: #888; margin-top: 20px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .hero .buttons { margin-top: 36px; display: flex; gap: 12px; justify-content: center; }
+
+  /* Scrolling examples */
+  .examples { overflow: hidden; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .examples-track { display: flex; gap: 24px; animation: scroll 30s linear infinite; width: max-content; }
+  @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .example-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px 28px; min-width: 400px; flex-shrink: 0; }
+  .example-card .bad { color: #ef4444; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .example-card .good { color: #22c55e; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px; }
+  .example-card .text { font-size: 14px; margin-top: 4px; color: #ccc; }
+  .example-card .text.dim { color: #666; text-decoration: line-through; }
+
+  /* Features */
+  .features { max-width: 1100px; margin: 0 auto; padding: 80px 60px; }
+  .features h2 { font-size: 36px; font-weight: 700; text-align: center; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+  .feat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 28px; transition: all 0.3s; backdrop-filter: blur(10px); }
+  .feat-card:hover { border-color: rgba(6,182,212,0.4); box-shadow: 0 0 30px rgba(6,182,212,0.1); }
+  .feat-card .icon { font-size: 32px; margin-bottom: 16px; }
+  .feat-card h3 { font-size: 16px; font-weight: 700; color: #fff; }
+  .feat-card p { font-size: 14px; color: #777; margin-top: 8px; }
+
+  /* Steps */
+  .steps-section { max-width: 1100px; margin: 0 auto; padding: 80px 60px; }
+  .steps-section h2 { font-size: 36px; font-weight: 700; text-align: center; }
+  .steps-row { display: flex; gap: 0; margin-top: 48px; position: relative; }
+  .steps-row::before { content: ''; position: absolute; top: 24px; left: 60px; right: 60px; height: 2px; background: linear-gradient(90deg, #06b6d4, rgba(6,182,212,0.1)); }
+  .step-item { flex: 1; text-align: center; position: relative; z-index: 1; }
+  .step-dot { width: 48px; height: 48px; border-radius: 50%; background: #0a0a0a; border: 2px solid #06b6d4; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: #22d3ee; font-size: 18px; }
+  .step-item h3 { font-size: 14px; font-weight: 700; color: #fff; margin-top: 14px; }
+  .step-item p { font-size: 12px; color: #666; margin-top: 4px; }
+
+  /* Pricing */
+  .pricing { max-width: 1000px; margin: 0 auto; padding: 80px 60px; }
+  .pricing h2 { font-size: 36px; font-weight: 700; text-align: center; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+  .price-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 32px; }
+  .price-card.pop { border-color: #06b6d4; position: relative; }
+  .price-card.pop::before { content: 'Популярный'; position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #06b6d4, #22d3ee); color: #0a0a0a; font-size: 11px; font-weight: 700; padding: 3px 14px; border-radius: 20px; }
+  .price-card .tier { font-size: 13px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .amount { font-size: 40px; font-weight: 700; color: #fff; margin-top: 8px; }
+  .price-card .amount span { font-size: 14px; color: #666; font-weight: 400; }
+  .price-card ul { list-style: none; margin-top: 20px; }
+  .price-card li { font-size: 14px; color: #888; padding: 5px 0; }
+  .price-card li::before { content: ''; display: inline-block; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+  .price-card .pbtn { display: block; text-align: center; margin-top: 24px; }
+
+  /* CTA */
+  .cta { text-align: center; padding: 80px 60px; position: relative; }
+  .cta::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 500px; height: 300px; background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%); pointer-events: none; }
+  .cta h2 { font-size: 40px; font-weight: 700; position: relative; }
+  .cta p { color: #666; margin-top: 12px; position: relative; }
+  .cta .buttons { margin-top: 28px; position: relative; }
+
+  footer { padding: 24px 60px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; font-size: 13px; color: #444; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ResumeAI</div>
+  <div class="links">
+    <a href="#">Возможности</a>
+    <a href="#">Цены</a>
+    <a href="#" class="btn-ghost" style="padding:8px 20px;">Войти</a>
+    <a href="#" class="btn-cyan" style="padding:8px 20px;">Начать бесплатно</a>
+  </div>
+</nav>
+
+<div class="hero-wrap">
+  <section class="hero">
+    <div class="badge">Powered by Claude Sonnet 4.6</div>
+    <h1>Ваше резюме. Переписано AI. По правилам экспертов.</h1>
+    <p>Адаптируйте резюме под любую вакансию за 30 секунд. Методология карьерных консультантов, встроенная в AI.</p>
+    <div class="buttons">
+      <a href="#" class="btn-cyan btn-lg">Попробовать бесплатно</a>
+      <a href="#" class="btn-ghost btn-lg">Войти</a>
+    </div>
+  </section>
+</div>
+
+<div class="examples">
+  <div class="examples-track">
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Участие в крупных проектах компании</div>
+      <div class="good">Стало</div>
+      <div class="text">Руководил реализацией 4 проектов по запуску новых продуктов, которые принесли 13% выручки компании</div>
+    </div>
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Перевыполнение плана продаж</div>
+      <div class="good">Стало</div>
+      <div class="text">Перевыполнил план по продажам на 15% за счёт привлечения 3 новых ключевых клиентов</div>
+    </div>
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Сокращение расходов отдела</div>
+      <div class="good">Стало</div>
+      <div class="text">Сократила транспортные расходы на 15% за счёт планирования маршрутов и переговоров с поставщиками</div>
+    </div>
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Запущены 3 рекламные кампании</div>
+      <div class="good">Стало</div>
+      <div class="text">Запустила 3 рекламные кампании совместно с ключевым поставщиком, управляя командой из 12 человек</div>
+    </div>
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Участие в крупных проектах компании</div>
+      <div class="good">Стало</div>
+      <div class="text">Руководил реализацией 4 проектов по запуску новых продуктов, которые принесли 13% выручки компании</div>
+    </div>
+    <div class="example-card">
+      <div class="bad">Было</div>
+      <div class="text dim">Перевыполнение плана продаж</div>
+      <div class="good">Стало</div>
+      <div class="text">Перевыполнил план по продажам на 15% за счёт привлечения 3 новых ключевых клиентов</div>
+    </div>
+  </div>
+</div>
+
+<section class="features">
+  <h2>Возможности</h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="icon">&#9881;</div>
+      <h3>Адаптация под вакансию</h3>
+      <p>PDF + ссылка на hh.ru. AI перепишет каждое достижение по 3 формулам экспертов.</p>
+    </div>
+    <div class="feat-card">
+      <div class="icon">&#128172;</div>
+      <h3>Интервью с AI</h3>
+      <p>Консультант задаёт вопросы, извлекает достижения, генерирует резюме с нуля.</p>
+    </div>
+    <div class="feat-card">
+      <div class="icon">&#128196;</div>
+      <h3>PDF за секунды</h3>
+      <p>Профессиональная вёрстка. Резюме + сопроводительное письмо. Один клик — скачивание.</p>
+    </div>
+  </div>
+</section>
+
+<section class="steps-section">
+  <h2>4 шага к идеальному резюме</h2>
+  <div class="steps-row">
+    <div class="step-item"><div class="step-dot">1</div><h3>Загрузите PDF</h3><p>Ваше текущее резюме</p></div>
+    <div class="step-item"><div class="step-dot">2</div><h3>Укажите вакансию</h3><p>Ссылка или текст</p></div>
+    <div class="step-item"><div class="step-dot">3</div><h3>AI адаптирует</h3><p>30-60 секунд</p></div>
+    <div class="step-item"><div class="step-dot">4</div><h3>Скачайте</h3><p>PDF + письмо</p></div>
+  </div>
+</section>
+
+<section class="pricing">
+  <h2>Тарифы</h2>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="tier">Free</div>
+      <div class="amount">0 &#8381;</div>
+      <ul><li>1 адаптация</li><li>Сопроводительное письмо</li><li>PDF-скачивание</li></ul>
+      <a href="#" class="btn-ghost pbtn">Начать</a>
+    </div>
+    <div class="price-card pop">
+      <div class="tier">Starter</div>
+      <div class="amount">499 &#8381;</div>
+      <ul><li>3 адаптации</li><li>Сопроводительные письма</li><li>Приоритет</li></ul>
+      <a href="#" class="btn-cyan pbtn">Купить</a>
+    </div>
+    <div class="price-card">
+      <div class="tier">Pro</div>
+      <div class="amount">1 499 &#8381; <span>/мес</span></div>
+      <ul><li>15 адаптаций/мес</li><li>Создание с нуля</li><li>Приоритет</li></ul>
+      <a href="#" class="btn-cyan pbtn">Подписаться</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Начните прямо сейчас</h2>
+  <p>Первая адаптация бесплатно. Без привязки карты.</p>
+  <div class="buttons"><a href="#" class="btn-cyan btn-lg">Создать резюме</a></div>
+</section>
+
+<footer>ResumeAI &copy; 2026</footer>
+
+</body>
+</html>

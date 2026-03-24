@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Вариант 5: Градиентный SaaS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Manrope', sans-serif; color: #1e1b4b; background: #fff; line-height: 1.6; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; }
+  nav .logo { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  nav .links { display: flex; gap: 12px; align-items: center; }
+  nav a.nl { text-decoration: none; font-size: 14px; color: #6b7280; font-weight: 500; }
+  .btn-grad { background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899); color: #fff; padding: 10px 24px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 700; display: inline-block; transition: opacity 0.2s; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+  .btn-grad:hover { opacity: 0.9; }
+  .btn-wht { background: #fff; border: 1.5px solid #e5e7eb; color: #374151; padding: 10px 24px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; }
+  .btn-lg { padding: 16px 40px; font-size: 16px; }
+
+  /* Hero */
+  .hero-wrap { background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7, #ec4899); position: relative; overflow: hidden; }
+  .hero-wrap::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 80px; background: #fff; clip-path: ellipse(55% 100% at 50% 100%); }
+  .hero { max-width: 900px; margin: 0 auto; padding: 80px 40px 120px; text-align: center; color: #fff; position: relative; z-index: 1; }
+  .hero .chip { display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); font-size: 13px; font-weight: 600; padding: 6px 18px; border-radius: 999px; margin-bottom: 20px; }
+  .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+  .hero p { font-size: 18px; opacity: 0.85; margin-top: 16px; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .hero .buttons { margin-top: 32px; display: flex; gap: 12px; justify-content: center; }
+  .hero .btn-hero-w { background: #fff; color: #6366f1; padding: 16px 40px; border-radius: 10px; font-weight: 700; font-size: 16px; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+  .hero .btn-hero-o { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; padding: 16px 40px; border-radius: 10px; font-weight: 700; font-size: 16px; text-decoration: none; }
+
+  /* Trust */
+  .trust { text-align: center; padding: 40px 40px 20px; }
+  .trust p { font-size: 13px; color: #9ca3af; font-weight: 500; }
+  .trust .nums { display: flex; gap: 60px; justify-content: center; margin-top: 16px; }
+  .trust .n { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .trust .l { font-size: 13px; color: #9ca3af; }
+
+  /* Features */
+  .features { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+  .features h2 { font-size: 36px; font-weight: 800; text-align: center; }
+  .features .sub { text-align: center; color: #9ca3af; margin-top: 8px; }
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .feat-card { background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 16px; padding: 28px; transition: all 0.3s; }
+  .feat-card:hover { box-shadow: 0 8px 30px rgba(99,102,241,0.1); border-color: #c7d2fe; transform: translateY(-2px); }
+  .feat-card .ic { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #ede9fe, #fce7f3); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+  .feat-card h3 { font-size: 16px; font-weight: 700; }
+  .feat-card p { font-size: 14px; color: #6b7280; margin-top: 6px; }
+
+  /* Steps */
+  .steps { max-width: 900px; margin: 0 auto; padding: 60px 40px; text-align: center; }
+  .steps h2 { font-size: 36px; font-weight: 800; }
+  .steps-row { display: flex; gap: 16px; margin-top: 36px; }
+  .st { flex: 1; background: #f9fafb; border-radius: 16px; padding: 24px; }
+  .st-n { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+  .st h3 { font-size: 14px; font-weight: 700; margin-top: 10px; }
+  .st p { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+
+  /* Pricing */
+  .pricing { max-width: 1000px; margin: 0 auto; padding: 60px 40px; }
+  .pricing h2 { font-size: 36px; font-weight: 800; text-align: center; }
+  .pricing .sub { text-align: center; color: #9ca3af; margin-top: 8px; }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .pr-card { border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px; text-align: center; }
+  .pr-card.pop { border: 2px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #6366f1, #a855f7, #ec4899); background-origin: border-box; background-clip: padding-box, border-box; position: relative; }
+  .pr-card.pop::before { content: 'Популярный'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 16px; border-radius: 999px; }
+  .pr-card .tier { font-size: 13px; color: #9ca3af; font-weight: 600; text-transform: uppercase; }
+  .pr-card .amt { font-size: 40px; font-weight: 800; margin-top: 8px; }
+  .pr-card .amt span { font-size: 14px; color: #9ca3af; font-weight: 400; }
+  .pr-card ul { list-style: none; margin-top: 16px; text-align: left; }
+  .pr-card li { font-size: 14px; color: #6b7280; padding: 5px 0; padding-left: 16px; position: relative; }
+  .pr-card li::before { content: ''; width: 5px; height: 5px; background: #a855f7; border-radius: 50%; position: absolute; left: 0; top: 12px; }
+  .pr-card .pb { display: block; margin-top: 20px; text-align: center; }
+
+  /* CTA */
+  .cta { background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7); color: #fff; padding: 60px; text-align: center; border-radius: 24px; max-width: 900px; margin: 40px auto 60px; }
+  .cta h2 { font-size: 32px; font-weight: 800; }
+  .cta p { opacity: 0.8; margin-top: 8px; }
+  .cta a { background: #fff; color: #6366f1; padding: 16px 40px; border-radius: 10px; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 20px; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+
+  footer { text-align: center; padding: 24px; font-size: 13px; color: #9ca3af; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ResumeAI</div>
+  <div class="links">
+    <a href="#" class="nl">Возможности</a>
+    <a href="#" class="nl">Цены</a>
+    <a href="#" class="btn-wht" style="padding:8px 20px;">Войти</a>
+    <a href="#" class="btn-grad" style="padding:8px 20px;">Начать бесплатно</a>
+  </div>
+</nav>
+
+<div class="hero-wrap">
+  <section class="hero">
+    <div class="chip">Первая адаптация — бесплатно</div>
+    <h1>AI-помощник для создания продающего резюме</h1>
+    <p>Адаптируйте резюме под вакансию за 30 секунд или создайте с нуля через AI-интервью. Методология лучших карьерных консультантов.</p>
+    <div class="buttons">
+      <a href="#" class="btn-hero-w">Попробовать бесплатно</a>
+      <a href="#" class="btn-hero-o">Как это работает</a>
+    </div>
+  </section>
+</div>
+
+<div class="trust">
+  <p>Проверенная методология</p>
+  <div class="nums">
+    <div><div class="n">30 сек</div><div class="l">Адаптация</div></div>
+    <div><div class="n">3</div><div class="l">Формулы достижений</div></div>
+    <div><div class="n">7</div><div class="l">Правил написания</div></div>
+    <div><div class="n">10x</div><div class="l">Дешевле консультанта</div></div>
+  </div>
+</div>
+
+<section class="features">
+  <h2>Возможности</h2>
+  <p class="sub">Два сценария — одно качество</p>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="ic">&#9881;</div><h3>Адаптация под вакансию</h3><p>Загрузите PDF + ссылку на hh.ru — AI перепишет по формулам экспертов. Результат: резюме + сопроводительное письмо.</p></div>
+    <div class="feat-card"><div class="ic">&#128172;</div><h3>Создание через интервью</h3><p>AI-консультант задаёт вопросы, извлекает достижения и создаёт резюме с нуля.</p></div>
+    <div class="feat-card"><div class="ic">&#128196;</div><h3>Готовый PDF</h3><p>Профессиональная вёрстка. Скачайте и отправляйте работодателям.</p></div>
+  </div>
+</section>
+
+<section class="steps">
+  <h2>Как это работает</h2>
+  <div class="steps-row">
+    <div class="st"><div class="st-n">1</div><h3>Загрузите резюме</h3><p>PDF-файл</p></div>
+    <div class="st"><div class="st-n">2</div><h3>Укажите вакансию</h3><p>Ссылка или текст</p></div>
+    <div class="st"><div class="st-n">3</div><h3>AI адаптирует</h3><p>30-60 секунд</p></div>
+    <div class="st"><div class="st-n">4</div><h3>Скачайте PDF</h3><p>Готово!</p></div>
+  </div>
+</section>
+
+<section class="pricing">
+  <h2>Простые цены</h2>
+  <p class="sub">Без скрытых платежей</p>
+  <div class="pr-grid">
+    <div class="pr-card"><div class="tier">Free</div><div class="amt">0 &#8381;</div><ul><li>1 адаптация</li><li>Сопроводительное письмо</li><li>PDF</li></ul><a href="#" class="btn-wht pb">Начать</a></div>
+    <div class="pr-card pop"><div class="tier">Starter</div><div class="amt">499 &#8381;</div><ul><li>3 адаптации</li><li>Сопроводительные письма</li><li>Приоритет</li></ul><a href="#" class="btn-grad pb">Купить</a></div>
+    <div class="pr-card"><div class="tier">Pro</div><div class="amt">1 499 &#8381; <span>/мес</span></div><ul><li>15 адаптаций/мес</li><li>Создание с нуля</li><li>Приоритет</li></ul><a href="#" class="btn-grad pb">Подписаться</a></div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Готовы получить работу мечты?</h2>
+  <p>Первая адаптация бесплатно. Без привязки карты.</p>
+  <a href="#">Создать резюме</a>
+</section>
+
+<footer>ResumeAI &copy; 2026</footer>
+
+</body>
+</html>

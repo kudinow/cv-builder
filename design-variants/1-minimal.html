@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Вариант 1: Деловой минимализм</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: #111; background: #fff; line-height: 1.6; }
+
+  /* Nav */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 60px; border-bottom: 1px solid #eee; }
+  nav .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  nav .links { display: flex; gap: 12px; align-items: center; }
+  nav .links a { text-decoration: none; font-size: 14px; color: #555; font-weight: 500; }
+  .btn-primary { background: #111; color: #fff; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; transition: background 0.2s; }
+  .btn-primary:hover { background: #333; }
+  .btn-outline { border: 1.5px solid #ddd; color: #111; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; transition: all 0.2s; }
+  .btn-outline:hover { border-color: #111; }
+  .btn-large { padding: 14px 36px; font-size: 16px; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; padding: 100px 60px; max-width: 1200px; margin: 0 auto; align-items: center; }
+  .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; }
+  .hero h1 span { color: #1d4ed8; }
+  .hero p { font-size: 18px; color: #666; margin-top: 20px; max-width: 480px; }
+  .hero .buttons { margin-top: 32px; display: flex; gap: 12px; }
+  .hero .stats { display: flex; gap: 40px; margin-top: 48px; }
+  .hero .stat-num { font-size: 32px; font-weight: 800; color: #111; }
+  .hero .stat-label { font-size: 13px; color: #888; margin-top: 2px; }
+
+  /* Resume card */
+  .resume-card { background: #fafafa; border: 1px solid #e5e5e5; border-radius: 12px; padding: 32px; position: relative; }
+  .resume-card::before { content: 'PDF'; position: absolute; top: 12px; right: 12px; background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .resume-card .rc-name { font-size: 18px; font-weight: 700; }
+  .resume-card .rc-role { font-size: 13px; color: #1d4ed8; margin-top: 2px; }
+  .resume-card .rc-section { margin-top: 16px; }
+  .resume-card .rc-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #1d4ed8; font-weight: 700; margin-bottom: 6px; }
+  .resume-card .rc-line { height: 8px; background: #e5e5e5; border-radius: 4px; margin-bottom: 6px; }
+  .resume-card .rc-line.short { width: 60%; }
+  .resume-card .rc-line.med { width: 80%; }
+  .resume-card .rc-achievement { font-size: 12px; color: #444; padding-left: 12px; border-left: 2px solid #1d4ed8; margin-bottom: 8px; line-height: 1.5; }
+  .resume-card .rc-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-right: 6px; margin-top: 8px; }
+
+  /* Divider */
+  .divider { width: 100%; height: 1px; background: #eee; }
+
+  /* Features */
+  .features { max-width: 1200px; margin: 0 auto; padding: 80px 60px; }
+  .features h2 { font-size: 36px; font-weight: 800; text-align: center; letter-spacing: -1px; }
+  .features .subtitle { text-align: center; color: #888; font-size: 16px; margin-top: 8px; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
+  .feature-card { padding: 32px; border: 1px solid #eee; border-radius: 12px; transition: border-color 0.2s; }
+  .feature-card:hover { border-color: #111; }
+  .feature-card .icon { font-size: 28px; margin-bottom: 16px; }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+  /* How it works */
+  .how { max-width: 1200px; margin: 0 auto; padding: 80px 60px; }
+  .how h2 { font-size: 36px; font-weight: 800; text-align: center; letter-spacing: -1px; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 48px; }
+  .step { text-align: center; }
+  .step-num { width: 48px; height: 48px; border-radius: 50%; background: #111; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+  .step h3 { font-size: 15px; font-weight: 700; margin-top: 16px; }
+  .step p { font-size: 13px; color: #888; margin-top: 6px; }
+  .step-arrow { display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 24px; padding-top: 24px; }
+
+  /* Pricing */
+  .pricing { max-width: 1000px; margin: 0 auto; padding: 80px 60px; }
+  .pricing h2 { font-size: 36px; font-weight: 800; text-align: center; letter-spacing: -1px; }
+  .pricing .subtitle { text-align: center; color: #888; font-size: 16px; margin-top: 8px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+  .price-card { padding: 32px; border: 1px solid #eee; border-radius: 12px; position: relative; }
+  .price-card.featured { border: 2px solid #111; }
+  .price-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #111; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 16px; border-radius: 20px; }
+  .price-card .plan { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .price { font-size: 36px; font-weight: 800; margin-top: 8px; }
+  .price-card .price span { font-size: 14px; font-weight: 500; color: #888; }
+  .price-card ul { list-style: none; margin-top: 20px; }
+  .price-card ul li { font-size: 14px; color: #555; padding: 6px 0; border-bottom: 1px solid #f5f5f5; }
+  .price-card ul li::before { content: ''; display: inline-block; width: 5px; height: 5px; background: #111; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+  .price-card .price-btn { display: block; text-align: center; margin-top: 24px; }
+
+  /* CTA */
+  .cta { background: #111; color: #fff; padding: 80px 60px; text-align: center; }
+  .cta h2 { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+  .cta p { color: #999; font-size: 16px; margin-top: 12px; }
+  .cta .btn-cta { background: #fff; color: #111; padding: 14px 36px; border-radius: 8px; font-size: 16px; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 24px; transition: opacity 0.2s; }
+  .cta .btn-cta:hover { opacity: 0.9; }
+
+  /* Footer */
+  footer { padding: 24px 60px; border-top: 1px solid #eee; text-align: center; font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ResumeAI</div>
+  <div class="links">
+    <a href="#">Возможности</a>
+    <a href="#">Цены</a>
+    <a href="#" class="btn-outline" style="padding:8px 20px;">Войти</a>
+    <a href="#" class="btn-primary" style="padding:8px 20px;">Начать бесплатно</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <h1>Резюме, которое <span>продаёт</span> вас работодателю</h1>
+    <p>Методология карьерных консультантов + AI. Адаптируйте резюме за 30 секунд или создайте с нуля через интервью.</p>
+    <div class="buttons">
+      <a href="#" class="btn-primary btn-large">Попробовать бесплатно</a>
+      <a href="#" class="btn-outline btn-large">Как это работает</a>
+    </div>
+    <div class="stats">
+      <div><div class="stat-num">30 сек</div><div class="stat-label">Время адаптации</div></div>
+      <div><div class="stat-num">10x</div><div class="stat-label">Дешевле консультанта</div></div>
+      <div><div class="stat-num">3</div><div class="stat-label">Формулы достижений</div></div>
+    </div>
+  </div>
+  <div class="resume-card">
+    <div class="rc-name">Николай Кудинов</div>
+    <div class="rc-role">Руководитель отдела маркетинга</div>
+    <div class="rc-section">
+      <div class="rc-section-title">Достижения</div>
+      <div class="rc-achievement">Снизил долю рекламных расходов в выручке на 15% за счёт оптимизации каналов при росте выручки на 30%</div>
+      <div class="rc-achievement">Сократил стоимость привлечения клиента на 40% через A/B-тесты креативов</div>
+    </div>
+    <div style="margin-top:12px;">
+      <span class="rc-badge">Google Ads</span>
+      <span class="rc-badge">Яндекс Директ</span>
+      <span class="rc-badge">Unit-экономика</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="features">
+  <h2>Два сценария — одно качество</h2>
+  <p class="subtitle">Выберите подходящий способ создания резюме</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon">&#9881;</div>
+      <h3>Адаптация под вакансию</h3>
+      <p>Загрузите резюме и ссылку на hh.ru. AI перепишет обязанности и достижения под требования конкретной вакансии. Результат — PDF + сопроводительное письмо.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#128172;</div>
+      <h3>Создание через интервью</h3>
+      <p>AI-консультант задаёт вопросы, извлекает достижения через проверенные техники и создаёт резюме по 3 формулам карьерных экспертов.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#9889;</div>
+      <h3>Экспертная методология</h3>
+      <p>7 правил написания, 3 формулы достижений, проверка на галлюцинации. Качество как у консультанта за 15 000 руб., но в 10 раз дешевле.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="how">
+  <h2>Как это работает</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Загрузите резюме</h3>
+      <p>PDF или текст — мы извлечём все данные</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Укажите вакансию</h3>
+      <p>Ссылка на hh.ru или вставьте текст</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>AI адаптирует</h3>
+      <p>Claude анализирует и переписывает по формулам</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Скачайте PDF</h3>
+      <p>Готовое резюме + сопроводительное письмо</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="pricing">
+  <h2>Простые цены</h2>
+  <p class="subtitle">Первая адаптация — бесплатно</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan">Free</div>
+      <div class="price">0 &#8381;</div>
+      <ul>
+        <li>1 адаптация резюме</li>
+        <li>Сопроводительное письмо</li>
+        <li>Скачивание PDF</li>
+      </ul>
+      <a href="#" class="btn-outline price-btn">Начать бесплатно</a>
+    </div>
+    <div class="price-card featured">
+      <div class="badge">Популярный</div>
+      <div class="plan">Starter</div>
+      <div class="price">499 &#8381;</div>
+      <ul>
+        <li>3 адаптации резюме</li>
+        <li>Сопроводительные письма</li>
+        <li>Скачивание PDF</li>
+        <li>Приоритетная генерация</li>
+      </ul>
+      <a href="#" class="btn-primary price-btn">Купить</a>
+    </div>
+    <div class="price-card">
+      <div class="plan">Pro</div>
+      <div class="price">1 499 &#8381; <span>/мес</span></div>
+      <ul>
+        <li>15 адаптаций в месяц</li>
+        <li>Создание с нуля (интервью)</li>
+        <li>Сопроводительные письма</li>
+        <li>Приоритетная генерация</li>
+      </ul>
+      <a href="#" class="btn-primary price-btn">Подписаться</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Готовы получить работу мечты?</h2>
+  <p>Первая адаптация бесплатно. Без привязки карты.</p>
+  <a href="#" class="btn-cta">Создать резюме</a>
+</section>
+
+<footer>ResumeAI &copy; 2026. AI-помощник для создания профессиональных резюме.</footer>
+
+</body>
+</html>

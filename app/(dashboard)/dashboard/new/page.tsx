@@ -5,10 +5,10 @@ async function fetchTokenBalance(userId: string): Promise<number> {
   const supabase = await createServerSupabaseClient()
   const { data } = await supabase
     .from("profiles")
-    .select("tokens")
+    .select("credits")
     .eq("id", userId)
     .single()
-  return data?.tokens ?? 0
+  return data?.credits ?? 0
 }
 
 async function hasMasterResumes(userId: string): Promise<boolean> {
@@ -24,13 +24,16 @@ async function hasMasterResumes(userId: string): Promise<boolean> {
 
 export default async function NewResumePage() {
   const supabase = await createServerSupabaseClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const userId = session?.user?.id
+
+  if (!userId) {
+    return <div style={{ color: "#f1f5f9" }}>Загрузка...</div>
+  }
 
   const [tokenBalance, hasResumes] = await Promise.all([
-    fetchTokenBalance(user!.id),
-    hasMasterResumes(user!.id),
+    fetchTokenBalance(userId),
+    hasMasterResumes(userId),
   ])
 
   return (

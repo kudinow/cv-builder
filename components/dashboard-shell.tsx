@@ -9,9 +9,9 @@ export async function DashboardShell({
   children: React.ReactNode
 }) {
   const supabase = await createServerSupabaseClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Use getSession instead of getUser — it reads from cookie without a network call
+  const { data: { session } } = await supabase.auth.getSession()
+  const email = session?.user?.email ?? ""
 
   return (
     <div className="theme-premium min-h-screen" style={{ backgroundColor: "#0f172a" }}>
@@ -24,7 +24,8 @@ export async function DashboardShell({
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2">
             <span
-              className="text-lg font-bold gradient-brand-text"
+              className="text-lg font-bold"
+              style={{ color: "#f1f5f9" }}
             >
               ResumeAI
             </span>
@@ -33,7 +34,7 @@ export async function DashboardShell({
           {/* Right side: token balance + user menu */}
           <div className="flex items-center gap-3">
             <TokenBalance />
-            <UserMenu userEmail={user?.email ?? ""} />
+            <UserMenu userEmail={email} />
           </div>
         </div>
       </header>

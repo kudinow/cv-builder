@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Вариант 4: Редакционный</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; color: #1a1a1a; background: #fff; line-height: 1.6; }
+  h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 60px; border-bottom: 3px solid #1a1a1a; }
+  nav .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+  nav .logo span { color: #dc2626; }
+  nav .links { display: flex; gap: 12px; align-items: center; }
+  nav a.nl { text-decoration: none; font-size: 14px; color: #666; font-weight: 500; }
+  .btn-red { background: #dc2626; color: #fff; padding: 10px 24px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; }
+  .btn-red:hover { background: #b91c1c; }
+  .btn-bdr { border: 1.5px solid #1a1a1a; color: #1a1a1a; padding: 10px 24px; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block; }
+  .btn-lg { padding: 14px 36px; font-size: 16px; }
+
+  .hero { max-width: 1100px; margin: 0 auto; padding: 80px 60px 60px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; }
+  .hero-left h1 { font-size: 54px; line-height: 1.08; font-weight: 900; }
+  .hero-left h1 em { font-style: italic; color: #dc2626; }
+  .hero-left .lead { font-size: 20px; color: #555; margin-top: 20px; max-width: 500px; }
+  .hero-left .buttons { margin-top: 28px; display: flex; gap: 12px; }
+  .hero-right { border-left: 3px solid #1a1a1a; padding-left: 40px; }
+  .hero-right .quote { font-family: 'Playfair Display', serif; font-size: 22px; font-style: italic; line-height: 1.4; color: #333; }
+  .hero-right .quote-src { font-size: 13px; color: #999; margin-top: 12px; }
+  .hero-right .numbers { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .hero-right .num-val { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; }
+  .hero-right .num-lbl { font-size: 13px; color: #888; }
+
+  .divider { border-top: 3px solid #1a1a1a; max-width: 1100px; margin: 0 auto; }
+  .thin-div { border-top: 1px solid #ddd; max-width: 1100px; margin: 0 auto; }
+
+  /* Errors section */
+  .errors { max-width: 1100px; margin: 0 auto; padding: 60px 60px; }
+  .errors h2 { font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+  .errors .sub { font-size: 16px; color: #888; margin-bottom: 32px; }
+  .errors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .err-card { display: flex; gap: 16px; padding: 20px; border: 1px solid #eee; border-radius: 4px; }
+  .err-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #dc2626; flex-shrink: 0; }
+  .err-card h3 { font-size: 15px; font-weight: 700; }
+  .err-card .bad-ex { font-size: 13px; color: #999; text-decoration: line-through; margin-top: 4px; }
+  .err-card .good-ex { font-size: 13px; color: #333; margin-top: 4px; }
+
+  /* How */
+  .how { max-width: 1100px; margin: 0 auto; padding: 60px; }
+  .how h2 { font-size: 36px; font-weight: 900; text-align: center; }
+  .how-steps { display: flex; gap: 0; margin-top: 40px; }
+  .how-step { flex: 1; padding: 24px; border-right: 1px solid #ddd; text-align: center; }
+  .how-step:last-child { border-right: none; }
+  .how-step .sn { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: #dc2626; }
+  .how-step h3 { font-size: 15px; font-weight: 700; margin-top: 8px; }
+  .how-step p { font-size: 13px; color: #888; margin-top: 4px; }
+
+  /* Pricing */
+  .pricing { max-width: 1000px; margin: 0 auto; padding: 60px; }
+  .pricing h2 { font-size: 36px; font-weight: 900; text-align: center; }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
+  .pr-card { padding: 28px; border: 1px solid #ddd; border-radius: 4px; }
+  .pr-card.feat { border: 3px solid #1a1a1a; position: relative; }
+  .pr-card.feat::after { content: 'РЕКОМЕНДУЕМ'; position: absolute; top: -12px; left: 20px; background: #dc2626; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 10px; letter-spacing: 1px; }
+  .pr-card .t { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+  .pr-card .a { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; margin-top: 6px; }
+  .pr-card .a span { font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: #888; font-weight: 400; }
+  .pr-card ul { list-style: none; margin-top: 16px; }
+  .pr-card li { font-size: 14px; color: #555; padding: 4px 0; padding-left: 14px; position: relative; }
+  .pr-card li::before { content: ''; width: 4px; height: 4px; background: #dc2626; border-radius: 50%; position: absolute; left: 0; top: 11px; }
+  .pr-card .pb { display: block; text-align: center; margin-top: 20px; }
+
+  .cta { background: #1a1a1a; color: #fff; padding: 60px; text-align: center; }
+  .cta h2 { font-size: 36px; font-weight: 900; }
+  .cta p { color: #888; margin-top: 8px; font-size: 16px; }
+  .cta a { background: #dc2626; color: #fff; padding: 14px 36px; border-radius: 4px; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 20px; font-size: 16px; }
+
+  footer { padding: 20px 60px; border-top: 3px solid #1a1a1a; text-align: center; font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Resume<span>AI</span></div>
+  <div class="links">
+    <a href="#" class="nl">Методология</a>
+    <a href="#" class="nl">Цены</a>
+    <a href="#" class="btn-bdr" style="padding:8px 20px;">Войти</a>
+    <a href="#" class="btn-red" style="padding:8px 20px;">Начать</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <h1>Резюме — это <em>маркетинговый документ</em>, а не биография</h1>
+    <p class="lead">Рекрутер тратит 6 секунд на просмотр. Каждое слово должно продавать. ResumeAI использует методологию лучших карьерных консультантов.</p>
+    <div class="buttons">
+      <a href="#" class="btn-red btn-lg">Попробовать бесплатно</a>
+      <a href="#" class="btn-bdr btn-lg">Войти</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="quote">"80% соискателей отправляют одно и то же резюме на все вакансии. AI адаптирует каждое — за секунды."</div>
+    <div class="quote-src">— Методология ResumeAI</div>
+    <div class="numbers">
+      <div><div class="num-val">30 сек</div><div class="num-lbl">Адаптация</div></div>
+      <div><div class="num-val">10x</div><div class="num-lbl">Дешевле</div></div>
+      <div><div class="num-val">3</div><div class="num-lbl">Формулы</div></div>
+      <div><div class="num-val">7</div><div class="num-lbl">Правил</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="errors">
+  <h2>7 ошибок, которые убивают ваше резюме</h2>
+  <p class="sub">ResumeAI проверяет и исправляет каждую</p>
+  <div class="errors-grid">
+    <div class="err-card"><div class="err-num">1</div><div><h3>Непонятно, в чём достижение</h3><div class="bad-ex">Участие в крупных проектах</div><div class="good-ex">Инициировал 3 проекта, сократив документооборот на 25%</div></div></div>
+    <div class="err-card"><div class="err-num">2</div><div><h3>Непонятен личный вклад</h3><div class="bad-ex">Участвовал в проектах</div><div class="good-ex">Руководил 4 проектами, принёсшими 13% выручки</div></div></div>
+    <div class="err-card"><div class="err-num">3</div><div><h3>Нет цифр и масштаба</h3><div class="bad-ex">Участие в 3 проектах</div><div class="good-ex">Привлек 3 клиентов из ТОП-10 отрасли</div></div></div>
+    <div class="err-card"><div class="err-num">4</div><div><h3>Слишком сложно, «вода»</h3><div class="bad-ex">Комплексное сопровождение проектов</div><div class="good-ex">Подготовила комплект документов для нового склада</div></div></div>
+    <div class="err-card"><div class="err-num">5</div><div><h3>Отглагольные существительные</h3><div class="bad-ex">Сокращение расходов</div><div class="good-ex">Сократила расходы на 15%</div></div></div>
+    <div class="err-card"><div class="err-num">6</div><div><h3>Пассивный залог</h3><div class="bad-ex">Запущены кампании</div><div class="good-ex">Запустила 3 кампании, управляя командой из 12 человек</div></div></div>
+  </div>
+</section>
+
+<div class="thin-div"></div>
+
+<section class="how">
+  <h2>Как это работает</h2>
+  <div class="how-steps">
+    <div class="how-step"><div class="sn">I</div><h3>Загрузите резюме</h3><p>PDF-файл</p></div>
+    <div class="how-step"><div class="sn">II</div><h3>Укажите вакансию</h3><p>Ссылка на hh.ru</p></div>
+    <div class="how-step"><div class="sn">III</div><h3>AI адаптирует</h3><p>По 3 формулам</p></div>
+    <div class="how-step"><div class="sn">IV</div><h3>Скачайте</h3><p>PDF + письмо</p></div>
+  </div>
+</section>
+
+<div class="thin-div"></div>
+
+<section class="pricing">
+  <h2>Тарифы</h2>
+  <div class="pr-grid">
+    <div class="pr-card"><div class="t">Free</div><div class="a">0 &#8381;</div><ul><li>1 адаптация</li><li>Письмо</li><li>PDF</li></ul><a href="#" class="btn-bdr pb">Начать</a></div>
+    <div class="pr-card feat"><div class="t">Starter</div><div class="a">499 &#8381;</div><ul><li>3 адаптации</li><li>Письма</li><li>Приоритет</li></ul><a href="#" class="btn-red pb">Купить</a></div>
+    <div class="pr-card"><div class="t">Pro</div><div class="a">1 499 &#8381; <span>/мес</span></div><ul><li>15 адаптаций/мес</li><li>Создание с нуля</li><li>Приоритет</li></ul><a href="#" class="btn-red pb">Подписаться</a></div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Создайте резюме, которое продаёт</h2>
+  <p>Первая адаптация бесплатно</p>
+  <a href="#">Начать бесплатно</a>
+</section>
+
+<footer>ResumeAI &copy; 2026</footer>
+
+</body>
+</html>

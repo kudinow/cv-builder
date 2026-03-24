@@ -8,21 +8,22 @@ export async function PUT(
 ) {
   const { id } = await params
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   // Verify session belongs to the user
-  const { data: session } = await supabase
+  const { data: interviewSession } = await supabase
     .from('interview_sessions')
     .select('id, user_id')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
 
-  if (!session) {
+  if (!interviewSession) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }
 

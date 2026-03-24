@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Ваше идеальное резюме</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #f8f5f0;
+  --gold: #c9a96e;
+  --dark: #1a1a1a;
+  --muted: #8a8578;
+  --light-gold: #e8dcc8;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  line-height: 1.8;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* NAV */
+nav {
+  padding: 32px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.5px solid var(--light-gold);
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+
+.nav-logo span { color: var(--gold); }
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+
+.nav-links a { transition: color 0.3s; }
+.nav-links a:hover { color: var(--gold); }
+
+.btn-gold {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--cream);
+  padding: 14px 36px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s;
+}
+
+.btn-gold:hover { background: var(--dark); }
+
+.btn-outline-gold {
+  display: inline-block;
+  border: 0.5px solid var(--gold);
+  color: var(--dark);
+  padding: 14px 36px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.4s;
+}
+
+.btn-outline-gold:hover { background: var(--gold); color: var(--cream); }
+
+/* HERO */
+.hero {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 40px;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  border: 0.5px solid var(--light-gold);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--gold);
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 7vw, 88px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 32px;
+  max-width: 800px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 480px;
+  margin-bottom: 48px;
+  font-weight: 300;
+  line-height: 2;
+}
+
+.hero-buttons { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+
+/* DIVIDER */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 60px;
+}
+
+.divider-line { flex: 1; height: 0.5px; background: var(--light-gold); }
+.divider-icon {
+  padding: 0 24px;
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-style: italic;
+}
+
+/* SECTION */
+section { padding: 100px 60px; }
+
+.section-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 300;
+  margin-bottom: 60px;
+  line-height: 1.2;
+}
+
+.section-title em { font-style: italic; color: var(--gold); }
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.feature-card {
+  padding: 48px 32px;
+  border: 0.5px solid var(--light-gold);
+  text-align: center;
+  transition: all 0.4s;
+}
+
+.feature-card:hover { border-color: var(--gold); }
+
+.feature-icon {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 24px;
+  line-height: 1;
+}
+
+.feature-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.feature-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 2;
+}
+
+/* HOW IT WORKS */
+.steps-section { background: var(--dark); color: var(--cream); }
+
+.steps-section .section-eyebrow { color: var(--gold); }
+.steps-section .section-title em { color: var(--gold); }
+
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.step {
+  text-align: center;
+  padding: 32px 16px;
+  position: relative;
+}
+
+.step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 72px;
+  font-weight: 300;
+  color: var(--gold);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.step h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+
+.step p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* BEFORE AFTER */
+.ba-section { display: grid; grid-template-columns: 1fr 1fr; min-height: 500px; }
+
+.ba-before {
+  background: var(--dark);
+  color: var(--cream);
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ba-after {
+  background: var(--cream);
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ba-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--gold);
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+.ba-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.ba-note {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+/* PRICING */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.price-card {
+  padding: 48px 36px;
+  border: 0.5px solid var(--light-gold);
+  text-align: center;
+  transition: all 0.4s;
+}
+
+.price-card.featured {
+  border-color: var(--gold);
+  position: relative;
+}
+
+.price-card.featured::before {
+  content: 'Популярный';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--cream);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  padding: 4px 20px;
+  font-weight: 500;
+}
+
+.price-name {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.price-amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 56px;
+  font-weight: 300;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.price-period {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+
+.price-features {
+  list-style: none;
+  margin-bottom: 40px;
+}
+
+.price-features li {
+  font-size: 13px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--light-gold);
+  color: var(--muted);
+}
+
+/* FINAL CTA */
+.final-cta {
+  text-align: center;
+  padding: 120px 40px;
+  position: relative;
+}
+
+.final-cta::before, .final-cta::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 0.5px;
+  background: var(--gold);
+  top: 50%;
+}
+
+.final-cta::before { left: 5%; }
+.final-cta::after { right: 5%; }
+
+.final-cta h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 300;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.final-cta h2 em { font-style: italic; color: var(--gold); }
+
+.final-cta p {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 400px;
+  margin: 0 auto 48px;
+  line-height: 2;
+}
+
+/* FOOTER */
+footer {
+  padding: 40px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.5px solid var(--light-gold);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+footer a:hover { color: var(--gold); }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav { padding: 20px 24px; }
+  .nav-links { display: none; }
+  section { padding: 60px 24px; }
+  .features-grid, .steps-row, .pricing-grid { grid-template-columns: 1fr; }
+  .ba-section { grid-template-columns: 1fr; }
+  .ba-before, .ba-after { padding: 48px 24px; }
+  footer { padding: 24px; flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Resume<span>AI</span></div>
+  <div class="nav-links">
+    <a href="#features">Возможности</a>
+    <a href="#process">Процесс</a>
+    <a href="#pricing">Тарифы</a>
+    <a href="#" class="btn-gold">Начать</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Искусство составления резюме</div>
+  <h1>Резюме, достойное <em>вашей карьеры</em></h1>
+  <p class="hero-sub">Методология лучших карьерных консультантов, усиленная искусственным интеллектом. Безупречный результат в десять раз доступнее.</p>
+  <div class="hero-buttons">
+    <a href="#" class="btn-gold">Создать резюме</a>
+    <a href="#" class="btn-outline-gold">Адаптировать</a>
+  </div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-icon">&diams;</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-eyebrow">Возможности</div>
+  <h2 class="section-title">Три грани <em>совершенства</em></h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">I</div>
+      <h3>Адаптация</h3>
+      <p>Загрузите резюме и укажите вакансию. Искусственный интеллект перестроит ваш опыт, подчеркнув именно то, что ищет работодатель. На выходе: безупречное резюме и сопроводительное письмо.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">II</div>
+      <h3>Интервью с ИИ</h3>
+      <p>Нет резюме? Начните с чистого листа. Наш ИИ проведёт структурированное интервью, раскроет ваши достижения и создаст резюме, которое отражает вашу истинную ценность.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">III</div>
+      <h3>Безупречный PDF</h3>
+      <p>Элегантная типографика, выверенная структура, совместимость с системами рекрутинга. Ваше резюме будет выглядеть так же профессионально, как и его содержание.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-section" id="process">
+  <div class="section-eyebrow">Процесс</div>
+  <h2 class="section-title">Четыре шага к <em>идеалу</em></h2>
+  <div class="steps-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Загрузите</h4>
+      <p>Ваше текущее резюме в формате PDF или начните с нуля.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>Укажите</h4>
+      <p>Ссылку на желаемую вакансию на hh.ru для точной адаптации.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Доверьтесь</h4>
+      <p>ИИ применит 3 формулы достижений и 7 правил написания.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h4>Получите</h4>
+      <p>Адаптированное резюме и сопроводительное письмо в PDF.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<div class="ba-section">
+  <div class="ba-before">
+    <div class="ba-label">До</div>
+    <p class="ba-text">&laquo;Занимался продажами и работой с клиентами. Выполнял план.&raquo;</p>
+    <p class="ba-note">Размыто, без цифр, без контекста достижения</p>
+  </div>
+  <div class="ba-after">
+    <div class="ba-label">После &mdash; ResumeAI</div>
+    <p class="ba-text">&laquo;Увеличил выручку отдела на 43% за 6 месяцев, перестроив воронку продаж и внедрив CRM-скоринг лидов.&raquo;</p>
+    <p class="ba-note">Конкретный результат, метрика, метод достижения</p>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div style="text-align:center;">
+    <div class="section-eyebrow">Тарифы</div>
+    <h2 class="section-title">Инвестиция в <em>карьеру</em></h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">Free</div>
+      <div class="price-amount">0 &#8381;</div>
+      <div class="price-period">навсегда</div>
+      <ul class="price-features">
+        <li>1 адаптация резюме</li>
+        <li>Экспорт в PDF</li>
+        <li>Базовые шаблоны</li>
+      </ul>
+      <a href="#" class="btn-outline-gold">Попробовать</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-name">Starter</div>
+      <div class="price-amount">499 &#8381;</div>
+      <div class="price-period">разовый платёж</div>
+      <ul class="price-features">
+        <li>3 адаптации резюме</li>
+        <li>Сопроводительные письма</li>
+        <li>Экспорт в PDF</li>
+        <li>Все шаблоны</li>
+      </ul>
+      <a href="#" class="btn-gold">Выбрать</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Pro</div>
+      <div class="price-amount">1 499 &#8381;</div>
+      <div class="price-period">в месяц</div>
+      <ul class="price-features">
+        <li>15 адаптаций в месяц</li>
+        <li>Создание с нуля</li>
+        <li>Сопроводительные письма</li>
+        <li>Приоритетная поддержка</li>
+      </ul>
+      <a href="#" class="btn-outline-gold">Выбрать</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-icon">&diams;</div>
+  <div class="divider-line"></div>
+</div>
+
+<section class="final-cta">
+  <h2>Время создать резюме,<br>которое вы <em>заслуживаете</em></h2>
+  <p>Первая адаптация бесплатно. Без обязательств, без ограничений по времени.</p>
+  <a href="#" class="btn-gold">Начать бесплатно</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>ResumeAI &copy; 2026</span>
+  <span>
+    <a href="#">Конфиденциальность</a> &nbsp;&middot;&nbsp;
+    <a href="#">Условия</a> &nbsp;&middot;&nbsp;
+    <a href="#">Поддержка</a>
+  </span>
+</footer>
+
+</body>
+</html>
