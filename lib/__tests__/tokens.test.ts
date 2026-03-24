@@ -22,7 +22,7 @@ describe('getBalance', () => {
     const selectMock = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
-          data: { tokens: 250 },
+          data: { credits: 250 },
           error: null,
         }),
       }),
@@ -45,7 +45,9 @@ describe('getBalance', () => {
     })
     mockSupabase.from.mockReturnValue({ select: selectMock })
 
-    await expect(getBalance('user-123')).rejects.toThrow('not found')
+    // getBalance returns 0 on error (graceful degradation)
+    const balance = await getBalance('user-123')
+    expect(balance).toBe(0)
   })
 })
 
