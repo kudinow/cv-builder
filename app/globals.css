@@ -128,3 +128,56 @@
     @apply font-sans;
   }
 }
+
+/* ============================================================
+   Premium / Dashboard theme
+   Applied when an ancestor has class="theme-premium"
+   ============================================================ */
+
+.theme-premium {
+  /* Base */
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+
+  /* Cards / surfaces */
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --card-border: #334155;
+
+  /* Primary accent: indigo-violet gradient endpoints */
+  --premium-accent-start: #6366f1;
+  --premium-accent-end: #8b5cf6;
+
+  /* Muted text */
+  --muted-foreground: #94a3b8;
+
+  /* Border */
+  --border: #334155;
+
+  /* Input */
+  --input: #1e293b;
+
+  /* Ring */
+  --ring: #6366f1;
+}
+
+/* Gradient utility: indigo → violet */
+.gradient-brand {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.gradient-brand-text {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card glow on hover */
+.card-glow {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-glow:hover {
+  box-shadow: 0 0 0 1px #6366f1, 0 4px 24px 0 rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+}
