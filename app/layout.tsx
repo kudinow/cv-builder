@@ -13,6 +13,21 @@ export const metadata: Metadata = {
   title: "ResumeAI — Создай продающее резюме с AI",
   description:
     "AI-интервьюер вытащит лучшее из вашего опыта и создаст продающее резюме за 15 минут. Проверенные формулы достижений из практики карьерных консультантов.",
+  metadataBase: new URL("https://cv-builder.ru"),
+  openGraph: {
+    title: "ResumeAI — Создай продающее резюме с AI",
+    description:
+      "AI проведёт интервью, извлечёт достижения и соберёт резюме по методике карьерных консультантов.",
+    siteName: "ResumeAI",
+    locale: "ru_RU",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ResumeAI — Создай продающее резюме с AI",
+    description:
+      "AI проведёт интервью, извлечёт достижения и соберёт резюме по методике карьерных консультантов.",
+  },
 };
 
 export default function RootLayout({
