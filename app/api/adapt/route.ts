@@ -46,8 +46,9 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
 
     if (!user) {
       return NextResponse.json({ error: "Не авторизован" }, { status: 401 });

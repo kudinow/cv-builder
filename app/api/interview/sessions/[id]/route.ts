@@ -76,3 +76,5 @@ export async function PUT(
 
   return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
 }
+
+export const POST = PUT

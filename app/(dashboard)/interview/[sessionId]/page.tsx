@@ -18,14 +18,15 @@ export default async function InterviewSessionPage({ params }: Props) {
 
   const supabase = await createServerSupabaseClient()
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session: authSession },
+  } = await supabase.auth.getSession()
+  const user = authSession?.user
 
   if (!user) {
     redirect('/login')
   }
 
-  const userId = user!.id
+  const userId = user.id
 
   // Load session from DB
   const { data: session } = await supabase

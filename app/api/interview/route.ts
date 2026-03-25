@@ -12,8 +12,9 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
 
     if (!user) {
       return new Response(JSON.stringify({ error: "Не авторизован" }), {

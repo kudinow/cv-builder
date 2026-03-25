@@ -14,8 +14,9 @@ import { TOKEN_COSTS } from '@/lib/token-costs'
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient()
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user
 
   if (!user) {
     return Response.json({ error: 'Не авторизован' }, { status: 401 })
@@ -27,18 +28,18 @@ export async function POST(req: NextRequest) {
   }
 
   // 1. Load and validate session
-  const { data: session, error: sessionError } = await supabase
+  const { data: interviewSession, error: sessionError } = await supabase
     .from('interview_sessions')
     .select('*')
     .eq('id', sessionId)
     .eq('user_id', user.id)
     .single()
 
-  if (sessionError || !session) {
+  if (sessionError || !interviewSession) {
     return Response.json({ error: 'Сессия не найдена' }, { status: 404 })
   }
 
-  if (session.status === 'completed') {
+  if (interviewSession.status === 'completed') {
     return Response.json({ error: 'Сессия уже завершена' }, { status: 409 })
   }
 
@@ -55,12 +56,12 @@ export async function POST(req: NextRequest) {
 
   // 3. Determine token cost by mode
   const tokenCost =
-    session.mode === 'improve' ? TOKEN_COSTS.IMPROVE_RESUME : TOKEN_COSTS.CREATE_RESUME
+    interviewSession.mode === 'improve' ? TOKEN_COSTS.IMPROVE_RESUME : TOKEN_COSTS.CREATE_RESUME
 
   // 4. Spend tokens (throws InsufficientTokensError if balance too low)
   try {
     const description =
-      session.mode === 'improve'
+      interviewSession.mode === 'improve'
         ? 'Улучшение резюме (интервью)'
         : 'Создание резюме с нуля (интервью)'
     await spendTokens(user.id, tokenCost, description)

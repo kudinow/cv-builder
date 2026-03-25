@@ -13,15 +13,16 @@ export default async function InterviewPage({ searchParams }: Props) {
 
   const supabase = await createServerSupabaseClient()
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user
 
   if (!user) {
     redirect('/login')
   }
 
   const mode: 'create' | 'improve' = rawMode === 'improve' ? 'improve' : 'create'
-  const tokenBalance = await getBalance(user!.id)
+  const tokenBalance = await getBalance(user.id)
   const requiredTokens =
     mode === 'improve' ? TOKEN_COSTS.IMPROVE_RESUME : TOKEN_COSTS.CREATE_RESUME
 

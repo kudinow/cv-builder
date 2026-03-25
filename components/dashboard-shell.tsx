@@ -2,6 +2,7 @@ import Link from "next/link"
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { TokenBalance } from "@/components/token-balance"
 import { UserMenu } from "@/components/user-menu"
+import { DashboardNav } from "@/components/dashboard-nav-links"
 
 export async function DashboardShell({
   children,
@@ -9,7 +10,6 @@ export async function DashboardShell({
   children: React.ReactNode
 }) {
   const supabase = await createServerSupabaseClient()
-  // Use getSession instead of getUser — it reads from cookie without a network call
   const { data: { session } } = await supabase.auth.getSession()
   const email = session?.user?.email ?? ""
 
@@ -21,15 +21,15 @@ export async function DashboardShell({
         style={{ backgroundColor: "#0f172a", borderColor: "#334155" }}
       >
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span
-              className="text-lg font-bold"
-              style={{ color: "#f1f5f9" }}
-            >
-              ResumeAI
-            </span>
-          </Link>
+          {/* Logo + Nav */}
+          <div className="flex items-center gap-8">
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <span className="text-lg font-bold" style={{ color: "#f1f5f9" }}>
+                ResumeAI
+              </span>
+            </Link>
+            <DashboardNav />
+          </div>
 
           {/* Right side: token balance + user menu */}
           <div className="flex items-center gap-3">

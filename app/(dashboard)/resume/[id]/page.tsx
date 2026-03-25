@@ -28,14 +28,15 @@ export default async function ResumePage({ params }: Props) {
 
   const supabase = await createServerSupabaseClient()
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user
 
   if (!user) {
     redirect('/login')
   }
 
-  const userId = user!.id
+  const userId = user.id
 
   // Load master resume
   const { data: resume } = await supabase

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { ResultTabs } from "@/components/result-tabs";
 import type { ResumeData } from "@/lib/pdf-generator";
@@ -16,7 +16,7 @@ export default async function ResultPage({ params }: Props) {
   } = await supabase.auth.getSession();
 
   if (!session?.user) {
-    notFound();
+    redirect("/login");
   }
 
   const { data: resume } = await supabase
