@@ -23,7 +23,7 @@ export function DemoSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#0f172a] to-[#1e1b4b]/50 py-24">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#0f172a] to-[#1e1b4b]/50 py-12 sm:py-16 md:py-24">
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute bottom-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-indigo-600/10 blur-3xl" />

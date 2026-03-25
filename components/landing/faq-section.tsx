@@ -35,7 +35,7 @@ export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="scroll-mt-16 bg-[#0f172a] py-24">
+    <section id="faq" className="scroll-mt-16 bg-[#0f172a] py-12 sm:py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-4">
         {/* Header */}
         <div className="mb-16 text-center">
@@ -61,7 +61,7 @@ export function FaqSection() {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="flex w-full items-center justify-between px-6 py-5 text-left"
+                className="flex w-full items-center justify-between px-4 py-3 sm:px-6 sm:py-5 text-left"
               >
                 <span className="pr-4 font-medium text-white">{faq.q}</span>
                 <ChevronDown

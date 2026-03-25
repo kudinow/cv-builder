@@ -56,7 +56,7 @@ const costTable = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="scroll-mt-16 bg-[#0f172a] py-24">
+    <section id="pricing" className="scroll-mt-16 bg-[#0f172a] py-12 sm:py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
         {/* Header */}
         <div className="mb-4 text-center">
@@ -100,7 +100,7 @@ export function PricingSection() {
               <div className="mb-6">
                 <div className="text-sm text-slate-400">{pkg.name}</div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold text-white">{pkg.price}₽</span>
+                  <span className="text-3xl sm:text-4xl font-extrabold text-white">{pkg.price}₽</span>
                 </div>
                 <div className="mt-1 flex items-center gap-3 text-sm">
                   <span className="font-semibold text-white">{pkg.tokens.toLocaleString()} токенов</span>
@@ -137,14 +137,14 @@ export function PricingSection() {
           <h3 className="mb-6 text-center text-lg font-bold text-white">
             Стоимость операций
           </h3>
-          <div className="overflow-hidden rounded-2xl border border-white/10">
+          <div className="overflow-x-auto rounded-2xl border border-white/10">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5">
-                  <th className="px-6 py-4 text-left font-semibold text-slate-300">
+                  <th className="px-3 py-3 sm:px-6 sm:py-4 text-left font-semibold text-slate-300">
                     Операция
                   </th>
-                  <th className="px-6 py-4 text-right font-semibold text-slate-300">
+                  <th className="px-3 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-300">
                     Токены
                   </th>
                 </tr>
@@ -152,8 +152,8 @@ export function PricingSection() {
               <tbody className="divide-y divide-white/5">
                 {costTable.map((row, i) => (
                   <tr key={i} className="transition-colors hover:bg-white/5">
-                    <td className="px-6 py-4 text-slate-400">{row.operation}</td>
-                    <td className="px-6 py-4 text-right font-semibold text-white">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-slate-400">{row.operation}</td>
+                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-right font-semibold text-white">
                       {row.tokens}
                     </td>
                   </tr>

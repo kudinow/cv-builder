@@ -16,7 +16,7 @@ export function MetricsSection() {
     <section
       ref={ref}
       className={cn(
-        "bg-[#0f172a] py-20 transition-all duration-700",
+        "bg-[#0f172a] py-12 sm:py-16 md:py-20 transition-all duration-700",
         isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       )}
     >

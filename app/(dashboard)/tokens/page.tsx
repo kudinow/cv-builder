@@ -57,7 +57,7 @@ export default function TokensPage() {
       {/* Header */}
       <div className="mb-10 text-center">
         <h1
-          className="mb-3 text-3xl font-bold tracking-tight"
+          className="mb-3 text-2xl sm:text-3xl font-bold tracking-tight"
           style={{ color: "#f1f5f9" }}
         >
           Пополнить баланс токенов
@@ -131,7 +131,7 @@ export default function TokensPage() {
                 {/* Token count */}
                 <div className="mt-2 flex items-end gap-2">
                   <span
-                    className="text-4xl font-bold"
+                    className="text-3xl sm:text-4xl font-bold"
                     style={{ color: "#f1f5f9" }}
                   >
                     {pkg.tokens.toLocaleString("ru-RU")}

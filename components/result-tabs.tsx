@@ -113,11 +113,11 @@ export function ResultTabs({
       {/* Resume tab */}
       {activeTab === "resume" && (
         <div className="rounded-xl" style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}>
-          <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid #334155" }}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4" style={{ borderBottom: "1px solid #334155" }}>
             <h3 className="text-base font-semibold" style={{ color: "#f1f5f9" }}>
               Адаптированное резюме
             </h3>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center flex-wrap">
               {resumeData && (
                 <div className="flex rounded-lg text-xs" style={{ border: "1px solid #334155" }}>
                   <button
@@ -207,11 +207,11 @@ export function ResultTabs({
       {/* Cover letter tab */}
       {activeTab === "cover-letter" && (
         <div className="rounded-xl" style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}>
-          <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid #334155" }}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4" style={{ borderBottom: "1px solid #334155" }}>
             <h3 className="text-base font-semibold" style={{ color: "#f1f5f9" }}>
               Сопроводительное письмо
             </h3>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => handleCopy(editedLetter)}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium"
@@ -313,8 +313,8 @@ function StructuredResumeView({ data }: { data: ResumeData }) {
           </h3>
           <div className="space-y-1">
             {Object.entries(data.skills).map(([category, skills]) => (
-              <div key={category} className="flex gap-2">
-                <span className="font-medium min-w-[140px]" style={{ color: "#f1f5f9" }}>{category}:</span>
+              <div key={category} className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                <span className="font-medium sm:min-w-[140px]" style={{ color: "#f1f5f9" }}>{category}:</span>
                 <span style={{ color: "#94a3b8" }}>{skills.join(", ")}</span>
               </div>
             ))}

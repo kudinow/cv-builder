@@ -20,7 +20,7 @@ const resumeAiItems = [
 
 export function ComparisonSection() {
   return (
-    <section className="bg-[#0f172a] py-24">
+    <section className="bg-[#0f172a] py-12 sm:py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
         {/* Header */}
         <div className="mb-16 text-center">

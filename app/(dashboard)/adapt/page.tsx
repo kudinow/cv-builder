@@ -150,13 +150,13 @@ export default function AdaptPage() {
                   {pos.period}{pos.summary ? ` • ${pos.summary}` : ""}
                 </p>
               </div>
-              <div className="flex gap-1 shrink-0">
+              <div className="flex gap-1 shrink-0 flex-wrap">
                 {([["full", "Полностью"], ["short", "Сократить"], ["remove", "Убрать"]] as [DetailLevel, string][]).map(
                   ([level, label]) => (
                     <button
                       key={level}
                       onClick={() => setPositionLevel(i, level)}
-                      className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
+                      className="px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md transition-colors"
                       style={
                         pos.level === level
                           ? level === "full"
@@ -243,7 +243,7 @@ export default function AdaptPage() {
 
       <form onSubmit={handleParse} className="space-y-6">
         {/* Resume upload */}
-        <div className="p-5 rounded-xl" style={cardStyle}>
+        <div className="p-3 sm:p-5 rounded-xl" style={cardStyle}>
           <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>1. Ваше резюме</h3>
           <p className="text-sm mb-4" style={{ color: "#64748b" }}>Загрузите PDF-файл с резюме</p>
           <label
@@ -272,7 +272,7 @@ export default function AdaptPage() {
         </div>
 
         {/* Photo upload */}
-        <div className="p-5 rounded-xl" style={cardStyle}>
+        <div className="p-3 sm:p-5 rounded-xl" style={cardStyle}>
           <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>2. Фото (необязательно)</h3>
           <p className="text-sm mb-4" style={{ color: "#64748b" }}>Добавьте профессиональное фото для резюме</p>
           <div className="flex items-center gap-4">
@@ -309,7 +309,7 @@ export default function AdaptPage() {
         </div>
 
         {/* Vacancy */}
-        <div className="p-5 rounded-xl" style={cardStyle}>
+        <div className="p-3 sm:p-5 rounded-xl" style={cardStyle}>
           <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>3. Вакансия</h3>
           <p className="text-sm mb-4" style={{ color: "#64748b" }}>Вставьте ссылку на вакансию (hh.ru) или текст вакансии</p>
 

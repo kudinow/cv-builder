@@ -365,12 +365,12 @@ export function InterviewChatV2({
         className="flex items-center justify-between px-4 py-3 border-b"
         style={{ borderColor: '#1e293b' }}
       >
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium" style={{ color: '#94a3b8' }}>
-            {mode === 'improve' ? 'Улучшение резюме' : 'Создание резюме'}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <span className="text-xs sm:text-sm font-medium truncate" style={{ color: '#94a3b8' }}>
+            {mode === 'improve' ? 'Улучшение' : 'Создание'}
           </span>
           <span
-            className="text-xs px-2 py-0.5 rounded-full"
+            className="text-xs px-2 py-0.5 rounded-full shrink-0"
             style={{
               background: showLimitWarning
                 ? 'rgba(251,191,36,0.15)'

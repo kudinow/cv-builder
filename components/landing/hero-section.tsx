@@ -24,7 +24,7 @@ export function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="mx-auto max-w-3xl text-5xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
+        <h1 className="mx-auto max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
           Создай продающее резюме{" "}
           <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             в 10 раз быстрее
