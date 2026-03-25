@@ -2,17 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 type Step = "input" | "parsing" | "review" | "adapting" | "error";
 type DetailLevel = "full" | "short" | "remove";
@@ -25,6 +14,19 @@ interface Position {
   level: DetailLevel;
 }
 
+const cardStyle = {
+  backgroundColor: "#1e293b",
+  border: "1px solid #334155",
+  borderRadius: "12px",
+};
+
+const inputStyle = {
+  backgroundColor: "#0f172a",
+  border: "1px solid #334155",
+  color: "#f1f5f9",
+  borderRadius: "8px",
+};
+
 export default function AdaptPage() {
   const router = useRouter();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -35,7 +37,6 @@ export default function AdaptPage() {
   const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState<string | null>(null);
 
-  // Parsed data (stored between steps)
   const [resumeText, setResumeText] = useState("");
   const [finalVacancyText, setFinalVacancyText] = useState("");
   const [positions, setPositions] = useState<Position[]>([]);
@@ -51,68 +52,41 @@ export default function AdaptPage() {
     }
   }
 
-  // Step 1: Parse resume and vacancy, then analyze positions
   async function handleParse(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
-    if (!resumeFile) {
-      setError("Загрузите PDF-файл с резюме");
-      return;
-    }
-    if (!vacancyUrl && !vacancyText) {
-      setError("Укажите ссылку на вакансию или вставьте текст");
-      return;
-    }
+    if (!resumeFile) { setError("Загрузите PDF-файл с резюме"); return; }
+    if (!vacancyUrl && !vacancyText) { setError("Укажите ссылку на вакансию или вставьте текст"); return; }
 
     try {
       setStep("parsing");
-
-      // Parse PDF
       const formData = new FormData();
       formData.append("file", resumeFile);
-      const parseResumeRes = await fetch("/api/parse-resume", {
-        method: "POST",
-        body: formData,
-      });
+      const parseResumeRes = await fetch("/api/parse-resume", { method: "POST", body: formData });
       const parseResumeData = await parseResumeRes.json();
-      if (!parseResumeRes.ok)
-        throw new Error(parseResumeData.error || "Ошибка парсинга резюме");
-
+      if (!parseResumeRes.ok) throw new Error(parseResumeData.error || "Ошибка парсинга резюме");
       setResumeText(parseResumeData.text);
 
-      // Parse vacancy
       let vacText = vacancyText;
       if (vacancyUrl && !vacancyText) {
         const parseVacancyRes = await fetch("/api/parse-vacancy", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: vacancyUrl }),
         });
         const parseVacancyData = await parseVacancyRes.json();
-        if (!parseVacancyRes.ok)
-          throw new Error(
-            parseVacancyData.error || "Ошибка парсинга вакансии"
-          );
+        if (!parseVacancyRes.ok) throw new Error(parseVacancyData.error || "Ошибка парсинга вакансии");
         vacText = parseVacancyData.text;
       }
       setFinalVacancyText(vacText);
 
-      // Analyze resume to extract positions
       const analyzeRes = await fetch("/api/analyze-resume", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resumeText: parseResumeData.text }),
       });
       const analyzeData = await analyzeRes.json();
-
-      const positionsWithLevel: Position[] = (
-        analyzeData.positions || []
-      ).map((p: Omit<Position, "level">) => ({
-        ...p,
-        level: "full" as DetailLevel,
-      }));
-
+      const positionsWithLevel: Position[] = (analyzeData.positions || []).map(
+        (p: Omit<Position, "level">) => ({ ...p, level: "full" as DetailLevel })
+      );
       setPositions(positionsWithLevel);
       setStep("review");
     } catch (err) {
@@ -121,41 +95,26 @@ export default function AdaptPage() {
     }
   }
 
-  // Step 2: Adapt with user's choices
   async function handleAdapt() {
     setError(null);
     try {
       setStep("adapting");
-
-      // Build user instructions from position choices
       const instructions = positions
         .map((p) => {
-          const label =
-            p.level === "full"
-              ? "ПОЛНОСТЬЮ (все обязанности и достижения)"
-              : p.level === "short"
-                ? "СОКРАТИТЬ (только ключевые достижения, 2-3 пункта)"
-                : "УБРАТЬ (не включать в резюме)";
+          const label = p.level === "full" ? "ПОЛНОСТЬЮ" : p.level === "short" ? "СОКРАТИТЬ" : "УБРАТЬ";
           return `• ${p.company} — ${p.position} (${p.period}): ${label}`;
         })
         .join("\n");
 
       const adaptRes = await fetch("/api/adapt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          resumeText,
-          vacancyText: finalVacancyText,
-          vacancyUrl: vacancyUrl || null,
-          photoBase64: photoPreview || null,
-          positionInstructions: instructions,
+          resumeText, vacancyText: finalVacancyText, vacancyUrl: vacancyUrl || null,
+          photoBase64: photoPreview || null, positionInstructions: instructions,
         }),
       });
       const adaptData = await adaptRes.json();
-
-      if (!adaptRes.ok)
-        throw new Error(adaptData.error || "Ошибка адаптации");
-
+      if (!adaptRes.ok) throw new Error(adaptData.error || "Ошибка адаптации");
       router.push(`/result/${adaptData.id}`);
     } catch (err) {
       setStep("error");
@@ -164,119 +123,117 @@ export default function AdaptPage() {
   }
 
   function setPositionLevel(index: number, level: DetailLevel) {
-    setPositions((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, level } : p))
-    );
+    setPositions((prev) => prev.map((p, i) => (i === index ? { ...p, level } : p)));
   }
 
   const isLoading = step === "parsing" || step === "adapting";
 
-  // Review step — show positions with level selector
+  // Review step
   if (step === "review") {
     return (
-      <div className="container mx-auto max-w-3xl py-8 px-4">
-        <h1 className="mb-2 text-3xl font-bold">Настройте адаптацию</h1>
-        <p className="mb-6 text-muted-foreground">
-          Укажите для каждой позиции, как подробно её описывать в
-          адаптированном резюме
+      <div className="mx-auto max-w-3xl py-8 px-4">
+        <h1 className="mb-2 text-3xl font-bold" style={{ color: "#f1f5f9" }}>
+          Настройте адаптацию
+        </h1>
+        <p className="mb-6 text-sm" style={{ color: "#94a3b8" }}>
+          Укажите для каждой позиции, как подробно её описывать в адаптированном резюме
         </p>
 
         <div className="space-y-3">
           {positions.map((pos, i) => (
-            <Card key={i}>
-              <CardContent className="flex items-center gap-4 py-4">
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">
-                    {pos.company} — {pos.position}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {pos.period}
-                    {pos.summary ? ` • ${pos.summary}` : ""}
-                  </p>
-                </div>
-                <div className="flex gap-1 shrink-0">
-                  {(
-                    [
-                      ["full", "Полностью"],
-                      ["short", "Сократить"],
-                      ["remove", "Убрать"],
-                    ] as [DetailLevel, string][]
-                  ).map(([level, label]) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-xl" style={cardStyle}>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate" style={{ color: "#f1f5f9" }}>
+                  {pos.company} — {pos.position}
+                </p>
+                <p className="text-xs" style={{ color: "#64748b" }}>
+                  {pos.period}{pos.summary ? ` • ${pos.summary}` : ""}
+                </p>
+              </div>
+              <div className="flex gap-1 shrink-0">
+                {([["full", "Полностью"], ["short", "Сократить"], ["remove", "Убрать"]] as [DetailLevel, string][]).map(
+                  ([level, label]) => (
                     <button
                       key={level}
                       onClick={() => setPositionLevel(i, level)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+                      className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
+                      style={
                         pos.level === level
                           ? level === "full"
-                            ? "bg-primary text-primary-foreground border-primary"
+                            ? { background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff" }
                             : level === "short"
-                              ? "bg-amber-100 text-amber-800 border-amber-300"
-                              : "bg-red-100 text-red-800 border-red-300"
-                          : "bg-background text-muted-foreground border-border hover:bg-muted"
-                      }`}
+                              ? { backgroundColor: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }
+                              : { backgroundColor: "rgba(239,68,68,0.15)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)" }
+                          : { border: "1px solid #334155", color: "#64748b" }
+                      }
                     >
                       {label}
                     </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  )
+                )}
+              </div>
+            </div>
           ))}
         </div>
 
-        {positions.filter((p) => p.level === "remove").length ===
-          positions.length && (
-          <p className="mt-4 text-sm text-destructive">
+        {positions.filter((p) => p.level === "remove").length === positions.length && (
+          <p className="mt-4 text-sm" style={{ color: "#ef4444" }}>
             Нельзя убрать все позиции — оставьте хотя бы одну
           </p>
         )}
 
         <div className="mt-6 flex gap-3">
-          <Button
+          <button
             onClick={handleAdapt}
-            size="lg"
-            className="flex-1"
-            disabled={
-              positions.filter((p) => p.level !== "remove").length === 0
-            }
+            className="flex-1 py-3 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+            disabled={positions.filter((p) => p.level !== "remove").length === 0}
           >
             Адаптировать резюме
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
+          </button>
+          <button
             onClick={() => setStep("input")}
+            className="py-3 px-6 rounded-xl text-sm font-medium"
+            style={{ border: "1px solid #334155", color: "#94a3b8" }}
           >
             Назад
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
-  // Input step — upload form
+  // Input step
   return (
-    <div className="container mx-auto max-w-3xl py-8 px-4">
-      <h1 className="mb-2 text-3xl font-bold">Адаптация резюме</h1>
-      <p className="mb-8 text-muted-foreground">
-        Загрузите резюме и укажите вакансию — AI адаптирует резюме и напишет
-        сопроводительное письмо
+    <div className="mx-auto max-w-3xl py-8 px-4">
+      <h1 className="mb-2 text-3xl font-bold" style={{ color: "#f1f5f9" }}>
+        Адаптация резюме
+      </h1>
+      <p className="mb-8 text-sm" style={{ color: "#94a3b8" }}>
+        Загрузите резюме и укажите вакансию — AI адаптирует резюме и напишет сопроводительное письмо
       </p>
 
       {error && (
-        <div className="mb-6 rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+        <div
+          className="mb-6 rounded-xl p-4 text-sm"
+          style={{ backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#ef4444" }}
+        >
           {error}
         </div>
       )}
 
       {isLoading && (
-        <div className="mb-6 rounded-md border bg-muted p-6 text-center">
-          <div className="mb-2 text-lg font-medium">
-            {step === "parsing"
-              ? "Анализируем документы..."
-              : "AI адаптирует резюме..."}
+        <div className="mb-6 rounded-xl p-6 text-center" style={cardStyle}>
+          <div className="mb-2">
+            <div
+              className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+              style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base font-medium" style={{ color: "#f1f5f9" }}>
+            {step === "parsing" ? "Анализируем документы..." : "AI адаптирует резюме..."}
+          </p>
+          <p className="text-sm" style={{ color: "#64748b" }}>
             {step === "parsing"
               ? "Извлекаем текст из PDF, парсим вакансию и анализируем опыт"
               : "Claude адаптирует ваше резюме. Это может занять 30-60 секунд"}
@@ -285,122 +242,120 @@ export default function AdaptPage() {
       )}
 
       <form onSubmit={handleParse} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>1. Ваше резюме</CardTitle>
-            <CardDescription>Загрузите PDF-файл с резюме</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Input
+        {/* Resume upload */}
+        <div className="p-5 rounded-xl" style={cardStyle}>
+          <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>1. Ваше резюме</h3>
+          <p className="text-sm mb-4" style={{ color: "#64748b" }}>Загрузите PDF-файл с резюме</p>
+          <label
+            className="flex items-center justify-center w-full py-8 rounded-lg cursor-pointer transition-colors hover:border-[#6366f1]"
+            style={{ border: "2px dashed #334155", backgroundColor: "#0f172a" }}
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-2">📄</div>
+              <p className="text-sm font-medium" style={{ color: "#94a3b8" }}>
+                {resumeFile ? resumeFile.name : "Нажмите для выбора PDF"}
+              </p>
+              {resumeFile && (
+                <p className="text-xs mt-1" style={{ color: "#64748b" }}>
+                  {(resumeFile.size / 1024).toFixed(0)} КБ
+                </p>
+              )}
+            </div>
+            <input
               type="file"
               accept=".pdf"
+              className="hidden"
               onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
               disabled={isLoading}
-              required
             />
-            {resumeFile && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Файл: {resumeFile.name} (
-                {(resumeFile.size / 1024).toFixed(0)} КБ)
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          </label>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>2. Фото (необязательно)</CardTitle>
-            <CardDescription>
-              Добавьте профессиональное фото для резюме
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              {photoPreview ? (
-                <img
-                  src={photoPreview}
-                  alt="Фото"
-                  className="h-20 w-16 rounded-md object-cover border"
-                />
-              ) : (
-                <div className="flex h-20 w-16 items-center justify-center rounded-md border border-dashed text-xs text-muted-foreground">
-                  Нет фото
-                </div>
-              )}
-              <div className="flex-1 space-y-2">
-                <Input
+        {/* Photo upload */}
+        <div className="p-5 rounded-xl" style={cardStyle}>
+          <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>2. Фото (необязательно)</h3>
+          <p className="text-sm mb-4" style={{ color: "#64748b" }}>Добавьте профессиональное фото для резюме</p>
+          <div className="flex items-center gap-4">
+            {photoPreview ? (
+              <img src={photoPreview} alt="Фото" className="h-20 w-16 rounded-lg object-cover" style={{ border: "1px solid #334155" }} />
+            ) : (
+              <div className="flex h-20 w-16 items-center justify-center rounded-lg text-xs" style={{ border: "2px dashed #334155", color: "#64748b" }}>
+                Нет фото
+              </div>
+            )}
+            <div className="flex-1 space-y-2">
+              <label
+                className="flex items-center justify-center w-full py-4 rounded-lg cursor-pointer"
+                style={{ border: "2px dashed #334155", backgroundColor: "#0f172a" }}
+              >
+                <span className="text-sm" style={{ color: "#94a3b8" }}>
+                  {photoFile ? photoFile.name : "Выбрать фото"}
+                </span>
+                <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) =>
-                    handlePhotoChange(e.target.files?.[0] ?? null)
-                  }
+                  className="hidden"
+                  onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
                   disabled={isLoading}
                 />
-                {photoFile && (
-                  <button
-                    type="button"
-                    className="text-xs text-muted-foreground hover:text-destructive"
-                    onClick={() => handlePhotoChange(null)}
-                  >
-                    Убрать фото
-                  </button>
-                )}
-              </div>
+              </label>
+              {photoFile && (
+                <button type="button" className="text-xs" style={{ color: "#ef4444" }} onClick={() => handlePhotoChange(null)}>
+                  Убрать фото
+                </button>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>3. Вакансия</CardTitle>
-            <CardDescription>
-              Вставьте ссылку на вакансию (hh.ru) или текст вакансии
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Vacancy */}
+        <div className="p-5 rounded-xl" style={cardStyle}>
+          <h3 className="text-base font-semibold mb-1" style={{ color: "#f1f5f9" }}>3. Вакансия</h3>
+          <p className="text-sm mb-4" style={{ color: "#64748b" }}>Вставьте ссылку на вакансию (hh.ru) или текст вакансии</p>
+
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="vacancyUrl">Ссылка на вакансию (hh.ru)</Label>
-              <Input
-                id="vacancyUrl"
+              <label className="text-sm font-medium" style={{ color: "#f1f5f9" }}>Ссылка на вакансию (hh.ru)</label>
+              <input
                 type="url"
                 placeholder="https://hh.ru/vacancy/123456"
                 value={vacancyUrl}
                 onChange={(e) => setVacancyUrl(e.target.value)}
                 disabled={isLoading}
+                className="w-full px-3 py-2.5 text-sm rounded-lg outline-none focus:ring-1 focus:ring-[#6366f1] placeholder:text-[#475569]"
+                style={inputStyle}
               />
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  или
-                </span>
-              </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px" style={{ backgroundColor: "#334155" }} />
+              <span className="text-xs uppercase" style={{ color: "#64748b" }}>или</span>
+              <div className="flex-1 h-px" style={{ backgroundColor: "#334155" }} />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="vacancyText">Текст вакансии</Label>
-              <Textarea
-                id="vacancyText"
+              <label className="text-sm font-medium" style={{ color: "#f1f5f9" }}>Текст вакансии</label>
+              <textarea
                 placeholder="Вставьте описание вакансии..."
                 rows={8}
                 value={vacancyText}
                 onChange={(e) => setVacancyText(e.target.value)}
                 disabled={isLoading}
+                className="w-full px-3 py-2.5 text-sm rounded-lg resize-y outline-none focus:ring-1 focus:ring-[#6366f1] placeholder:text-[#475569]"
+                style={inputStyle}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Button
+        <button
           type="submit"
-          size="lg"
-          className="w-full"
+          className="w-full py-3 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
           disabled={isLoading || !resumeFile || (!vacancyUrl && !vacancyText)}
         >
           {isLoading ? "Обработка..." : "Далее — настроить адаптацию"}
-        </Button>
+        </button>
       </form>
     </div>
   );

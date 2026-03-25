@@ -12,10 +12,10 @@ export default async function ResultPage({ params }: Props) {
   const supabase = await createServerSupabaseClient();
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!session?.user) {
     notFound();
   }
 
@@ -23,47 +23,59 @@ export default async function ResultPage({ params }: Props) {
     .from("resumes")
     .select("*")
     .eq("id", id)
-    .eq("user_id", user.id)
+    .eq("user_id", session.user.id)
     .single();
 
   if (!resume) {
     notFound();
   }
 
-  // Try to parse adapted_text as structured ResumeData JSON
   let resumeData: ResumeData | null = null;
   try {
     if (resume.adapted_text) {
       const parsed = JSON.parse(resume.adapted_text);
-      // Verify it has the expected structure
       if (parsed.full_name && parsed.experience) {
         resumeData = parsed as ResumeData;
       }
     }
   } catch {
-    // Not JSON — old format plain text, will use fallback
     resumeData = null;
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4">
-      <h1 className="mb-6 text-3xl font-bold">Результат адаптации</h1>
+    <div className="mx-auto max-w-4xl py-8 px-4">
+      <h1
+        className="mb-6 text-3xl font-bold"
+        style={{ color: "#f1f5f9" }}
+      >
+        Результат адаптации
+      </h1>
 
       {resume.status === "processing" && (
-        <div className="rounded-md border bg-muted p-6 text-center">
-          <p className="text-lg font-medium">Резюме обрабатывается...</p>
-          <p className="text-sm text-muted-foreground">
+        <div
+          className="rounded-xl p-6 text-center"
+          style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}
+        >
+          <p className="text-lg font-medium" style={{ color: "#f1f5f9" }}>
+            Резюме обрабатывается...
+          </p>
+          <p className="text-sm" style={{ color: "#94a3b8" }}>
             Обновите страницу через несколько секунд
           </p>
         </div>
       )}
 
       {resume.status === "error" && (
-        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center">
-          <p className="text-lg font-medium text-destructive">
+        <div
+          className="rounded-xl p-6 text-center"
+          style={{ backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}
+        >
+          <p className="text-lg font-medium" style={{ color: "#ef4444" }}>
             Произошла ошибка при обработке
           </p>
-          <p className="text-sm text-muted-foreground">Попробуйте ещё раз</p>
+          <p className="text-sm" style={{ color: "#94a3b8" }}>
+            Попробуйте ещё раз
+          </p>
         </div>
       )}
 

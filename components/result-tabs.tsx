@@ -1,16 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import type { ResumeData } from "@/lib/pdf-generator";
 import { formatResumeToText } from "@/lib/format-resume";
 
@@ -22,6 +12,8 @@ interface ResultTabsProps {
   photoBase64?: string;
 }
 
+type Tab = "resume" | "cover-letter" | "changes";
+
 export function ResultTabs({
   resumeData,
   adaptedText,
@@ -29,6 +21,7 @@ export function ResultTabs({
   changes,
   photoBase64,
 }: ResultTabsProps) {
+  const [activeTab, setActiveTab] = useState<Tab>("resume");
   const [editedText, setEditedText] = useState(
     resumeData ? formatResumeToText(resumeData) : adaptedText
   );
@@ -53,7 +46,6 @@ export function ResultTabs({
       const body = resumeData
         ? { resumeData, photoBase64: photo }
         : { text: editedText, name: "resume", position: "" };
-
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,11 +69,7 @@ export function ResultTabs({
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: editedLetter,
-          name: "cover-letter",
-          position: "",
-        }),
+        body: JSON.stringify({ text: editedLetter, name: "cover-letter", position: "" }),
       });
       if (!res.ok) throw new Error("Ошибка генерации PDF");
       const blob = await res.blob();
@@ -96,149 +84,212 @@ export function ResultTabs({
     }
   }
 
-  return (
-    <Tabs defaultValue="resume">
-      <TabsList className="mb-4">
-        <TabsTrigger value="resume">Резюме</TabsTrigger>
-        <TabsTrigger value="cover-letter">Сопроводительное письмо</TabsTrigger>
-        <TabsTrigger value="changes">Изменения ({changes.length})</TabsTrigger>
-      </TabsList>
+  const tabs: { value: Tab; label: string }[] = [
+    { value: "resume", label: "Резюме" },
+    { value: "cover-letter", label: "Сопроводительное письмо" },
+    { value: "changes", label: `Изменения (${changes.length})` },
+  ];
 
-      <TabsContent value="resume">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Адаптированное резюме</CardTitle>
-              <div className="flex gap-2">
-                {resumeData && (
-                  <div className="flex rounded-lg border text-xs">
-                    <button
-                      className={`px-3 py-1 rounded-l-lg ${resumeView === "structured" ? "bg-muted font-medium" : ""}`}
-                      onClick={() => setResumeView("structured")}
-                    >
-                      Секции
-                    </button>
-                    <button
-                      className={`px-3 py-1 rounded-r-lg ${resumeView === "text" ? "bg-muted font-medium" : ""}`}
-                      onClick={() => setResumeView("text")}
-                    >
-                      Текст
-                    </button>
-                  </div>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(editedText)}
-                >
-                  Копировать
-                </Button>
-                <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border px-3 text-xs font-medium hover:bg-muted">
-                  {photo ? "Заменить фото" : "Добавить фото"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handlePhotoUpload(f);
-                    }}
-                  />
-                </label>
-                {photo && (
+  return (
+    <div>
+      {/* Tabs */}
+      <div className="flex gap-1 mb-6 rounded-xl p-1" style={{ backgroundColor: "#1e293b" }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setActiveTab(tab.value)}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            style={
+              activeTab === tab.value
+                ? { background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff" }
+                : { color: "#94a3b8" }
+            }
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Resume tab */}
+      {activeTab === "resume" && (
+        <div className="rounded-xl" style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}>
+          <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid #334155" }}>
+            <h3 className="text-base font-semibold" style={{ color: "#f1f5f9" }}>
+              Адаптированное резюме
+            </h3>
+            <div className="flex gap-2 items-center">
+              {resumeData && (
+                <div className="flex rounded-lg text-xs" style={{ border: "1px solid #334155" }}>
                   <button
-                    className="text-xs text-muted-foreground hover:text-destructive"
-                    onClick={() => setPhoto(undefined)}
+                    className="px-3 py-1.5 rounded-l-lg transition-colors"
+                    style={
+                      resumeView === "structured"
+                        ? { backgroundColor: "#334155", color: "#f1f5f9" }
+                        : { color: "#64748b" }
+                    }
+                    onClick={() => setResumeView("structured")}
                   >
-                    Убрать
+                    Секции
                   </button>
-                )}
-                <Button size="sm" onClick={handleDownloadPDF}>
-                  Скачать PDF
-                </Button>
-              </div>
+                  <button
+                    className="px-3 py-1.5 rounded-r-lg transition-colors"
+                    style={
+                      resumeView === "text"
+                        ? { backgroundColor: "#334155", color: "#f1f5f9" }
+                        : { color: "#64748b" }
+                    }
+                    onClick={() => setResumeView("text")}
+                  >
+                    Текст
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={() => handleCopy(editedText)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                style={{ border: "1px solid #334155", color: "#94a3b8" }}
+              >
+                Копировать
+              </button>
+              <label
+                className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
+                style={{ border: "1px solid #334155", color: "#94a3b8" }}
+              >
+                {photo ? "Заменить фото" : "Добавить фото"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handlePhotoUpload(f);
+                  }}
+                />
+              </label>
+              {photo && (
+                <button
+                  className="text-xs transition-colors"
+                  style={{ color: "#ef4444" }}
+                  onClick={() => setPhoto(undefined)}
+                >
+                  Убрать
+                </button>
+              )}
+              <button
+                onClick={handleDownloadPDF}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+              >
+                Скачать PDF
+              </button>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="p-4">
             {resumeData && resumeView === "structured" ? (
               <StructuredResumeView data={resumeData} />
             ) : (
-              <Textarea
+              <textarea
                 value={editedText}
                 onChange={(e) => setEditedText(e.target.value)}
                 rows={25}
-                className="font-mono text-sm"
+                className="w-full rounded-lg p-3 font-mono text-sm resize-y"
+                style={{
+                  backgroundColor: "#0f172a",
+                  border: "1px solid #334155",
+                  color: "#cbd5e1",
+                }}
               />
             )}
-          </CardContent>
-        </Card>
-      </TabsContent>
+          </div>
+        </div>
+      )}
 
-      <TabsContent value="cover-letter">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Сопроводительное письмо</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(editedLetter)}
-                >
-                  Копировать
-                </Button>
-                <Button size="sm" onClick={handleDownloadLetterPDF}>
-                  Скачать PDF
-                </Button>
-              </div>
+      {/* Cover letter tab */}
+      {activeTab === "cover-letter" && (
+        <div className="rounded-xl" style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}>
+          <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid #334155" }}>
+            <h3 className="text-base font-semibold" style={{ color: "#f1f5f9" }}>
+              Сопроводительное письмо
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleCopy(editedLetter)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                style={{ border: "1px solid #334155", color: "#94a3b8" }}
+              >
+                Копировать
+              </button>
+              <button
+                onClick={handleDownloadLetterPDF}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+              >
+                Скачать PDF
+              </button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <Textarea
+          </div>
+          <div className="p-4">
+            <textarea
               value={editedLetter}
               onChange={(e) => setEditedLetter(e.target.value)}
               rows={15}
-              className="font-mono text-sm"
+              className="w-full rounded-lg p-3 font-mono text-sm resize-y"
+              style={{
+                backgroundColor: "#0f172a",
+                border: "1px solid #334155",
+                color: "#cbd5e1",
+              }}
             />
-          </CardContent>
-        </Card>
-      </TabsContent>
+          </div>
+        </div>
+      )}
 
-      <TabsContent value="changes">
-        <Card>
-          <CardHeader>
-            <CardTitle>Список изменений</CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Changes tab */}
+      {activeTab === "changes" && (
+        <div className="rounded-xl" style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}>
+          <div className="p-4" style={{ borderBottom: "1px solid #334155" }}>
+            <h3 className="text-base font-semibold" style={{ color: "#f1f5f9" }}>
+              Список изменений
+            </h3>
+          </div>
+          <div className="p-4">
             {changes.length > 0 ? (
-              <ul className="list-disc space-y-2 pl-5">
+              <ul className="space-y-3">
                 {changes.map((change, i) => (
-                  <li key={i} className="text-sm">
-                    {change}
+                  <li
+                    key={i}
+                    className="flex gap-3 text-sm rounded-lg p-3"
+                    style={{ backgroundColor: "#0f172a", border: "1px solid #334155" }}
+                  >
+                    <span style={{ color: "#6366f1" }}>•</span>
+                    <span style={{ color: "#cbd5e1" }}>{change}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm" style={{ color: "#64748b" }}>
                 Список изменений недоступен
               </p>
             )}
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-// Structured resume view component
 function StructuredResumeView({ data }: { data: ResumeData }) {
   return (
     <div className="space-y-6 text-sm">
       {/* Header */}
-      <div className="border-b pb-4">
-        <h2 className="text-xl font-bold">{data.full_name}</h2>
-        <p className="text-primary font-medium">{data.target_position}</p>
-        <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+      <div className="pb-4" style={{ borderBottom: "1px solid #334155" }}>
+        <h2 className="text-xl font-bold" style={{ color: "#f1f5f9" }}>
+          {data.full_name}
+        </h2>
+        <p className="font-medium" style={{ color: "#a78bfa" }}>
+          {data.target_position}
+        </p>
+        <div className="mt-1 flex flex-wrap gap-3 text-xs" style={{ color: "#64748b" }}>
           {data.contacts.email && <span>{data.contacts.email}</span>}
           {data.contacts.phone && <span>{data.contacts.phone}</span>}
           {data.contacts.telegram && <span>{data.contacts.telegram}</span>}
@@ -246,86 +297,78 @@ function StructuredResumeView({ data }: { data: ResumeData }) {
         </div>
       </div>
 
-      {/* About Me */}
       {data.about_me && (
         <div>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             О себе
           </h3>
-          <p className="text-muted-foreground leading-relaxed">{data.about_me}</p>
+          <p className="leading-relaxed" style={{ color: "#94a3b8" }}>{data.about_me}</p>
         </div>
       )}
 
-      {/* Skills */}
       {Object.keys(data.skills).length > 0 && (
         <div>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             Навыки
           </h3>
           <div className="space-y-1">
             {Object.entries(data.skills).map(([category, skills]) => (
               <div key={category} className="flex gap-2">
-                <span className="font-medium min-w-[140px]">{category}:</span>
-                <span className="text-muted-foreground">{skills.join(", ")}</span>
+                <span className="font-medium min-w-[140px]" style={{ color: "#f1f5f9" }}>{category}:</span>
+                <span style={{ color: "#94a3b8" }}>{skills.join(", ")}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Experience */}
       {data.experience.length > 0 && (
         <div>
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             Опыт работы
           </h3>
           <div className="space-y-5">
             {data.experience.map((exp, i) =>
               exp.is_relevant !== false ? (
-                // Relevant role — full detail
                 <div key={i}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <span className="font-bold">{exp.company}</span>
-                      {exp.industry && (
-                        <span className="text-muted-foreground"> — {exp.industry}</span>
-                      )}
+                      <span className="font-bold" style={{ color: "#f1f5f9" }}>{exp.company}</span>
+                      {exp.industry && <span style={{ color: "#94a3b8" }}> — {exp.industry}</span>}
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">
+                    <span className="text-xs whitespace-nowrap ml-4" style={{ color: "#64748b" }}>
                       {exp.period}
                     </span>
                   </div>
-                  <p className="text-muted-foreground">
+                  <p style={{ color: "#94a3b8" }}>
                     {exp.position}
                     {exp.team_size ? ` | Команда: ${exp.team_size}` : ""}
                   </p>
-
                   {exp.responsibilities.length > 0 && (
                     <div className="mt-2">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                      <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#64748b" }}>
                         Обязанности
                       </p>
                       <ul className="space-y-0.5 pl-4">
                         {exp.responsibilities.map((r, j) => (
                           <li key={j} className="flex gap-2">
-                            <span className="text-muted-foreground">•</span>
-                            <span>{r}</span>
+                            <span style={{ color: "#6366f1" }}>•</span>
+                            <span style={{ color: "#cbd5e1" }}>{r}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
-
                   {exp.achievements.length > 0 && (
                     <div className="mt-2">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                      <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#64748b" }}>
                         Достижения
                       </p>
                       <ul className="space-y-0.5 pl-4">
                         {exp.achievements.map((a, j) => (
                           <li key={j} className="flex gap-2">
-                            <span className="text-muted-foreground">•</span>
-                            <span>{a}</span>
+                            <span style={{ color: "#a78bfa" }}>•</span>
+                            <span style={{ color: "#cbd5e1" }}>{a}</span>
                           </li>
                         ))}
                       </ul>
@@ -333,21 +376,17 @@ function StructuredResumeView({ data }: { data: ResumeData }) {
                   )}
                 </div>
               ) : (
-                // Non-relevant role — compact
-                <div
-                  key={i}
-                  className="border-l-2 border-muted pl-3 py-1"
-                >
+                <div key={i} className="pl-3 py-1" style={{ borderLeft: "2px solid #334155" }}>
                   <div className="flex items-start justify-between">
-                    <span className="font-medium">
+                    <span className="font-medium" style={{ color: "#94a3b8" }}>
                       {exp.company} — {exp.position}
                     </span>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">
+                    <span className="text-xs whitespace-nowrap ml-4" style={{ color: "#64748b" }}>
                       {exp.period}
                     </span>
                   </div>
                   {exp.achievements.length > 0 && (
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs mt-1" style={{ color: "#64748b" }}>
                       {exp.achievements.join(". ")}
                     </p>
                   )}
@@ -358,46 +397,45 @@ function StructuredResumeView({ data }: { data: ResumeData }) {
         </div>
       )}
 
-      {/* Education */}
       {data.education.length > 0 && (
         <div>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             Образование
           </h3>
           {data.education.map((edu, i) => (
             <div key={i} className="mb-1">
-              <span className="font-medium">{edu.institution}</span>
-              <span className="text-muted-foreground">
-                {" "} — {edu.degree}, {edu.year}
-              </span>
+              <span className="font-medium" style={{ color: "#f1f5f9" }}>{edu.institution}</span>
+              <span style={{ color: "#94a3b8" }}> — {edu.degree}, {edu.year}</span>
             </div>
           ))}
         </div>
       )}
 
-      {/* Certificates */}
       {data.certificates.length > 0 && (
         <div>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             Сертификаты
           </h3>
           <div className="flex flex-wrap gap-1">
             {data.certificates.map((cert, i) => (
-              <Badge key={i} variant="secondary" className="text-xs">
+              <span
+                key={i}
+                className="rounded-md px-2 py-0.5 text-xs"
+                style={{ backgroundColor: "rgba(99,102,241,0.1)", color: "#a78bfa" }}
+              >
                 {cert}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>
       )}
 
-      {/* Languages */}
       {data.languages.length > 0 && (
         <div>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#a78bfa" }}>
             Языки
           </h3>
-          <p className="text-muted-foreground">{data.languages.join(" | ")}</p>
+          <p style={{ color: "#94a3b8" }}>{data.languages.join(" | ")}</p>
         </div>
       )}
     </div>

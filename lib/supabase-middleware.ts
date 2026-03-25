@@ -1,7 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const protectedPaths = ["/dashboard", "/adapt", "/create", "/result", "/interview", "/resume", "/tokens"];
+const authPaths = ["/login", "/register"];
+
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Skip Supabase entirely for public pages (landing, static assets)
+  const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
+  const isAuthPage = authPaths.some((p) => pathname.startsWith(p));
+
+  if (!isProtected && !isAuthPage) {
+    return NextResponse.next({ request });
+  }
+
+  // Only create Supabase client for pages that need auth check
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -13,7 +27,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({ request });
@@ -25,29 +39,16 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Use getSession (reads from cookie, no network call) instead of getUser
   const {
     data: { session },
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
-
-  // Protected routes — redirect to login if not authenticated
-  const protectedPaths = ["/dashboard", "/adapt", "/create", "/result", "/interview", "/resume"];
-  const isProtected = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-
-  // Redirect logged-in users away from auth pages
-  const authPaths = ["/login", "/register"];
-  const isAuthPage = authPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
 
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
