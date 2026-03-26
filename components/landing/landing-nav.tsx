@@ -9,7 +9,7 @@ export function LandingNav() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         {/* Logo */}
         <span className="text-xl font-bold text-white tracking-tight">
-          Resume<span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">AI</span>
+          CV <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Builder</span>
         </span>
 
         {/* Nav links */}
