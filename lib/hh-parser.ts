@@ -24,7 +24,7 @@ export function extractHHVacancyId(url: string): string | null {
  */
 export async function fetchHHVacancy(vacancyId: string): Promise<HHVacancy> {
   const response = await fetch(`https://api.hh.ru/vacancies/${vacancyId}`, {
-    headers: { "User-Agent": "ResumeAI/1.0" },
+    headers: { "User-Agent": "CV Builder/1.0" },
   });
 
   if (!response.ok) {

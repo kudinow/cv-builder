@@ -13,7 +13,7 @@ import { FaqSection } from "@/components/landing/faq-section";
 import { FinalCtaSection } from "@/components/landing/final-cta-section";
 
 export const metadata: Metadata = {
-  title: "ResumeAI — Создай продающее резюме за 15 минут",
+  title: "CV Builder — Создай продающее резюме за 15 минут",
   description:
     "AI проведёт интервью, извлечёт достижения и соберёт резюме по методике карьерных консультантов. Без шаблонов. 50 токенов бесплатно при регистрации.",
 };
@@ -34,7 +34,7 @@ export default function HomePage() {
       <FaqSection />
       <FinalCtaSection />
       <footer className="border-t border-white/10 bg-[#0f172a] py-8 text-center text-sm text-slate-600">
-        © 2026 ResumeAI — AI-помощник для создания продающих резюме
+        © 2026 CV Builder — AI-помощник для создания продающих резюме
       </footer>
     </div>
   );

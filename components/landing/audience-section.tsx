@@ -46,7 +46,7 @@ export function AudienceSection() {
             Узнайте себя
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            ResumeAI решает три ключевые задачи соискателя
+            CV Builder решает три ключевые задачи соискателя
           </p>
         </div>
 

@@ -51,9 +51,9 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <Link href="/" className="text-lg font-bold mb-2 inline-block" style={{ color: "#a78bfa" }}>
-            ResumeAI
+            CV Builder
           </Link>
-          <CardTitle>Регистрация в ResumeAI</CardTitle>
+          <CardTitle>Регистрация в CV Builder</CardTitle>
           <CardDescription>
             Создайте аккаунт — первая адаптация резюме бесплатно
           </CardDescription>

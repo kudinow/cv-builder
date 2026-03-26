@@ -43,7 +43,7 @@ export function MethodologySection() {
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-slate-400 leading-relaxed">
-            ChatGPT напишет что-нибудь. ResumeAI напишет то, что работает на
+            ChatGPT напишет что-нибудь. CV Builder напишет то, что работает на
             рынке труда — потому что за алгоритмом стоит методика, а не
             универсальный промпт.
           </p>
@@ -76,7 +76,7 @@ export function MethodologySection() {
             «Большинство соискателей недооценивают свой опыт. Наша задача — помочь
             вам рассказать о себе так, как это делают люди, которые получают офферы.»
           </blockquote>
-          <p className="mt-4 text-sm text-slate-500">— Методика ResumeAI</p>
+          <p className="mt-4 text-sm text-slate-500">— Методика CV Builder</p>
         </div>
       </div>
     </section>

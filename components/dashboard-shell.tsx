@@ -25,7 +25,7 @@ export async function DashboardShell({
           <div className="flex items-center gap-3 md:gap-8">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-lg font-bold" style={{ color: "#f1f5f9" }}>
-                ResumeAI
+                CV Builder
               </span>
             </Link>
             <DashboardNav />

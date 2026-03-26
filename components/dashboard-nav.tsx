@@ -20,7 +20,7 @@ export function DashboardNav({ userEmail }: { userEmail: string }) {
       <div className="container mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="text-lg font-bold">
-            ResumeAI
+            CV Builder
           </Link>
           <div className="flex gap-4 text-sm">
             <Link

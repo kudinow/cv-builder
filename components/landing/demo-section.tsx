@@ -56,7 +56,7 @@ export function DemoSection() {
               <div className="h-3 w-3 rounded-full bg-yellow-500/60" />
               <div className="h-3 w-3 rounded-full bg-green-500/60" />
               <div className="ml-4 flex-1 rounded-md bg-slate-700/50 px-3 py-1 text-xs text-slate-500">
-                ResumeAI — Интервью · Фаза 2 из 5
+                CV Builder — Интервью · Фаза 2 из 5
               </div>
             </div>
 

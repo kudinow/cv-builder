@@ -28,7 +28,7 @@ export function ComparisonSection() {
             Ценность
           </div>
           <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-            Карьерный консультант или ResumeAI?
+            Карьерный консультант или CV Builder?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
             Одинаковое качество. В 10–30 раз дешевле. В 10 раз быстрее.
@@ -56,14 +56,14 @@ export function ComparisonSection() {
             </ul>
           </div>
 
-          {/* ResumeAI */}
+          {/* CV Builder */}
           <div className="relative rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-8">
             {/* Best value badge */}
             <div className="absolute -top-3 right-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-indigo-500/30">
               Выгоднее в 10–30×
             </div>
             <div className="mb-6">
-              <div className="mb-1 text-sm text-indigo-400">ResumeAI</div>
+              <div className="mb-1 text-sm text-indigo-400">CV Builder</div>
               <div className="text-4xl font-extrabold text-white">от 499₽</div>
               <div className="mt-1 text-sm text-slate-500">пакет токенов</div>
             </div>

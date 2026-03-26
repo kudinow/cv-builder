@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "ResumeAI — Создай продающее резюме с AI";
+export const alt = "CV Builder — Создай продающее резюме с AI";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -63,12 +63,12 @@ export default function OGImage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "36px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "white",
             }}
           >
-            R
+            CV
           </div>
           <span
             style={{
@@ -77,7 +77,7 @@ export default function OGImage() {
               color: "#f1f5f9",
             }}
           >
-            ResumeAI
+            CV Builder
           </span>
         </div>
 

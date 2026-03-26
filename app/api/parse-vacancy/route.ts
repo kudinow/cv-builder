@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       const vacancyId = hhMatch[1];
       const response = await fetch(
         `https://api.hh.ru/vacancies/${vacancyId}`,
-        { headers: { "User-Agent": "ResumeAI/1.0" } }
+        { headers: { "User-Agent": "CV Builder/1.0" } }
       );
 
       if (!response.ok) {
