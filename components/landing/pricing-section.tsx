@@ -49,9 +49,8 @@ const packages = [
 
 const costTable = [
   { operation: "Создание резюме с нуля (интервью)", tokens: 100 },
-  { operation: "Улучшение существующего резюме", tokens: 60 },
-  { operation: "Адаптация под вакансию (с мастер-резюме)", tokens: 40 },
-  { operation: "Адаптация standalone (загрузка PDF)", tokens: 80 },
+  { operation: "Улучшение существующего резюме", tokens: 80 },
+  { operation: "Адаптация под вакансию", tokens: 50 },
 ];
 
 export function PricingSection() {

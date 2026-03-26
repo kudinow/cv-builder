@@ -1,8 +1,7 @@
 export const TOKEN_COSTS = {
   CREATE_RESUME: 100,
-  IMPROVE_RESUME: 60,
-  ADAPT_RESUME: 40,
-  ADAPT_STANDALONE: 80,
+  IMPROVE_RESUME: 80,
+  ADAPT_RESUME: 50,
 } as const
 
 export const INTERVIEW_LIMITS = {
@@ -18,7 +17,3 @@ export const TOKEN_PACKAGES = [
   { name: 'Средний', tokens: 1_500, priceKopeks: 119_900 },
   { name: 'Большой', tokens: 4_000, priceKopeks: 249_900 },
 ] as const
-
-export function getAdaptCost(parentId: string | null | undefined): number {
-  return parentId ? TOKEN_COSTS.ADAPT_RESUME : TOKEN_COSTS.ADAPT_STANDALONE
-}

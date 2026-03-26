@@ -4,7 +4,7 @@ import { callOpenRouter } from "@/lib/openrouter";
 import { ADAPT_SYSTEM_PROMPT } from "@/lib/prompts/adapt-system";
 import type { ResumeData } from "@/lib/pdf-generator";
 import { spendTokens, InsufficientTokensError } from '@/lib/tokens';
-import { getAdaptCost } from '@/lib/token-costs';
+import { TOKEN_COSTS } from '@/lib/token-costs';
 
 /**
  * Extract and sanitize JSON from Claude's response.
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const { resumeText, vacancyText, vacancyUrl, photoBase64, positionInstructions, parentId } = await req.json();
 
     // Check and spend tokens
-    const cost = getAdaptCost(parentId);
+    const cost = TOKEN_COSTS.ADAPT_RESUME;
     try {
       await spendTokens(user.id, cost, 'Адаптация резюме');
     } catch (error) {

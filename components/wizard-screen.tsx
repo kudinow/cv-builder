@@ -25,8 +25,6 @@ export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenPro
     needed: 0,
   })
 
-  const adaptCost = hasMasterResumes ? 40 : 80
-
   const options: WizardOption[] = [
     {
       id: "create",
@@ -40,17 +38,15 @@ export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenPro
       id: "improve",
       title: "Хочу улучшить резюме",
       description: "Загрузите ваш PDF — AI проведёт интервью и перепишет резюме",
-      cost: 60,
+      cost: 80,
       icon: "⚡",
       href: "/interview?mode=improve",
     },
     {
       id: "adapt",
       title: "Адаптировать под вакансию",
-      description: hasMasterResumes
-        ? "Адаптируем ваше мастер-резюме под конкретную вакансию"
-        : "Загрузите PDF и вставьте вакансию — адаптируем под неё",
-      cost: adaptCost,
+      description: "Загрузите PDF и вставьте вакансию — адаптируем под неё",
+      cost: 50,
       icon: "🎯",
       href: "/adapt",
     },

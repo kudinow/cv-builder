@@ -168,7 +168,7 @@ export default function TokensPage() {
                 <p className="mb-1 font-medium" style={{ color: "#94a3b8" }}>Что можно сделать:</p>
                 <ul className="space-y-1">
                   <li>◈ {Math.floor(pkg.tokens / TOKEN_COSTS.CREATE_RESUME)} создания с нуля ({TOKEN_COSTS.CREATE_RESUME} токенов)</li>
-                  <li>◈ {Math.floor(pkg.tokens / TOKEN_COSTS.ADAPT_RESUME)} адаптации ({TOKEN_COSTS.ADAPT_RESUME} токена)</li>
+                  <li>◈ {Math.floor(pkg.tokens / TOKEN_COSTS.ADAPT_RESUME)} адаптаций ({TOKEN_COSTS.ADAPT_RESUME} токенов)</li>
                   <li>◈ {Math.floor(pkg.tokens / TOKEN_COSTS.IMPROVE_RESUME)} улучшений ({TOKEN_COSTS.IMPROVE_RESUME} токенов)</li>
                 </ul>
               </div>

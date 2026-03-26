@@ -36,7 +36,7 @@ export function ResumeCard({
   })
 
   function handleAdapt() {
-    const cost = 40 // has master resume in system
+    const cost = 50
     if (tokenBalance < cost) {
       setModalState({ open: true, needed: cost })
       return
@@ -45,7 +45,7 @@ export function ResumeCard({
   }
 
   function handleImprove() {
-    const cost = 60
+    const cost = 80
     if (tokenBalance < cost) {
       setModalState({ open: true, needed: cost })
       return
@@ -110,7 +110,7 @@ export function ResumeCard({
               cursor: "pointer",
             }}
           >
-            Адаптировать · 40
+            Адаптировать · 50
           </button>
           <button
             onClick={handleImprove}
@@ -122,7 +122,7 @@ export function ResumeCard({
               cursor: "pointer",
             }}
           >
-            Улучшить · 60
+            Улучшить · 80
           </button>
           <Link
             href={`/resume/${id}`}
