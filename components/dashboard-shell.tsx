@@ -23,7 +23,7 @@ export async function DashboardShell({
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           {/* Logo + Nav */}
           <div className="flex items-center gap-3 md:gap-8">
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <span className="text-lg font-bold" style={{ color: "#f1f5f9" }}>
                 ResumeAI
               </span>

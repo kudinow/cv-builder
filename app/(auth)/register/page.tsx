@@ -50,6 +50,9 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
+          <Link href="/" className="text-lg font-bold mb-2 inline-block" style={{ color: "#a78bfa" }}>
+            ResumeAI
+          </Link>
           <CardTitle>Регистрация в ResumeAI</CardTitle>
           <CardDescription>
             Создайте аккаунт — первая адаптация резюме бесплатно
