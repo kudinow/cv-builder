@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { reachGoal } from "@/lib/metrika"
 
 export default function TokensSuccessPage() {
   const [balance, setBalance] = useState<number | null>(null)
@@ -12,7 +13,10 @@ export default function TokensSuccessPage() {
     const timer = setTimeout(() => {
       fetch("/api/tokens/balance")
         .then((r) => (r.ok ? r.json() : { balance: null }))
-        .then((data) => setBalance(data.balance ?? null))
+        .then((data) => {
+          setBalance(data.balance ?? null)
+          reachGoal('purchase_success')
+        })
         .catch(() => setBalance(null))
         .finally(() => setLoading(false))
     }, 1500)

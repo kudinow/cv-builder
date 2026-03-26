@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { InsufficientTokensModal } from '@/components/insufficient-tokens-modal'
+import { reachGoal } from '@/lib/metrika'
 
 interface InterviewEntryClientProps {
   mode: 'create' | 'improve'
@@ -87,6 +88,7 @@ export function InterviewEntryClient({
         throw new Error(data.error || 'Ошибка создания сессии')
       }
 
+      reachGoal('interview_start')
       router.push('/interview/' + data.session.id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка')

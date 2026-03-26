@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { TOKEN_PACKAGES, TOKEN_COSTS } from "@/lib/token-costs"
+import { reachGoal } from "@/lib/metrika"
 
 const PACKAGE_DESCRIPTIONS = [
   "1 создание резюме с нуля, несколько адаптаций",
@@ -43,7 +44,7 @@ export default function TokensPage() {
         return
       }
 
-      // Redirect to YooKassa checkout
+      reachGoal('purchase_click')
       window.location.href = data.confirmationUrl
     } catch {
       setError("Ошибка сети. Проверьте соединение и попробуйте снова.")

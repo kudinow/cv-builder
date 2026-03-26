@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { reachGoal } from "@/lib/metrika";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,7 @@ function LoginForm() {
       setError(error.message);
     } else {
       setSent(true);
+      reachGoal('login');
     }
     setLoading(false);
   }

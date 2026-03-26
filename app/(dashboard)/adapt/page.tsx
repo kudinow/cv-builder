@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { reachGoal } from "@/lib/metrika";
 
 type Step = "input" | "parsing" | "review" | "adapting" | "error";
 type DetailLevel = "full" | "short" | "remove";
@@ -88,6 +89,7 @@ export default function AdaptPage() {
         (p: Omit<Position, "level">) => ({ ...p, level: "full" as DetailLevel })
       );
       setPositions(positionsWithLevel);
+      reachGoal('adapt_start');
       setStep("review");
     } catch (err) {
       setStep("error");
@@ -115,6 +117,7 @@ export default function AdaptPage() {
       });
       const adaptData = await adaptRes.json();
       if (!adaptRes.ok) throw new Error(adaptData.error || "Ошибка адаптации");
+      reachGoal('adapt_finish');
       router.push(`/result/${adaptData.id}`);
     } catch (err) {
       setStep("error");

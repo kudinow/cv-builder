@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { INTERVIEW_LIMITS } from '@/lib/token-costs'
+import { reachGoal } from '@/lib/metrika'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -183,6 +184,7 @@ export function InterviewChatV2({
         throw new Error(data.error || 'Ошибка финализации')
       }
 
+      reachGoal('interview_finish')
       router.push('/resume/' + data.resumeId)
     } catch (err) {
       setMessages((prev) => [

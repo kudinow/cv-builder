@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ResumeData } from "@/lib/pdf-generator";
 import { formatResumeToText } from "@/lib/format-resume";
+import { reachGoal } from "@/lib/metrika";
 
 interface ResultTabsProps {
   resumeData: ResumeData | null;
@@ -57,6 +58,7 @@ export function ResultTabs({
       const a = document.createElement("a");
       a.href = url;
       a.download = `${resumeData?.full_name || "resume"}.pdf`;
+      reachGoal('pdf_download');
       a.click();
       URL.revokeObjectURL(url);
     } catch {

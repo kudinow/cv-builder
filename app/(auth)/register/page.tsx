@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { reachGoal } from "@/lib/metrika";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +43,7 @@ export default function RegisterPage() {
       setError(error.message);
     } else {
       setSent(true);
+      reachGoal('registration');
     }
     setLoading(false);
   }
