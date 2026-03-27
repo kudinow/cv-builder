@@ -9,6 +9,7 @@ const navItems = [
   { href: "/dashboard", label: "Мои резюме" },
   { href: "/interview", label: "Создать резюме" },
   { href: "/adapt", label: "Адаптировать" },
+  { href: "/promo", label: "Промо-код" },
 ]
 
 export function DashboardNav() {
