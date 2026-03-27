@@ -33,6 +33,21 @@ CREATE POLICY "Anyone can view active promo codes"
   ON promo_codes FOR SELECT
   USING (active = true);
 
+-- Users can view their own codes (including inactive)
+CREATE POLICY "Users can view own promo codes"
+  ON promo_codes FOR SELECT
+  USING (auth.uid() = owner_id);
+
+-- Users can insert their own referral codes
+CREATE POLICY "Users can insert own referral codes"
+  ON promo_codes FOR INSERT
+  WITH CHECK (auth.uid() = owner_id AND type = 'referral');
+
+-- Allow updating uses_count on active codes
+CREATE POLICY "Users can update promo code uses_count"
+  ON promo_codes FOR UPDATE
+  USING (active = true);
+
 -- 2. Promo code uses table
 CREATE TABLE promo_code_uses (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
