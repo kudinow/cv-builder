@@ -66,6 +66,11 @@ export async function spendTokens(
     })
 
   if (txError) throw new Error(txError.message)
+
+  // Process referral bonus on first action
+  await supabase.rpc('process_referral_bonus', { p_user_id: userId }).catch(() => {
+    // Non-critical: don't fail the main operation
+  })
 }
 
 export async function addTokens(
