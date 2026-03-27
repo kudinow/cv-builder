@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { WizardScreen } from "@/components/wizard-screen"
 import { ResumeCard } from "@/components/resume-card"
 import { ActiveInterviewBanner } from "@/components/active-interview-banner"
+import { ReferralBlock } from "@/components/referral-block"
 
 interface MasterResume {
   id: string
@@ -104,6 +105,8 @@ export default function DashboardPage() {
       ) : (
         <WizardScreen hasMasterResumes={false} tokenBalance={tokenBalance} />
       )}
+
+      <ReferralBlock />
     </div>
   )
 }

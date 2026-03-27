@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import { reachGoal } from "@/lib/metrika";
@@ -16,9 +17,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
+  const [promoCode, setPromoCode] = useState(searchParams.get("ref") || "");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +38,7 @@ export default function RegisterPage() {
         emailRedirectTo: `${window.location.origin}/callback`,
         data: {
           full_name: fullName,
+          promo_code: promoCode || undefined,
         },
       },
     });
@@ -98,6 +102,16 @@ export default function RegisterPage() {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="promoCode">Промо-код (необязательно)</Label>
+                  <Input
+                    id="promoCode"
+                    type="text"
+                    placeholder="Например: REF-A7K2M9"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  />
+                </div>
               </>
             )}
           </CardContent>
@@ -117,5 +131,13 @@ export default function RegisterPage() {
         </form>
       </Card>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }
