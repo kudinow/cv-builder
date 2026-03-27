@@ -31,6 +31,7 @@ const inputStyle = {
 export default function AdaptPage() {
   const router = useRouter();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeDragOver, setResumeDragOver] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [vacancyUrl, setVacancyUrl] = useState("");
@@ -251,12 +252,31 @@ export default function AdaptPage() {
           <p className="text-sm mb-4" style={{ color: "#64748b" }}>Загрузите PDF-файл с резюме</p>
           <label
             className="flex items-center justify-center w-full py-8 rounded-lg cursor-pointer transition-colors hover:border-[#6366f1]"
-            style={{ border: "2px dashed #334155", backgroundColor: "#0f172a" }}
+            style={{
+              border: "2px dashed",
+              borderColor: resumeDragOver ? "#8b5cf6" : "#334155",
+              backgroundColor: resumeDragOver ? "rgba(99,102,241,0.08)" : "#0f172a",
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setResumeDragOver(true);
+            }}
+            onDragLeave={() => setResumeDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setResumeDragOver(false);
+              const file = e.dataTransfer.files[0];
+              if (file && file.type === "application/pdf") {
+                setResumeFile(file);
+              } else {
+                setError("Пожалуйста, загрузите файл в формате PDF");
+              }
+            }}
           >
             <div className="text-center">
               <div className="text-2xl mb-2">📄</div>
               <p className="text-sm font-medium" style={{ color: "#94a3b8" }}>
-                {resumeFile ? resumeFile.name : "Нажмите для выбора PDF"}
+                {resumeFile ? resumeFile.name : "Перетащите PDF или нажмите для выбора"}
               </p>
               {resumeFile && (
                 <p className="text-xs mt-1" style={{ color: "#64748b" }}>
