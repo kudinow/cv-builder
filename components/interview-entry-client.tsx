@@ -28,6 +28,7 @@ export function InterviewEntryClient({
   const [showInsufficientModal, setShowInsufficientModal] = useState(false)
   const [insufficientNeeded, setInsufficientNeeded] = useState(0)
   const [showExpiredBanner, setShowExpiredBanner] = useState(expiredError ?? false)
+  const [isDragOver, setIsDragOver] = useState(false)
 
   const requiredTokens = selectedMode === 'improve' ? 60 : 100
   const hasEnoughTokens = tokenBalance >= requiredTokens
@@ -189,8 +190,23 @@ export function InterviewEntryClient({
               className="block rounded-2xl p-6 text-center cursor-pointer transition-colors"
               style={{
                 border: '2px dashed',
-                borderColor: parsedResumeText ? '#6366f1' : '#334155',
-                background: '#1e293b',
+                borderColor: isDragOver ? '#8b5cf6' : parsedResumeText ? '#6366f1' : '#334155',
+                background: isDragOver ? 'rgba(99,102,241,0.08)' : '#1e293b',
+              }}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDragOver(true)
+              }}
+              onDragLeave={() => setIsDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragOver(false)
+                const file = e.dataTransfer.files[0]
+                if (file && file.type === 'application/pdf') {
+                  handlePdfSelect(file)
+                } else {
+                  setParseError('Пожалуйста, загрузите файл в формате PDF')
+                }
               }}
             >
               <input
