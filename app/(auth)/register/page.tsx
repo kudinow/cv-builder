@@ -8,6 +8,7 @@ import { reachGoal } from "@/lib/metrika";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -22,6 +23,8 @@ function RegisterForm() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [promoCode, setPromoCode] = useState(searchParams.get("ref") || "");
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentMarketing, setConsentMarketing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +42,8 @@ function RegisterForm() {
         data: {
           full_name: fullName,
           promo_code: promoCode || undefined,
+          consent_privacy: consentPrivacy,
+          consent_marketing: consentMarketing,
         },
       },
     });
@@ -112,12 +117,57 @@ function RegisterForm() {
                     onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                   />
                 </div>
+
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-start gap-2">
+                    <Checkbox
+                      id="consentPrivacy"
+                      checked={consentPrivacy}
+                      onCheckedChange={(checked) =>
+                        setConsentPrivacy(checked === true)
+                      }
+                    />
+                    <label
+                      htmlFor="consentPrivacy"
+                      className="text-sm leading-tight cursor-pointer"
+                    >
+                      Я принимаю{" "}
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline text-violet-400 hover:text-violet-300"
+                      >
+                        условия использования и политику конфиденциальности
+                      </a>
+                    </label>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Checkbox
+                      id="consentMarketing"
+                      checked={consentMarketing}
+                      onCheckedChange={(checked) =>
+                        setConsentMarketing(checked === true)
+                      }
+                    />
+                    <label
+                      htmlFor="consentMarketing"
+                      className="text-sm leading-tight cursor-pointer"
+                    >
+                      Я согласен получать маркетинговые рассылки
+                    </label>
+                  </div>
+                </div>
               </>
             )}
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
             {!sent && (
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading || !consentPrivacy}
+              >
                 {loading ? "Отправка..." : "Зарегистрироваться"}
               </Button>
             )}
