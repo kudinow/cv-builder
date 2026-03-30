@@ -2,11 +2,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function HeroSection() {
-  const metrics = [
-    { value: "12 000+", label: "резюме создано" },
-    { value: "87%", label: "получили оффер" },
-    { value: "15 мин", label: "среднее время" },
-  ];
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#172554] pt-16">
@@ -63,15 +58,6 @@ export function HeroSection() {
           50 бесплатных токенов при регистрации · Без привязки карты
         </p>
 
-        {/* Trust metrics */}
-        <div className="mx-auto mt-16 grid max-w-xl grid-cols-3 gap-6">
-          {metrics.map((m) => (
-            <div key={m.label} className="text-center">
-              <div className="text-3xl font-extrabold text-white">{m.value}</div>
-              <div className="mt-1 text-sm text-slate-400">{m.label}</div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
