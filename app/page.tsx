@@ -34,7 +34,10 @@ export default function HomePage() {
       <FaqSection />
       <FinalCtaSection />
       <footer className="border-t border-white/10 bg-[#0f172a] py-8 text-center text-sm text-slate-600">
-        © 2026 CV Builder — AI-помощник для создания продающих резюме
+        <p>© 2026 CV Builder — AI-помощник для создания продающих резюме</p>
+        <a href="/terms" className="mt-2 inline-block underline hover:text-slate-400">
+          Условия использования и политика конфиденциальности
+        </a>
       </footer>
     </div>
   );
