@@ -187,6 +187,8 @@ export async function POST(req: NextRequest) {
         cover_letter: parsed.cover_letter,
         changes_log: parsed.changes,
         pdf_path: photoBase64 || null,
+        title: parsed.resume.target_position || null,
+        target_position: parsed.resume.target_position || null,
       })
       .eq("id", resume.id);
 

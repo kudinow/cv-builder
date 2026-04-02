@@ -17,7 +17,7 @@ interface ResumeCardProps {
 
 export function ResumeCard({
   id,
-  title,
+  title: initialTitle,
   targetPosition,
   adaptationCount,
   createdAt,
@@ -28,6 +28,9 @@ export function ResumeCard({
     open: false,
     needed: 0,
   })
+  const [title, setTitle] = useState(initialTitle)
+  const [editing, setEditing] = useState(false)
+  const [editValue, setEditValue] = useState(initialTitle)
 
   const formattedDate = new Date(createdAt).toLocaleDateString("ru-RU", {
     day: "numeric",
@@ -42,6 +45,28 @@ export function ResumeCard({
       return
     }
     router.push(`/adapt?master=${id}`)
+  }
+
+  async function handleRename() {
+    const trimmed = editValue.trim()
+    if (!trimmed || trimmed === title) {
+      setEditing(false)
+      setEditValue(title)
+      return
+    }
+    try {
+      const res = await fetch(`/api/resumes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed }),
+      })
+      if (res.ok) {
+        setTitle(trimmed)
+      }
+    } catch {
+      // Revert on error
+    }
+    setEditing(false)
   }
 
   function handleImprove() {
@@ -62,12 +87,29 @@ export function ResumeCard({
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h3
-              className="truncate text-base font-semibold leading-tight"
-              style={{ color: "#f1f5f9" }}
-            >
-              {title}
-            </h3>
+            {editing ? (
+              <input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={handleRename}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleRename()
+                  if (e.key === "Escape") { setEditing(false); setEditValue(title) }
+                }}
+                className="w-full text-base font-semibold leading-tight outline-none rounded px-1 -mx-1"
+                style={{ color: "#f1f5f9", backgroundColor: "#0f172a", border: "1px solid #6366f1" }}
+              />
+            ) : (
+              <h3
+                className="truncate text-base font-semibold leading-tight cursor-pointer hover:opacity-80"
+                style={{ color: "#f1f5f9" }}
+                onClick={() => { setEditValue(title); setEditing(true) }}
+                title="Нажмите, чтобы переименовать"
+              >
+                {title}
+              </h3>
+            )}
             {targetPosition && (
               <p className="mt-0.5 truncate text-sm" style={{ color: "#94a3b8" }}>
                 {targetPosition}
