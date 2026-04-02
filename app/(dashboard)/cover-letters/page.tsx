@@ -77,6 +77,18 @@ export default function CoverLettersPage() {
     setEditingId(null)
   }
 
+  async function handleDelete(id: string) {
+    if (!confirm("Удалить это письмо?")) return
+    try {
+      const res = await fetch(`/api/cover-letter/${id}`, { method: "DELETE" })
+      if (res.ok) {
+        setLetters((prev) => prev.filter((l) => l.id !== id))
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -179,14 +191,23 @@ export default function CoverLettersPage() {
                 {formatDate(item.created_at)}
               </span>
 
-              {/* Open link */}
-              <Link
-                href={`/cover-letter/${item.id}`}
-                className="text-xs font-medium hover:opacity-80"
-                style={{ color: "#94a3b8" }}
-              >
-                Открыть
-              </Link>
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/cover-letter/${item.id}`}
+                  className="text-xs font-medium hover:opacity-80"
+                  style={{ color: "#94a3b8" }}
+                >
+                  Открыть
+                </Link>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="text-xs hover:opacity-80"
+                  style={{ color: "#475569" }}
+                >
+                  Удалить
+                </button>
+              </div>
             </div>
           ))}
         </div>
