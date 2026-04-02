@@ -10,7 +10,7 @@ const navItems = [
   { href: "/dashboard", label: "Мои резюме" },
   { href: "/interview", label: "Создать резюме" },
   { href: "/adapt", label: "Адаптировать" },
-  { href: "/cover-letters", label: "Сопр. письма" },
+  { href: "/cover-letters", label: "Сопроводительные письма" },
   { href: "/promo", label: "Промо-код" },
 ]
 
