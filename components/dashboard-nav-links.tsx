@@ -11,6 +11,7 @@ const navItems = [
   { href: "/interview", label: "Создать резюме" },
   { href: "/adapt", label: "Адаптировать" },
   { href: "/cover-letters", label: "Сопр. письма" },
+  { href: "/promo", label: "Промо-код" },
 ]
 
 interface SidebarProps {
@@ -83,16 +84,7 @@ function SidebarContent({ userEmail, onNavigate }: SidebarProps & { onNavigate?:
 
       {/* Bottom section */}
       <div className="px-2 pb-4">
-        <Link
-          href="/promo"
-          onClick={onNavigate}
-          className="block px-3 py-1.5 text-[11px] transition-colors hover:opacity-80"
-          style={{ color: "#475569" }}
-        >
-          Промо-код
-        </Link>
-
-        <div className="mt-2 mx-1 border-t" style={{ borderColor: "#1e293b" }} />
+        <div className="mx-1 border-t" style={{ borderColor: "#1e293b" }} />
 
         <div className="mt-2 px-3">
           <Link
