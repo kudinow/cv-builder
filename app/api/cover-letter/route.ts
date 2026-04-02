@@ -141,6 +141,13 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
+    // Auto-generate title from first non-empty line of vacancy text
+    const autoTitle = finalVacancyText
+      .split("\n")
+      .map((l: string) => l.trim())
+      .find((l: string) => l.length > 0)
+      ?.slice(0, 100) || "Сопроводительное письмо";
+
     // Create cover letter record
     const { data: record, error: insertError } = await supabase
       .from("cover_letters")
@@ -150,6 +157,7 @@ export async function POST(req: NextRequest) {
         resume_text: finalResumeText,
         vacancy_url: vacancyUrl || null,
         vacancy_text: finalVacancyText,
+        title: autoTitle,
         status: "processing",
       })
       .select("id")

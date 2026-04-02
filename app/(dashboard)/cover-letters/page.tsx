@@ -5,6 +5,7 @@ import Link from "next/link"
 
 interface CoverLetterItem {
   id: string
+  title: string | null
   vacancy_url: string | null
   vacancy_text: string
   status: string
@@ -20,6 +21,8 @@ const cardStyle = {
 export default function CoverLettersPage() {
   const [letters, setLetters] = useState<CoverLetterItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState("")
 
   useEffect(() => {
     async function load() {
@@ -38,6 +41,42 @@ export default function CoverLettersPage() {
     load()
   }, [])
 
+  function formatDate(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  }
+
+  function getTitle(item: CoverLetterItem) {
+    return item.title || "Сопроводительное письмо"
+  }
+
+  async function handleRename(id: string) {
+    const trimmed = editValue.trim()
+    const item = letters.find((l) => l.id === id)
+    if (!trimmed || trimmed === getTitle(item!)) {
+      setEditingId(null)
+      return
+    }
+    try {
+      const res = await fetch(`/api/cover-letter/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed }),
+      })
+      if (res.ok) {
+        setLetters((prev) =>
+          prev.map((l) => (l.id === id ? { ...l, title: trimmed } : l))
+        )
+      }
+    } catch {
+      // Revert on error
+    }
+    setEditingId(null)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -47,27 +86,6 @@ export default function CoverLettersPage() {
         />
       </div>
     )
-  }
-
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString("ru-RU", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-  }
-
-  function getSnippet(item: CoverLetterItem) {
-    if (item.vacancy_url) return item.vacancy_url
-    return item.vacancy_text.length > 100
-      ? item.vacancy_text.slice(0, 100) + "..."
-      : item.vacancy_text
-  }
-
-  function getStatusBadge(status: string) {
-    if (status === "done") return { label: "Готово", color: "#22c55e", bg: "rgba(34,197,94,0.1)", border: "rgba(34,197,94,0.3)" }
-    if (status === "error") return { label: "Ошибка", color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" }
-    return { label: "Генерация...", color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.3)" }
   }
 
   return (
@@ -117,36 +135,60 @@ export default function CoverLettersPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {letters.map((item) => {
-            const badge = getStatusBadge(item.status)
-            return (
+          {letters.map((item) => (
+            <div
+              key={item.id}
+              className="flex flex-col gap-3 p-4 rounded-xl"
+              style={cardStyle}
+            >
+              {/* Title — editable */}
+              {editingId === item.id ? (
+                <input
+                  autoFocus
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => handleRename(item.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleRename(item.id)
+                    if (e.key === "Escape") setEditingId(null)
+                  }}
+                  className="text-sm font-medium outline-none rounded px-1 -mx-1"
+                  style={{
+                    color: "#f1f5f9",
+                    backgroundColor: "#0f172a",
+                    border: "1px solid #6366f1",
+                  }}
+                />
+              ) : (
+                <h3
+                  className="text-sm font-medium truncate cursor-pointer hover:opacity-80"
+                  style={{ color: "#f1f5f9" }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setEditValue(getTitle(item))
+                    setEditingId(item.id)
+                  }}
+                  title="Нажмите, чтобы переименовать"
+                >
+                  {getTitle(item)}
+                </h3>
+              )}
+
+              {/* Date */}
+              <span className="text-xs" style={{ color: "#64748b" }}>
+                {formatDate(item.created_at)}
+              </span>
+
+              {/* Open link */}
               <Link
-                key={item.id}
                 href={`/cover-letter/${item.id}`}
-                className="block p-4 rounded-xl transition-colors hover:border-[#6366f1]"
-                style={cardStyle}
+                className="text-xs font-medium hover:opacity-80"
+                style={{ color: "#94a3b8" }}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <span
-                    className="inline-block px-2 py-0.5 rounded text-xs font-medium"
-                    style={{
-                      backgroundColor: badge.bg,
-                      color: badge.color,
-                      border: `1px solid ${badge.border}`,
-                    }}
-                  >
-                    {badge.label}
-                  </span>
-                  <span className="text-xs" style={{ color: "#64748b" }}>
-                    {formatDate(item.created_at)}
-                  </span>
-                </div>
-                <p className="text-sm line-clamp-2" style={{ color: "#94a3b8" }}>
-                  {getSnippet(item)}
-                </p>
+                Открыть
               </Link>
-            )
-          })}
+            </div>
+          ))}
         </div>
       )}
     </div>

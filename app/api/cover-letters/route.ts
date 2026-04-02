@@ -15,7 +15,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from("cover_letters")
-      .select("id, vacancy_url, vacancy_text, status, created_at")
+      .select("id, title, vacancy_url, vacancy_text, status, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
