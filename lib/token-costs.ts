@@ -2,6 +2,7 @@ export const TOKEN_COSTS = {
   CREATE_RESUME: 100,
   IMPROVE_RESUME: 80,
   ADAPT_RESUME: 50,
+  COVER_LETTER: 20,
 } as const
 
 export const INTERVIEW_LIMITS = {
