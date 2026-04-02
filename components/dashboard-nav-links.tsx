@@ -6,11 +6,10 @@ import { useState } from "react"
 import { Menu, X } from "lucide-react"
 
 const navItems = [
-  { href: "/dashboard", label: "Резюме" },
-  { href: "/interview", label: "Создать" },
+  { href: "/dashboard", label: "Мои резюме" },
+  { href: "/interview", label: "Создать резюме" },
   { href: "/adapt", label: "Адаптировать" },
-  { href: "/cover-letters", label: "Письма" },
-  { href: "/promo", label: "Промо-код" },
+  { href: "/cover-letters", label: "Сопроводительные письма" },
 ]
 
 export function DashboardNav() {

@@ -43,6 +43,22 @@ export async function DashboardShell({
       <main className="mx-auto max-w-6xl px-4 py-8">
         {children}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t" style={{ borderColor: "#1e293b" }}>
+        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+          <span className="text-xs" style={{ color: "#475569" }}>
+            CV Builder
+          </span>
+          <Link
+            href="/promo"
+            className="text-xs transition-colors hover:opacity-80"
+            style={{ color: "#475569" }}
+          >
+            Промо-код
+          </Link>
+        </div>
+      </footer>
     </div>
   )
 }
