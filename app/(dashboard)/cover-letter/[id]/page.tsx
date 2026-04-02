@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 
 const cardStyle = {
@@ -11,6 +11,7 @@ const cardStyle = {
 }
 
 export default function CoverLetterResultPage() {
+  const router = useRouter()
   const params = useParams()
   const id = params.id as string
 
@@ -18,6 +19,13 @@ export default function CoverLetterResultPage() {
   const [status, setStatus] = useState<string>("processing")
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [regenerating, setRegenerating] = useState(false)
+  const [sourceData, setSourceData] = useState<{
+    resume_id: string | null
+    resume_text: string
+    vacancy_url: string | null
+    vacancy_text: string
+  } | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -27,6 +35,12 @@ export default function CoverLetterResultPage() {
           const data = await res.json()
           setCoverLetter(data.cover_letter || "")
           setStatus(data.status || "error")
+          setSourceData({
+            resume_id: data.resume_id || null,
+            resume_text: data.resume_text || "",
+            vacancy_url: data.vacancy_url || null,
+            vacancy_text: data.vacancy_text || "",
+          })
         } else {
           setStatus("error")
         }
@@ -38,6 +52,29 @@ export default function CoverLetterResultPage() {
     }
     load()
   }, [id])
+
+  async function handleRegenerate() {
+    if (!sourceData) return
+    setRegenerating(true)
+    try {
+      const res = await fetch("/api/cover-letter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resumeId: sourceData.resume_id || undefined,
+          resumeText: sourceData.resume_id ? undefined : sourceData.resume_text,
+          vacancyUrl: sourceData.vacancy_url || undefined,
+          vacancyText: sourceData.vacancy_text,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Ошибка генерации")
+      router.push(`/cover-letter/${data.id}`)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Ошибка при генерации")
+      setRegenerating(false)
+    }
+  }
 
   async function handleCopy() {
     try {
@@ -133,19 +170,32 @@ export default function CoverLetterResultPage() {
         </p>
       </div>
 
-      <button
-        onClick={handleCopy}
-        className="px-6 py-2.5 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
-        style={{
-          background: copied
-            ? "rgba(34,197,94,0.15)"
-            : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-          color: copied ? "#22c55e" : "#fff",
-          border: copied ? "1px solid rgba(34,197,94,0.3)" : "none",
-        }}
-      >
-        {copied ? "Скопировано!" : "Скопировать"}
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={handleCopy}
+          className="px-6 py-2.5 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
+          style={{
+            background: copied
+              ? "rgba(34,197,94,0.15)"
+              : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+            color: copied ? "#22c55e" : "#fff",
+            border: copied ? "1px solid rgba(34,197,94,0.3)" : "none",
+          }}
+        >
+          {copied ? "Скопировано!" : "Скопировать"}
+        </button>
+        <button
+          onClick={handleRegenerate}
+          disabled={regenerating || !sourceData}
+          className="px-6 py-2.5 rounded-xl text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{
+            border: "1px solid #334155",
+            color: "#94a3b8",
+          }}
+        >
+          {regenerating ? "Генерация..." : "Сгенерировать заново — 20 токенов"}
+        </button>
+      </div>
     </div>
   )
 }
