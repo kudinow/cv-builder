@@ -9,6 +9,7 @@ const navItems = [
   { href: "/dashboard", label: "Резюме" },
   { href: "/interview", label: "Создать" },
   { href: "/adapt", label: "Адаптировать" },
+  { href: "/cover-letters", label: "Письма" },
   { href: "/promo", label: "Промо-код" },
 ]
 
