@@ -66,6 +66,28 @@ export function ResultTabs({
     }
   }
 
+  async function handleDownloadDOCX() {
+    if (!resumeData) return;
+    try {
+      const res = await fetch("/api/generate-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeData }),
+      });
+      if (!res.ok) throw new Error("Ошибка генерации DOCX");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${resumeData.full_name || "resume"}.docx`;
+      reachGoal('docx_download');
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Ошибка при скачивании DOCX");
+    }
+  }
+
   async function handleDownloadLetterPDF() {
     try {
       const res = await fetch("/api/generate-pdf", {
@@ -184,6 +206,15 @@ export function ResultTabs({
               >
                 Скачать PDF
               </button>
+              {resumeData && (
+                <button
+                  onClick={handleDownloadDOCX}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                  style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                >
+                  Скачать DOCX
+                </button>
+              )}
             </div>
           </div>
           <div className="p-4">
