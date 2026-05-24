@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description:
     "AI-интервьюер вытащит лучшее из вашего опыта и создаст продающее резюме за 15 минут. Проверенные формулы достижений из практики карьерных консультантов.",
   metadataBase: new URL("https://cv-builder.ru"),
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  verification: { yandex: "461c20154cfa2690" },
   openGraph: {
     title: "CV Builder — Создай продающее резюме с AI",
     description:
@@ -30,6 +33,23 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "CV Builder",
+  url: "https://cv-builder.ru",
+  logo: "https://cv-builder.ru/icon.svg",
+  description:
+    "AI-сервис для создания продающего резюме и сопроводительных писем. Методика карьерных консультантов + AI-интервью.",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,6 +61,12 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans" style={{ fontFamily: "var(--font-inter), sans-serif" }}>
+        <Script
+          id="ld-organization"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         {children}
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
