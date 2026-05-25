@@ -8,8 +8,11 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Skip Supabase entirely for public pages (landing, static assets)
-  const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
-  const isAuthPage = authPaths.some((p) => pathname.startsWith(p));
+  // Match exact or path segment (e.g. "/adapt" but NOT "/adaptaciya-resume")
+  const matchSegment = (paths: string[]) =>
+    paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
+  const isProtected = matchSegment(protectedPaths);
+  const isAuthPage = matchSegment(authPaths);
 
   if (!isProtected && !isAuthPage) {
     return NextResponse.next({ request });
