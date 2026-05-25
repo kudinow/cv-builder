@@ -16,10 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthSkeleton } from "@/components/auth/auth-skeleton";
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<AuthSkeleton kind="login" />}>
       <LoginForm />
     </Suspense>
   );

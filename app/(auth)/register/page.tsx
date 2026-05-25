@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthSkeleton } from "@/components/auth/auth-skeleton";
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -186,7 +187,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AuthSkeleton kind="register" />}>
       <RegisterForm />
     </Suspense>
   );
