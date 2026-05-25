@@ -8,9 +8,10 @@ const columns: {
     title: "Продукт",
     links: [
       { label: "Главная", href: "/" },
-      { label: "Создать резюме", href: "/register" },
-      { label: "Адаптация под вакансию", href: "/register" },
-      { label: "Сопроводительное письмо", href: "/register" },
+      { label: "Резюме с помощью ИИ", href: "/ai-resume" },
+      { label: "Конструктор резюме", href: "/konstruktor" },
+      { label: "Адаптация под вакансию", href: "/adaptaciya-resume" },
+      { label: "Сопроводительное письмо", href: "/soprovoditelnoe-pismo" },
       { label: "Тарифы", href: "/#pricing" },
     ],
   },
@@ -18,10 +19,10 @@ const columns: {
     title: "Гайды",
     links: [
       { label: "Образец резюме", href: "/obrazec-rezume" },
-      { label: "Как это работает", href: "/#how-it-works" },
-      { label: "Возможности", href: "/#features" },
-      { label: "Сравнение с консультантом", href: "/#comparison" },
-      { label: "FAQ", href: "/#faq" },
+      { label: "Как составить резюме", href: "/kak-sostavit-rezume" },
+      { label: "Резюме на английском", href: "/rezume-na-angliyskom" },
+      { label: "По профессиям", href: "/rezume" },
+      { label: "Блог", href: "/blog" },
     ],
   },
   {
