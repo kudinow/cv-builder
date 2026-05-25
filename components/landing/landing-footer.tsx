@@ -15,8 +15,9 @@ const columns: {
     ],
   },
   {
-    title: "Методика",
+    title: "Гайды",
     links: [
+      { label: "Образец резюме", href: "/obrazec-rezume" },
       { label: "Как это работает", href: "/#how-it-works" },
       { label: "Возможности", href: "/#features" },
       { label: "Сравнение с консультантом", href: "/#comparison" },
