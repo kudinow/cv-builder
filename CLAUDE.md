@@ -18,6 +18,7 @@ AI-платформа для создания резюме и сопроводи
 - **`resume-ai` — git submodule** — коммиты делать изнутри `resume-ai/`
 - **Колонка `tokens`** (не `credits`) — миграция 002 уже применена
 - **Inline styles** — проект использует inline styles для цветов, не Tailwind классы
+- **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
 
 ## Navigation
 
@@ -51,3 +52,15 @@ ssh kudinow@158.160.160.206 "bash ~/deploy.sh"
 - `supabase/migrations/` — SQL миграции (001-007)
 - `components/dashboard-nav-links.tsx` — сайдбар навигации
 - `components/dashboard-shell.tsx` — layout дашборда
+
+## Marketing / SEO
+
+15 публичных SEO-страниц в `app/(marketing)/`:
+- `obrazec-rezume`, `kak-sostavit-rezume`, `soprovoditelnoe-pismo`, `ai-resume`
+- `rezume` index + 5 programmatic `rezume/[slug]` (buhgalter, menedzher-prodazh, dizayner, razrabotchik, hr)
+- `rezume-na-angliyskom`, `konstruktor`, `adaptaciya-resume`
+- `blog` + статьи `oshibki-v-rezume`, `dostizheniya-v-rezume`
+
+Source of truth для данных: `lib/seo/{faq,professions,blog,pages}.ts`. Шаринг компоненты — `components/marketing/*`. `app/sitemap.ts` динамически собирает URL из `professions` и `blogPosts`.
+
+При добавлении новой страницы: создать в `(marketing)/`, добавить в `lib/seo/pages.ts` (для RelatedTiles) и в footer колонку «Гайды».
