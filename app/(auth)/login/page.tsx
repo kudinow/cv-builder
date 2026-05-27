@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthSkeleton } from "@/components/auth/auth-skeleton";
+import { TelegramAuthBlock } from "@/components/auth/telegram-auth-block";
 
 export default function LoginPage() {
   return (
@@ -33,6 +34,7 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const authError = searchParams.get("error");
+  const [tgConsent, setTgConsent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,6 +108,24 @@ function LoginForm() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Отправка..." : "Войти по email"}
               </Button>
+            )}
+            {!sent && (
+              <>
+                <div className="relative w-full my-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">или</span>
+                  </div>
+                </div>
+                <TelegramAuthBlock
+                  intent="login"
+                  consentPrivacy={tgConsent}
+                  showOwnConsent
+                  onConsentChange={setTgConsent}
+                />
+              </>
             )}
             <p className="text-sm text-muted-foreground">
               Нет аккаунта?{" "}
