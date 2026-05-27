@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
 
-// Fix #3: helper that injects Cache-Control: no-store on every response
+// Polling endpoint — keep CDN/browser from caching any response.
 function json(body: unknown, init?: { status?: number }) {
   return NextResponse.json(body, {
     status: init?.status ?? 200,
@@ -39,7 +39,6 @@ export async function GET(request: Request) {
   const expired = new Date(row.expires_at).getTime() < now;
 
   if (row.status === "pending" && expired) {
-    // Fix #1: handle UPDATE error instead of silently swallowing it
     const { error: expErr } = await admin
       .from("telegram_auth_requests")
       .update({ status: "expired" })
@@ -64,7 +63,6 @@ export async function GET(request: Request) {
     return json({ status: "consumed" });
   }
 
-  // Fix #2: guard against unknown statuses before the ready UPDATE
   if (row.status !== "ready") {
     console.error("telegram/status unknown status", row.status);
     return json({ error: "unknown_status" }, { status: 500 });
