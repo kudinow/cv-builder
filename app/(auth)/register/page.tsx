@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthSkeleton } from "@/components/auth/auth-skeleton";
+import { TelegramAuthBlock } from "@/components/auth/telegram-auth-block";
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -171,6 +172,25 @@ function RegisterForm() {
               >
                 {loading ? "Отправка..." : "Зарегистрироваться"}
               </Button>
+            )}
+            {!sent && (
+              <>
+                <div className="relative w-full my-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">или</span>
+                  </div>
+                </div>
+                <TelegramAuthBlock
+                  intent="register"
+                  fullName={fullName}
+                  promoCode={promoCode}
+                  consentPrivacy={consentPrivacy}
+                  consentMarketing={consentMarketing}
+                />
+              </>
             )}
             <p className="text-sm text-muted-foreground">
               Уже есть аккаунт?{" "}
