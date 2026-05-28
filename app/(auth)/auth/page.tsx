@@ -17,9 +17,11 @@ import { TelegramAuthBlock } from "@/components/auth/telegram-auth-block";
 
 function AuthForm() {
   const searchParams = useSearchParams();
+  const refParam = searchParams.get("ref") || "";
+  const errorParam = searchParams.get("error");
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
-  const [promoCode, setPromoCode] = useState(searchParams.get("ref") || "");
+  const [promoCode, setPromoCode] = useState(refParam);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -34,6 +36,11 @@ function AuthForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {errorParam && (
+            <p className="text-sm text-destructive">
+              Ошибка авторизации. Попробуйте ещё раз.
+            </p>
+          )}
           <div className="flex items-start gap-2">
             <Checkbox
               id="consentPrivacy"
@@ -53,7 +60,7 @@ function AuthForm() {
             </label>
           </div>
 
-          <details className="text-sm">
+          <details className="text-sm" open={!!refParam}>
             <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
               Есть промо-код?
             </summary>
