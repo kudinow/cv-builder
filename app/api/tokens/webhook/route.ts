@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { TOKEN_PACKAGES } from '@/lib/token-costs'
+import { notifyAdmin } from '@/lib/telegram-bot'
 
 interface YooKassaEvent {
   type: string
@@ -111,6 +112,26 @@ export async function POST(req: NextRequest) {
         status: 'succeeded',
         description: `Пакет токенов «${pkg.name}»`,
       })
+    }
+
+    // Notify admin (fire-and-forget; never blocks the webhook response)
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('telegram_id, tokens, full_name')
+        .eq('id', userId)
+        .single()
+
+      const tgIdLine = profile?.telegram_id ? ` (tg_id ${profile.telegram_id})` : ''
+      const name = profile?.full_name ? ` — ${profile.full_name}` : ''
+      const balance = typeof profile?.tokens === 'number' ? `\nБаланс после: ${profile.tokens}` : ''
+      const priceRub = (pkg.priceKopeks / 100).toFixed(2)
+
+      await notifyAdmin(
+        `💰 Оплата${name}${tgIdLine}\nПакет: «${pkg.name}» — ${pkg.tokens} токенов, ${priceRub} ₽${balance}`
+      )
+    } catch (e) {
+      console.error('notifyAdmin (payment) failed', e)
     }
 
     return NextResponse.json({ ok: true })
