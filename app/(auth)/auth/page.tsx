@@ -79,8 +79,6 @@ function AuthForm() {
         </CardContent>
         <CardFooter>
           <TelegramAuthBlock
-            intent="register"
-            fullName={undefined}
             promoCode={promoCode}
             consentPrivacy={consentPrivacy}
             consentMarketing={consentMarketing}
