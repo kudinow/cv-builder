@@ -91,7 +91,7 @@ function AuthForm() {
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<AuthSkeleton kind="login" />}>
+    <Suspense fallback={<AuthSkeleton />}>
       <AuthForm />
     </Suspense>
   );
