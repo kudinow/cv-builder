@@ -66,7 +66,7 @@ export function BlogArticleShell({ post, children }: Props) {
               AI спрашивает по всем правилам из этой статьи, вытаскивает цифры из вашего опыта и собирает сильное резюме. 50 токенов бесплатно при регистрации — хватит на первое резюме целиком.
             </p>
             <Link
-              href={`/register?utm_source=seo_blog&utm_medium=post_offer&utm_content=${post.slug}`}
+              href={`/auth?utm_source=seo_blog&utm_medium=post_offer&utm_content=${post.slug}`}
               className="mt-5 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 hover:from-indigo-600 hover:to-purple-600"
             >
               Создать своё резюме →

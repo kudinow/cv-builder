@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   if (text.startsWith("/start") && !payload) {
     await sendBotMessage(
       chatId,
-      "Это бот авторизации и поддержки CV Builder.\nДля входа: cv-builder.ru/login → Войти через Telegram."
+      "Это бот авторизации и поддержки CV Builder.\nДля входа: cv-builder.ru/auth → Войти через Telegram."
     );
     return NextResponse.json({ ok: true });
   }
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     if (!req) {
       await sendBotMessage(
         chatId,
-        "Эта ссылка не найдена. Вернитесь на cv-builder.ru/login и попробуйте ещё раз."
+        "Эта ссылка не найдена. Вернитесь на cv-builder.ru/auth и попробуйте ещё раз."
       );
       return NextResponse.json({ ok: true });
     }
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     if (expired || req.status === "expired" || req.status === "consumed") {
       await sendBotMessage(
         chatId,
-        "Эта ссылка устарела. Вернитесь на cv-builder.ru/login и попробуйте ещё раз."
+        "Эта ссылка устарела. Вернитесь на cv-builder.ru/auth и попробуйте ещё раз."
       );
       return NextResponse.json({ ok: true });
     }

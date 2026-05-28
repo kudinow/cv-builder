@@ -134,7 +134,7 @@ export default function SoprovoditelnoePismoPage() {
           </p>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/register?utm_source=seo_sopr&utm_medium=hero_cta"
+              href="/auth?utm_source=seo_sopr&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-purple-500/30 transition-all hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5"
             >
               Сгенерировать с AI →
@@ -196,7 +196,7 @@ export default function SoprovoditelnoePismoPage() {
               Не уверены, какой формат подходит вашей ситуации?
             </p>
             <Link
-              href="/register?utm_source=seo_sopr&utm_medium=examples_cta"
+              href="/auth?utm_source=seo_sopr&utm_medium=examples_cta"
               className="mt-4 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-pink-600"
             >
               Сгенерировать на основе моей вакансии →

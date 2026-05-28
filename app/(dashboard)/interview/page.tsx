@@ -18,7 +18,7 @@ export default async function InterviewPage({ searchParams }: Props) {
   const user = session?.user
 
   if (!user) {
-    redirect('/login')
+    redirect('/auth')
   }
 
   const mode: 'create' | 'improve' = rawMode === 'improve' ? 'improve' : 'create'

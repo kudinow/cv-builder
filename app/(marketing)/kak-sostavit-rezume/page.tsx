@@ -160,7 +160,7 @@ export default function KakSostavitRezumePage() {
           </p>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/register?utm_source=seo_kak_sostavit&utm_medium=hero_cta"
+              href="/auth?utm_source=seo_kak_sostavit&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-500/30 transition-all hover:from-indigo-600 hover:to-purple-600 hover:-translate-y-0.5"
             >
               Пройти с AI за 15 минут →
@@ -205,7 +205,7 @@ export default function KakSostavitRezumePage() {
               Если все 7 шагов выше — это 3-4 часа в Google Docs, то AI-интервью проходит по тем же шагам, но в формате диалога: задаёт уточняющие вопросы, вытаскивает достижения, переформулирует слабые места. 15-20 минут вместо часов.
             </p>
             <Link
-              href="/register?utm_source=seo_kak_sostavit&utm_medium=short_path"
+              href="/auth?utm_source=seo_kak_sostavit&utm_medium=short_path"
               className="mt-4 inline-flex items-center text-sm font-semibold text-white underline decoration-indigo-400 underline-offset-4 hover:text-indigo-200"
             >
               Попробовать AI бесплатно — 50 токенов при регистрации →

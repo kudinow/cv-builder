@@ -142,7 +142,7 @@ export default function AiResumePage() {
           </p>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/register?utm_source=seo_ai_resume&utm_medium=hero_cta"
+              href="/auth?utm_source=seo_ai_resume&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-500/30 transition-all hover:from-indigo-600 hover:to-purple-600 hover:-translate-y-0.5"
             >
               Попробовать AI бесплатно →

@@ -71,7 +71,7 @@ export async function GET() {
 
     return NextResponse.json({
       code,
-      link: `${process.env.NEXT_PUBLIC_APP_URL}/register?ref=${code}`,
+      link: `${process.env.NEXT_PUBLIC_APP_URL}/auth?ref=${code}`,
       stats: { invited, tokensEarned },
     })
   } catch (error) {

@@ -23,7 +23,7 @@ export default async function InterviewSessionPage({ params }: Props) {
   const user = authSession?.user
 
   if (!user) {
-    redirect('/login')
+    redirect('/auth')
   }
 
   const userId = user.id

@@ -100,7 +100,7 @@ export default function ObrazecRezumePage() {
 
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/register?utm_source=seo_obrazec&utm_medium=hero_cta"
+              href="/auth?utm_source=seo_obrazec&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-500/30 transition-all hover:from-indigo-600 hover:to-purple-600 hover:-translate-y-0.5"
             >
               Создать своё резюме — 50 токенов бесплатно →
@@ -184,7 +184,7 @@ export default function ObrazecRezumePage() {
                 Перечитайте пять правил выше — потом откройте AI-интервью. AI задаст вопросы под каждое правило: вытащит цифры, переформулирует достижения и соберёт резюме за 15 минут вместо часов в Google Docs.
               </p>
               <Link
-                href="/register?utm_source=seo_obrazec&utm_medium=rules_block"
+                href="/auth?utm_source=seo_obrazec&utm_medium=rules_block"
                 className="mt-4 inline-flex items-center text-sm font-semibold text-white underline decoration-indigo-400 underline-offset-4 transition-colors hover:text-indigo-200"
               >
                 Начать интервью бесплатно →

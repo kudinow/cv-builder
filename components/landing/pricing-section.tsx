@@ -117,7 +117,7 @@ export function PricingSection() {
               </ul>
 
               <Link
-                href="/register"
+                href="/auth"
                 className={cn(
                   "inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-semibold transition-all",
                   pkg.popular

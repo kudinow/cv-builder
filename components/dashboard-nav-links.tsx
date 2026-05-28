@@ -33,7 +33,7 @@ function SidebarContent({ userEmail, onNavigate }: SidebarProps & { onNavigate?:
   async function handleLogout() {
     const supabase = createBrowserSupabaseClient()
     await supabase.auth.signOut()
-    router.push("/login")
+    router.push("/auth")
     router.refresh()
   }
 

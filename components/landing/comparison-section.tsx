@@ -76,7 +76,7 @@ export function ComparisonSection() {
               ))}
             </ul>
             <Link
-              href="/register"
+              href="/auth"
               className={cn(
                 "mt-8 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-semibold text-white",
                 "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/25",

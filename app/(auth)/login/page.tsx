@@ -129,7 +129,7 @@ function LoginForm() {
             )}
             <p className="text-sm text-muted-foreground">
               Нет аккаунта?{" "}
-              <Link href="/register" className="underline">
+              <Link href="/auth" className="underline">
                 Зарегистрироваться
               </Link>
             </p>

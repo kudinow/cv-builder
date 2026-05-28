@@ -56,7 +56,7 @@ export function TemplateGallery() {
           {templates.map((t, i) => (
             <Link
               key={i}
-              href="/register?utm_source=seo_obrazec&utm_medium=gallery_card"
+              href="/auth?utm_source=seo_obrazec&utm_medium=gallery_card"
               className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-all hover:bg-white/[0.06] hover:border-white/20 hover:-translate-y-0.5"
             >
               <div className={`mb-4 rounded-xl bg-gradient-to-br ${t.tone} p-4 ring-1 ring-inset ring-white/5`}>
@@ -73,7 +73,7 @@ export function TemplateGallery() {
           ))}
 
           <Link
-            href="/register?utm_source=seo_obrazec&utm_medium=gallery_cta_tile"
+            href="/auth?utm_source=seo_obrazec&utm_medium=gallery_cta_tile"
             className="group flex flex-col items-center justify-center rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-6 text-center transition-all hover:from-indigo-500/15 hover:to-purple-500/15 hover:-translate-y-0.5"
           >
             <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/30">

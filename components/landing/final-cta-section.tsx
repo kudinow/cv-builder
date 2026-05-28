@@ -29,7 +29,7 @@ export function FinalCtaSection() {
         {/* CTA */}
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
-            href="/register"
+            href="/auth"
             className={cn(
               "inline-flex items-center justify-center rounded-xl px-10 py-4 text-base font-semibold text-white",
               "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-xl shadow-indigo-500/30",
@@ -40,7 +40,7 @@ export function FinalCtaSection() {
             Зарегистрироваться бесплатно →
           </Link>
           <Link
-            href="/login"
+            href="/auth"
             className="inline-flex items-center justify-center rounded-xl border border-white/20 px-8 py-4 text-base text-slate-300 transition-all hover:bg-white/5 hover:text-white"
           >
             Уже есть аккаунт? Войти

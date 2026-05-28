@@ -35,7 +35,7 @@ export function HeroSection() {
         {/* CTA group */}
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
-            href="/register"
+            href="/auth"
             className={cn(
               "inline-flex items-center justify-center rounded-xl px-8 py-4 text-base font-semibold text-white",
               "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/30",

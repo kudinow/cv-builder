@@ -10,7 +10,7 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
   async function handleLogout() {
     const supabase = createBrowserSupabaseClient()
     await supabase.auth.signOut()
-    router.push("/login")
+    router.push("/auth")
     router.refresh()
   }
 

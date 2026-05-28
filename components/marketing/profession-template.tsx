@@ -45,7 +45,7 @@ export function ProfessionPageTemplate({ profession: p }: Props) {
           <p className="mt-6 max-w-2xl text-lg text-slate-400 leading-relaxed">{p.heroHook}</p>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href={`/register?utm_source=seo_profession&utm_medium=hero_cta&utm_content=${p.slug}`}
+              href={`/auth?utm_source=seo_profession&utm_medium=hero_cta&utm_content=${p.slug}`}
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-500/30 transition-all hover:from-indigo-600 hover:to-purple-600 hover:-translate-y-0.5"
             >
               Создать своё резюме {p.genitive} →
@@ -169,7 +169,7 @@ export function ProfessionPageTemplate({ profession: p }: Props) {
               AI задаёт целевые вопросы под профессию {p.genitive} — те, что вы знаете, но забываете включить в резюме. Результат — конкретное и продающее резюме за 15 минут.
             </p>
             <Link
-              href={`/register?utm_source=seo_profession&utm_medium=short_path&utm_content=${p.slug}`}
+              href={`/auth?utm_source=seo_profession&utm_medium=short_path&utm_content=${p.slug}`}
               className="mt-4 inline-flex items-center text-sm font-semibold text-white underline decoration-indigo-400 underline-offset-4 hover:text-indigo-200"
             >
               Попробовать AI бесплатно — 50 токенов при регистрации →

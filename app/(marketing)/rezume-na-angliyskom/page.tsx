@@ -104,7 +104,7 @@ export default function RezumeAngPage() {
           </p>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Link
-              href="/register?utm_source=seo_eng&utm_medium=hero_cta"
+              href="/auth?utm_source=seo_eng&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-sky-500/30 transition-all hover:from-sky-600 hover:to-blue-600 hover:-translate-y-0.5"
             >
               Создать резюме на английском с AI →

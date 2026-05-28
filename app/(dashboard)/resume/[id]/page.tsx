@@ -33,7 +33,7 @@ export default async function ResumePage({ params }: Props) {
   const user = session?.user
 
   if (!user) {
-    redirect('/login')
+    redirect('/auth')
   }
 
   const userId = user.id

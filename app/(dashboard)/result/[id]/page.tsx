@@ -16,7 +16,7 @@ export default async function ResultPage({ params }: Props) {
   } = await supabase.auth.getSession();
 
   if (!session?.user) {
-    redirect("/login");
+    redirect("/auth");
   }
 
   const { data: resume } = await supabase

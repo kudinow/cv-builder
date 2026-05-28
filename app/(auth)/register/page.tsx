@@ -194,7 +194,7 @@ function RegisterForm() {
             )}
             <p className="text-sm text-muted-foreground">
               Уже есть аккаунт?{" "}
-              <Link href="/login" className="underline">
+              <Link href="/auth" className="underline">
                 Войти
               </Link>
             </p>
