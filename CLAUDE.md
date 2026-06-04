@@ -21,6 +21,14 @@ AI-платформа для создания резюме и сопроводи
 - **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
 - **Telegram сеть (РКН-блок, двусторонний)** — подсети Telegram заблокированы и на выход, и на вход. Исходящее: `api.telegram.org` запинен в `/etc/hosts` VM на рабочий IP `149.154.167.220`. Входящее (webhook от Telegram) дропается до nginx — поэтому бот работает НЕ на webhook, а на **long polling**: процесс PM2 `tg-poller` (`scripts/telegram-poller.mjs`) дёргает `getUpdates` и прокидывает апдейты на локальный `/api/telegram/webhook`. Не возвращать `setWebhook`. Если бот замолчал — проверь `pm2 logs tg-poller` и доступность IP `149.154.167.220`
 
+## Auth
+
+Два равноправных способа входа на `/auth`:
+- **Telegram** — `@cvbuilder_support_bot`, deep link `?start=<token>` (см. `project_telegram_auth` в памяти). Юзер = `auth.users` с фейковым email `tg-<id>@telegram.cv-builder.ru`, ключ — `profiles.telegram_id`.
+- **Email OTP** — `EmailAuthBlock` ([components/auth/email-auth-block.tsx](components/auth/email-auth-block.tsx)): `signInWithOtp({ email, options:{ data } })` → 6-значный код в письме → `verifyOtp({ email, token, type:"email" })` в той же вкладке (без редиректов/PKCE → кросс-браузер не ломается). Чистая логика — [lib/auth/email-otp.ts](lib/auth/email-otp.ts).
+
+Аккаунты email и TG **раздельные, без связывания** (v1). Миграции не нужны: `handle_new_user` (010) уже тянет email-юзеров (`telegram_id` NULL, `auth_provider` 'email', 50 токенов + промо). Email-код шлётся тем же Supabase-пайплайном, что magic link — шаблон Auth → Magic Link должен содержать `{{ .Token }}`.
+
 ## Navigation
 
 Левый сайдбар (Linear-стиль, текст без иконок):
