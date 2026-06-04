@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { AuthSkeleton } from "@/components/auth/auth-skeleton";
 import { TelegramAuthBlock } from "@/components/auth/telegram-auth-block";
+import { EmailAuthBlock } from "@/components/auth/email-auth-block";
 
 function AuthForm() {
   const searchParams = useSearchParams();
@@ -32,7 +33,7 @@ function AuthForm() {
           </Link>
           <CardTitle>Войти или зарегистрироваться</CardTitle>
           <CardDescription>
-            Один клик через Telegram
+            Через Telegram или по коду на email
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -84,8 +85,18 @@ function AuthForm() {
             </label>
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-col gap-4">
           <TelegramAuthBlock
+            promoCode={promoCode}
+            consentPrivacy={consentPrivacy}
+            consentMarketing={consentMarketing}
+          />
+          <div className="flex items-center gap-3 w-full text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            или
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <EmailAuthBlock
             promoCode={promoCode}
             consentPrivacy={consentPrivacy}
             consentMarketing={consentMarketing}
