@@ -98,9 +98,9 @@ export function EmailAuthBlock(props: Props) {
         <Input
           inputMode="numeric"
           autoComplete="one-time-code"
-          placeholder="6-значный код"
+          placeholder="Код из письма"
           value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
         />
         <Button type="button" onClick={verify} disabled={busy || code.trim().length < 6} className="w-full">
           {busy ? "..." : "Войти"}
