@@ -116,8 +116,14 @@ export function EmailAuthBlock(props: Props) {
           </button>
           <button
             type="button"
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+            disabled={busy}
             onClick={() => {
+              if (timerRef.current) {
+                window.clearInterval(timerRef.current);
+                timerRef.current = null;
+              }
+              setCooldown(0);
               setStep("email");
               setCode("");
               setError(null);
