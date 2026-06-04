@@ -19,7 +19,7 @@ AI-платформа для создания резюме и сопроводи
 - **Колонка `tokens`** (не `credits`) — миграция 002 уже применена
 - **Inline styles** — проект использует inline styles для цветов, не Tailwind классы
 - **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
-- **Telegram egress** — подсети api.telegram.org с прод-VM заблокированы (РКН). `api.telegram.org` запинен в `/etc/hosts` на рабочий IP `149.154.167.220`. Если бот замолчал — проверь доступность этого IP, не самого хоста (он резолвится в заблокированный адрес)
+- **Telegram сеть (РКН-блок, двусторонний)** — подсети Telegram заблокированы и на выход, и на вход. Исходящее: `api.telegram.org` запинен в `/etc/hosts` VM на рабочий IP `149.154.167.220`. Входящее (webhook от Telegram) дропается до nginx — поэтому бот работает НЕ на webhook, а на **long polling**: процесс PM2 `tg-poller` (`scripts/telegram-poller.mjs`) дёргает `getUpdates` и прокидывает апдейты на локальный `/api/telegram/webhook`. Не возвращать `setWebhook`. Если бот замолчал — проверь `pm2 logs tg-poller` и доступность IP `149.154.167.220`
 
 ## Navigation
 
