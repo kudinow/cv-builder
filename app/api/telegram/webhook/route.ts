@@ -8,6 +8,9 @@ import { relayUserToAdmin, relayAdminToUser } from "@/lib/telegram-support";
 
 export const runtime = "nodejs";
 
+const WELCOME_TEXT =
+  "Это бот авторизации и поддержки CV Builder.\nДля входа: cv-builder.ru/auth → Войти через Telegram.\nЛюбое сообщение здесь попадёт в поддержку.";
+
 type TgUser = {
   id: number;
   username?: string;
@@ -67,7 +70,7 @@ export async function POST(request: Request) {
   try {
     const admin = createSupabaseAdmin();
 
-    // ─── 3. Admin-chat routing (must come BEFORE /start handling) ───
+    // ─── 3. Admin-chat routing (must come BEFORE generic /start handling) ───
     if (adminChatId !== null && chatId === adminChatId) {
       const replyTo = message?.reply_to_message?.message_id;
       if (replyTo) {
@@ -75,8 +78,18 @@ export async function POST(request: Request) {
           { adminChatId, replyMessageId: replyTo, adminReplyMessageId: messageId },
           { admin, bot }
         );
+        return NextResponse.json({ ok: true });
       }
-      // Admin typing without reply → silent no-op.
+      // The admin's private chat_id == TELEGRAM_ADMIN_CHAT_ID, so the admin's own
+      // /start lands here too. Let the admin use the bot as a regular user for
+      // /start (auth deep link + welcome). Any other non-reply text is a silent
+      // no-op — otherwise we'd relay the admin's messages back to themselves.
+      const adminPayload = text ? parseStartPayload(text) : null;
+      if (adminPayload) {
+        await handleAuthStart({ admin, chatId, from, payload: adminPayload });
+      } else if (text && text.startsWith("/start")) {
+        await sendBotMessage(chatId, WELCOME_TEXT);
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -84,10 +97,7 @@ export async function POST(request: Request) {
     const payload = text ? parseStartPayload(text) : null;
 
     if (text && text.startsWith("/start") && !payload) {
-      await sendBotMessage(
-        chatId,
-        "Это бот авторизации и поддержки CV Builder.\nДля входа: cv-builder.ru/auth → Войти через Telegram.\nЛюбое сообщение здесь попадёт в поддержку."
-      );
+      await sendBotMessage(chatId, WELCOME_TEXT);
       return NextResponse.json({ ok: true });
     }
 
