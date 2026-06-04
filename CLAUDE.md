@@ -19,6 +19,7 @@ AI-платформа для создания резюме и сопроводи
 - **Колонка `tokens`** (не `credits`) — миграция 002 уже применена
 - **Inline styles** — проект использует inline styles для цветов, не Tailwind классы
 - **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
+- **Telegram egress** — подсети api.telegram.org с прод-VM заблокированы (РКН). `api.telegram.org` запинен в `/etc/hosts` на рабочий IP `149.154.167.220`. Если бот замолчал — проверь доступность этого IP, не самого хоста (он резолвится в заблокированный адрес)
 
 ## Navigation
 
