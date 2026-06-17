@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { PaywallModal } from '@/components/paywall-modal'
 
 interface ResumeData {
   full_name: string
@@ -35,15 +36,18 @@ interface ResumeViewClientProps {
     created_at: string
     status: string
   }>
+  canDownload: boolean
 }
 
 export function ResumeViewClient({
   resume,
   resumeData,
   adaptations,
+  canDownload,
 }: ResumeViewClientProps) {
   const router = useRouter()
   const [isDownloading, setIsDownloading] = useState(false)
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   const displayTitle = resume.title || resumeData?.full_name || 'Резюме'
   const createdDate = new Date(resume.created_at).toLocaleDateString('ru-RU', {
@@ -54,13 +58,18 @@ export function ResumeViewClient({
 
   async function handleDownloadPDF() {
     if (!resumeData) return
+    if (!canDownload) {
+      setPaywallOpen(true)
+      return
+    }
     setIsDownloading(true)
     try {
       const res = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeData }),
+        body: JSON.stringify({ resumeData, resumeId: resume.id }),
       })
+      if (res.status === 402) { setPaywallOpen(true); return }
       if (!res.ok) throw new Error('Ошибка генерации PDF')
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
@@ -148,7 +157,7 @@ export function ResumeViewClient({
   }
 
   return (
-    <div style={{ color: '#f1f5f9' }}>
+    <div style={{ color: '#f1f5f9', userSelect: canDownload ? 'auto' : 'none' }}>
       {/* Header section */}
       <div style={{ ...cardStyle, marginBottom: '1.5rem' }}>
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -329,6 +338,12 @@ export function ResumeViewClient({
           Улучшить это резюме
         </Link>
       </div>
+
+      <PaywallModal
+        open={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        resumeId={resume.id}
+      />
     </div>
   )
 }

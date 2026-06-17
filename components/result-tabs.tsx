@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ResumeData } from "@/lib/pdf-generator";
 import { formatResumeToText } from "@/lib/format-resume";
 import { reachGoal } from "@/lib/metrika";
+import { PaywallModal } from "@/components/paywall-modal";
 
 interface ResultTabsProps {
   resumeData: ResumeData | null;
@@ -11,6 +12,8 @@ interface ResultTabsProps {
   coverLetter: string;
   changes: string[];
   photoBase64?: string;
+  resumeId?: string;
+  canDownload?: boolean;
 }
 
 type Tab = "resume" | "cover-letter" | "changes";
@@ -21,6 +24,8 @@ export function ResultTabs({
   coverLetter,
   changes,
   photoBase64,
+  resumeId,
+  canDownload = false,
 }: ResultTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>("resume");
   const [editedText, setEditedText] = useState(
@@ -31,6 +36,7 @@ export function ResultTabs({
   const [resumeView, setResumeView] = useState<"structured" | "text">(
     resumeData ? "structured" : "text"
   );
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   function handlePhotoUpload(file: File) {
     const reader = new FileReader();
@@ -39,19 +45,22 @@ export function ResultTabs({
   }
 
   function handleCopy(text: string) {
+    if (!canDownload) { setPaywallOpen(true); return; }
     navigator.clipboard.writeText(text);
   }
 
   async function handleDownloadPDF() {
+    if (!canDownload) { setPaywallOpen(true); return; }
     try {
       const body = resumeData
-        ? { resumeData, photoBase64: photo }
-        : { text: editedText, name: "resume", position: "" };
+        ? { resumeData, photoBase64: photo, resumeId }
+        : { text: editedText, name: "resume", position: "", resumeId };
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (res.status === 402) { setPaywallOpen(true); return; }
       if (!res.ok) throw new Error("Ошибка генерации PDF");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -68,12 +77,14 @@ export function ResultTabs({
 
   async function handleDownloadDOCX() {
     if (!resumeData) return;
+    if (!canDownload) { setPaywallOpen(true); return; }
     try {
       const res = await fetch("/api/generate-docx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resumeData }),
+        body: JSON.stringify({ resumeData, resumeId }),
       });
+      if (res.status === 402) { setPaywallOpen(true); return; }
       if (!res.ok) throw new Error("Ошибка генерации DOCX");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -89,12 +100,14 @@ export function ResultTabs({
   }
 
   async function handleDownloadLetterPDF() {
+    if (!canDownload) { setPaywallOpen(true); return; }
     try {
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: editedLetter, name: "cover-letter", position: "" }),
       });
+      if (res.status === 402) { setPaywallOpen(true); return; }
       if (!res.ok) throw new Error("Ошибка генерации PDF");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -307,6 +320,13 @@ export function ResultTabs({
           </div>
         </div>
       )}
+
+      <PaywallModal
+        open={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        resumeId={resumeId}
+        highlightPass
+      />
     </div>
   );
 }

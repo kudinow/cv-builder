@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { ResultTabs } from "@/components/result-tabs";
 import type { ResumeData } from "@/lib/pdf-generator";
+import { hasActivePass } from "@/lib/access";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -41,6 +42,8 @@ export default async function ResultPage({ params }: Props) {
   } catch {
     resumeData = null;
   }
+
+  const canDownload = resume.unlocked === true || (await hasActivePass(session.user.id));
 
   return (
     <div className="mx-auto max-w-4xl py-8 px-4">
@@ -86,6 +89,8 @@ export default async function ResultPage({ params }: Props) {
           coverLetter={resume.cover_letter ?? ""}
           changes={(resume.changes_log as string[]) ?? []}
           photoBase64={resume.pdf_path ?? undefined}
+          resumeId={resume.id}
+          canDownload={canDownload}
         />
       )}
     </div>

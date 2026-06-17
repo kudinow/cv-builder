@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { ResumeViewClient } from '@/components/resume-view-client'
+import { hasActivePass } from '@/lib/access'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,6 +70,8 @@ export default async function ResumePage({ params }: Props) {
     /* not JSON */
   }
 
+  const canDownload = resume.unlocked === true || (await hasActivePass(userId))
+
   return (
     <div className="theme-premium min-h-screen" style={{ backgroundColor: '#0f172a' }}>
       <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -82,6 +85,7 @@ export default async function ResumePage({ params }: Props) {
           }}
           resumeData={resumeData}
           adaptations={adaptations ?? []}
+          canDownload={canDownload}
         />
       </div>
     </div>
