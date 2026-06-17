@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { callOpenRouter } from "@/lib/openrouter";
 import { COVER_LETTER_SYSTEM_PROMPT } from "@/lib/prompts/cover-letter-system";
-import { spendTokens, InsufficientTokensError } from "@/lib/tokens";
-import { TOKEN_COSTS } from "@/lib/token-costs";
+import { hasActivePass } from "@/lib/access";
 
 export async function POST(req: NextRequest) {
   try {
@@ -123,22 +122,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Spend tokens
-    const cost = TOKEN_COSTS.COVER_LETTER;
-    try {
-      await spendTokens(user.id, cost, "Сопроводительное письмо");
-    } catch (error) {
-      if (error instanceof InsufficientTokensError) {
-        return NextResponse.json(
-          {
-            error: "Недостаточно токенов",
-            needed: error.needed,
-            balance: error.balance,
-          },
-          { status: 402 }
-        );
-      }
-      throw error;
+    // Сопроводительные доступны только по активному 30-дневному доступу.
+    if (!(await hasActivePass(user.id))) {
+      return NextResponse.json(
+        { error: "payment_required", code: "PAYWALL", product: "pass_890" },
+        { status: 402 }
+      );
     }
 
     // Auto-generate title from first non-empty line of vacancy text
@@ -159,6 +148,7 @@ export async function POST(req: NextRequest) {
         vacancy_text: finalVacancyText,
         title: autoTitle,
         status: "processing",
+        unlocked: true,
       })
       .select("id")
       .single();
