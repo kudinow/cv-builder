@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { TOKEN_PACKAGES } from '@/lib/token-costs'
+import { PRODUCTS, isProductId, type ProductId } from '@/lib/access-products'
 import { notifyAdmin } from '@/lib/telegram-bot'
 
 interface YooKassaEvent {
@@ -11,8 +11,8 @@ interface YooKassaEvent {
     status: string
     metadata?: {
       user_id?: string
-      package_index?: number | string
-      tokens?: number | string
+      product?: string
+      resume_id?: string
     }
   }
 }
@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
   try {
     const event = await req.json() as YooKassaEvent
 
-    // Only handle succeeded payments
     if (event.event !== 'payment.succeeded' || event.object?.status !== 'succeeded') {
       return NextResponse.json({ ok: true })
     }
@@ -29,26 +28,17 @@ export async function POST(req: NextRequest) {
     const payment = event.object
     const meta = payment.metadata
 
-    if (!meta?.user_id) {
-      console.error('Webhook: no user_id in metadata', payment.id)
+    if (!meta?.user_id || !isProductId(meta.product)) {
+      console.error('Webhook: missing user_id or invalid product', payment.id, meta?.product)
       return NextResponse.json({ ok: true })
     }
 
     const userId = meta.user_id
-    const packageIndex = typeof meta.package_index === 'string'
-      ? parseInt(meta.package_index, 10)
-      : (meta.package_index ?? 0)
-
-    const pkg = TOKEN_PACKAGES[packageIndex]
-    if (!pkg) {
-      console.error('Webhook: invalid package_index', packageIndex)
-      return NextResponse.json({ ok: true })
-    }
-
-    const tokensToAdd = pkg.tokens
+    const product: ProductId = meta.product
+    const resumeId = meta.resume_id
     const supabase = await createServerSupabaseClient()
 
-    // Check if we already processed this payment (idempotency)
+    // Идемпотентность
     const { data: existing } = await supabase
       .from('payments')
       .select('id, status')
@@ -56,79 +46,70 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existing?.status === 'succeeded') {
-      // Already processed — return 200 to stop retries
       return NextResponse.json({ ok: true })
     }
 
-    // Add tokens: try the increment_tokens RPC first (atomic), then fall back to
-    // a direct expression-based update using the Supabase JS client's sql template.
-    // Use atomic RPC to increment tokens.
-    const { error: rpcError } = await supabase.rpc('increment_tokens', {
-      p_user_id: userId,
-      p_amount: tokensToAdd,
-    })
-
-    if (rpcError) {
-      // RPC unavailable — fall back to a read-then-write (best effort)
-      console.warn('increment_tokens RPC failed, falling back:', rpcError.message)
-
-      const { data: profile, error: readErr } = await supabase
-        .from('profiles')
-        .select('tokens')
-        .eq('id', userId)
-        .single()
-
-      if (readErr || !profile) {
-        console.error('Webhook: failed to read profile', readErr)
-        return NextResponse.json({ error: 'Ошибка начисления токенов' }, { status: 500 })
+    // Фулфилмент по продукту (SECURITY DEFINER RPC — webhook без RLS-контекста)
+    if (product === 'resume_390') {
+      if (!resumeId) {
+        console.error('Webhook: resume_390 without resume_id', payment.id)
+        return NextResponse.json({ ok: true })
       }
-
-      const newBalance = (profile.tokens ?? 0) + tokensToAdd
-
-      const { error: writeErr } = await supabase
-        .from('profiles')
-        .update({ tokens: newBalance })
-        .eq('id', userId)
-
-      if (writeErr) {
-        console.error('Webhook: failed to update credits', writeErr)
-        return NextResponse.json({ error: 'Ошибка начисления токенов' }, { status: 500 })
+      const { error } = await supabase.rpc('unlock_resume', {
+        p_resume_id: resumeId,
+        p_user_id: userId,
+      })
+      if (error) {
+        console.error('Webhook: unlock_resume failed', error)
+        return NextResponse.json({ error: 'Ошибка разблокировки' }, { status: 500 })
+      }
+    } else {
+      const days = PRODUCTS.pass_890.passDays ?? 30
+      const { error } = await supabase.rpc('grant_pass_days', {
+        p_user_id: userId,
+        p_days: days,
+      })
+      if (error) {
+        console.error('Webhook: grant_pass_days failed', error)
+        return NextResponse.json({ error: 'Ошибка начисления доступа' }, { status: 500 })
       }
     }
 
-    // Update or insert payment record
+    // Обновить/создать запись платежа
     if (existing) {
       await supabase
         .from('payments')
         .update({ status: 'succeeded' })
         .eq('yookassa_payment_id', payment.id)
     } else {
-      // Edge case: purchase route didn't create the record
       await supabase.from('payments').insert({
         user_id: userId,
         yookassa_payment_id: payment.id,
-        amount: pkg.priceKopeks,
-        tokens_added: tokensToAdd,
+        amount: PRODUCTS[product].priceKopeks,
         status: 'succeeded',
-        description: `Пакет токенов «${pkg.name}»`,
+        product,
+        resume_id: product === 'resume_390' ? resumeId : null,
+        description: PRODUCTS[product].label,
       })
     }
 
-    // Notify admin (fire-and-forget; never blocks the webhook response)
+    // Уведомление админа (fire-and-forget)
     try {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('telegram_id, tokens, full_name')
+        .select('telegram_id, full_name, access_until')
         .eq('id', userId)
         .single()
 
       const tgIdLine = profile?.telegram_id ? ` (tg_id ${profile.telegram_id})` : ''
       const name = profile?.full_name ? ` — ${profile.full_name}` : ''
-      const balance = typeof profile?.tokens === 'number' ? `\nБаланс после: ${profile.tokens}` : ''
-      const priceRub = (pkg.priceKopeks / 100).toFixed(2)
+      const priceRub = (PRODUCTS[product].priceKopeks / 100).toFixed(2)
+      const extra = product === 'pass_890' && profile?.access_until
+        ? `\nДоступ до: ${new Date(profile.access_until).toLocaleDateString('ru-RU')}`
+        : ''
 
       await notifyAdmin(
-        `💰 Оплата${name}${tgIdLine}\nПакет: «${pkg.name}» — ${pkg.tokens} токенов, ${priceRub} ₽${balance}`
+        `💰 Оплата${name}${tgIdLine}\nПродукт: ${PRODUCTS[product].label}, ${priceRub} ₽${extra}`
       )
     } catch (e) {
       console.error('notifyAdmin (payment) failed', e)
