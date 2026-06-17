@@ -82,4 +82,19 @@ describe('canDownloadResume', () => {
     expect(await canDownloadResume('r1', 'u1')).toBe(true)
     expect(mockSupabase.rpc).toHaveBeenCalledWith('unlock_resume', { p_resume_id: 'r1', p_user_id: 'u1' })
   })
+
+  it('false и НЕ дёргает RPC когда резюме не unlocked и нет активного pass', async () => {
+    // 1-й from(): isResumeUnlocked → false; 2-й from(): hasActivePass → null
+    mockSupabase.from
+      .mockReturnValueOnce({
+        select: () => ({ eq: () => ({ eq: () => ({ single: () => Promise.resolve({ data: { unlocked: false }, error: null }) }) }) }),
+      })
+      .mockReturnValueOnce({
+        select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: { access_until: null }, error: null }) }) }),
+      })
+
+    const result = await canDownloadResume('r1', 'u1')
+    expect(result).toBe(false)
+    expect(mockSupabase.rpc).not.toHaveBeenCalled()
+  })
 })

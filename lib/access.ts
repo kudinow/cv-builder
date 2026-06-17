@@ -2,25 +2,33 @@ import { createServerSupabaseClient } from './supabase-server'
 
 export async function hasActivePass(userId: string): Promise<boolean> {
   const supabase = await createServerSupabaseClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('profiles')
     .select('access_until')
     .eq('id', userId)
     .single()
 
+  if (error) {
+    console.error('hasActivePass query failed', error)
+    return false
+  }
   if (!data?.access_until) return false
   return new Date(data.access_until).getTime() > Date.now()
 }
 
 export async function isResumeUnlocked(resumeId: string, userId: string): Promise<boolean> {
   const supabase = await createServerSupabaseClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('resumes')
     .select('unlocked')
     .eq('id', resumeId)
     .eq('user_id', userId)
     .single()
 
+  if (error) {
+    console.error('isResumeUnlocked query failed', error)
+    return false
+  }
   return data?.unlocked === true
 }
 
@@ -31,7 +39,8 @@ export async function canDownloadResume(resumeId: string, userId: string): Promi
   if (await isResumeUnlocked(resumeId, userId)) return true
   if (await hasActivePass(userId)) {
     const supabase = await createServerSupabaseClient()
-    await supabase.rpc('unlock_resume', { p_resume_id: resumeId, p_user_id: userId })
+    const { error } = await supabase.rpc('unlock_resume', { p_resume_id: resumeId, p_user_id: userId })
+    if (error) console.error('unlock_resume failed', error)
     return true
   }
   return false
