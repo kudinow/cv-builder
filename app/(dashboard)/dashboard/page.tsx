@@ -15,18 +15,13 @@ interface MasterResume {
 }
 
 export default function DashboardPage() {
-  const [tokenBalance, setTokenBalance] = useState(0)
   const [resumes, setResumes] = useState<MasterResume[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [balanceRes, resumesRes] = await Promise.all([
-          fetch("/api/tokens/balance").then(r => r.ok ? r.json() : { balance: 0 }),
-          fetch("/api/resumes").then(r => r.ok ? r.json() : { resumes: [] }),
-        ])
-        setTokenBalance(balanceRes.balance ?? 0)
+        const resumesRes = await fetch("/api/resumes").then(r => r.ok ? r.json() : { resumes: [] })
 
         // Map resumes with adaptation count
         const mapped = (resumesRes.resumes ?? []).map((r: Record<string, unknown>) => ({
@@ -97,13 +92,12 @@ export default function DashboardPage() {
                 targetPosition={resume.target_position}
                 adaptationCount={resume.adaptation_count}
                 createdAt={resume.created_at}
-                tokenBalance={tokenBalance}
               />
             ))}
           </div>
         </div>
       ) : (
-        <WizardScreen hasMasterResumes={false} tokenBalance={tokenBalance} />
+        <WizardScreen hasMasterResumes={false} />
       )}
 
       <ReferralBlock />

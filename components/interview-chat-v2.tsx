@@ -168,22 +168,11 @@ export function InterviewChatV2({
       })
       const data = await res.json()
 
-      if (res.status === 402) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content:
-              'Недостаточно токенов для завершения. Купите токены на странице /tokens.',
-          },
-        ])
-        return
-      }
-
       if (!res.ok) {
         throw new Error(data.error || 'Ошибка финализации')
       }
 
+      reachGoal('resume_generated')
       reachGoal('interview_finish')
       router.push('/resume/' + data.resumeId)
     } catch (err) {

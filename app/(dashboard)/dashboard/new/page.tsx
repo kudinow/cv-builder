@@ -1,16 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server"
 import { WizardScreen } from "@/components/wizard-screen"
 
-async function fetchTokenBalance(userId: string): Promise<number> {
-  const supabase = await createServerSupabaseClient()
-  const { data } = await supabase
-    .from("profiles")
-    .select("tokens")
-    .eq("id", userId)
-    .single()
-  return data?.tokens ?? 0
-}
-
 async function hasMasterResumes(userId: string): Promise<boolean> {
   const supabase = await createServerSupabaseClient()
   const { count } = await supabase
@@ -31,10 +21,7 @@ export default async function NewResumePage() {
     return <div style={{ color: "#f1f5f9" }}>Загрузка...</div>
   }
 
-  const [tokenBalance, hasResumes] = await Promise.all([
-    fetchTokenBalance(userId),
-    hasMasterResumes(userId),
-  ])
+  const hasResumes = await hasMasterResumes(userId)
 
   return (
     <div>
@@ -46,7 +33,7 @@ export default async function NewResumePage() {
       >
         ← Мои резюме
       </a>
-      <WizardScreen hasMasterResumes={hasResumes} tokenBalance={tokenBalance} />
+      <WizardScreen hasMasterResumes={hasResumes} />
     </div>
   )
 }

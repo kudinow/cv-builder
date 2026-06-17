@@ -4,7 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
-import { InsufficientTokensModal } from "@/components/insufficient-tokens-modal"
 
 interface ResumeCardProps {
   id: string
@@ -12,7 +11,6 @@ interface ResumeCardProps {
   targetPosition?: string | null
   adaptationCount: number
   createdAt: string
-  tokenBalance: number
 }
 
 export function ResumeCard({
@@ -21,13 +19,8 @@ export function ResumeCard({
   targetPosition,
   adaptationCount,
   createdAt,
-  tokenBalance,
 }: ResumeCardProps) {
   const router = useRouter()
-  const [modalState, setModalState] = useState<{ open: boolean; needed: number }>({
-    open: false,
-    needed: 0,
-  })
   const [title, setTitle] = useState(initialTitle)
   const [editing, setEditing] = useState(false)
   const [editValue, setEditValue] = useState(initialTitle)
@@ -39,11 +32,6 @@ export function ResumeCard({
   })
 
   function handleAdapt() {
-    const cost = 50
-    if (tokenBalance < cost) {
-      setModalState({ open: true, needed: cost })
-      return
-    }
     router.push(`/adapt?master=${id}`)
   }
 
@@ -70,17 +58,11 @@ export function ResumeCard({
   }
 
   function handleImprove() {
-    const cost = 80
-    if (tokenBalance < cost) {
-      setModalState({ open: true, needed: cost })
-      return
-    }
     router.push(`/interview?mode=improve&master=${id}`)
   }
 
   return (
-    <>
-      <div
+    <div
         className="card-glow flex flex-col gap-4 rounded-2xl p-5"
         style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}
       >
@@ -175,13 +157,5 @@ export function ResumeCard({
           </Link>
         </div>
       </div>
-
-      <InsufficientTokensModal
-        open={modalState.open}
-        onClose={() => setModalState({ open: false, needed: 0 })}
-        needed={modalState.needed}
-        balance={tokenBalance}
-      />
-    </>
   )
 }

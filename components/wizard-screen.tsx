@@ -1,8 +1,6 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { InsufficientTokensModal } from "@/components/insufficient-tokens-modal"
 
 interface WizardOption {
   id: "create" | "improve" | "adapt"
@@ -15,15 +13,10 @@ interface WizardOption {
 
 interface WizardScreenProps {
   hasMasterResumes: boolean
-  tokenBalance: number
 }
 
-export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenProps) {
+export function WizardScreen({ hasMasterResumes }: WizardScreenProps) {
   const router = useRouter()
-  const [modalState, setModalState] = useState<{ open: boolean; needed: number }>({
-    open: false,
-    needed: 0,
-  })
 
   const options: WizardOption[] = [
     {
@@ -53,10 +46,6 @@ export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenPro
   ]
 
   function handleOptionClick(option: WizardOption) {
-    if (tokenBalance < option.cost) {
-      setModalState({ open: true, needed: option.cost })
-      return
-    }
     router.push(option.href)
   }
 
@@ -119,13 +108,6 @@ export function WizardScreen({ hasMasterResumes, tokenBalance }: WizardScreenPro
         ))}
       </div>
 
-      {/* Insufficient tokens modal */}
-      <InsufficientTokensModal
-        open={modalState.open}
-        onClose={() => setModalState({ open: false, needed: 0 })}
-        needed={modalState.needed}
-        balance={tokenBalance}
-      />
     </div>
   )
 }

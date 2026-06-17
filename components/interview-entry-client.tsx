@@ -2,19 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { InsufficientTokensModal } from '@/components/insufficient-tokens-modal'
 import { reachGoal } from '@/lib/metrika'
 
 interface InterviewEntryClientProps {
   mode: 'create' | 'improve'
-  tokenBalance: number
-  requiredTokens: number
   expiredError?: boolean
 }
 
 export function InterviewEntryClient({
   mode: initialMode,
-  tokenBalance,
   expiredError,
 }: InterviewEntryClientProps) {
   const router = useRouter()
@@ -25,13 +21,8 @@ export function InterviewEntryClient({
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState('')
   const [parseError, setParseError] = useState('')
-  const [showInsufficientModal, setShowInsufficientModal] = useState(false)
-  const [insufficientNeeded, setInsufficientNeeded] = useState(0)
   const [showExpiredBanner, setShowExpiredBanner] = useState(expiredError ?? false)
   const [isDragOver, setIsDragOver] = useState(false)
-
-  const requiredTokens = selectedMode === 'improve' ? 60 : 100
-  const hasEnoughTokens = tokenBalance >= requiredTokens
 
   async function handlePdfSelect(file: File) {
     setPdfFile(file)
@@ -54,7 +45,6 @@ export function InterviewEntryClient({
   }
 
   async function handleStart() {
-    if (!hasEnoughTokens) return
     if (selectedMode === 'improve' && !parsedResumeText) return
     if (isCreating) return
 
@@ -79,12 +69,6 @@ export function InterviewEntryClient({
         return
       }
 
-      if (res.status === 402) {
-        setInsufficientNeeded(data.needed ?? requiredTokens)
-        setShowInsufficientModal(true)
-        return
-      }
-
       if (!res.ok) {
         throw new Error(data.error || 'Ошибка создания сессии')
       }
@@ -99,7 +83,6 @@ export function InterviewEntryClient({
   }
 
   const isStartDisabled =
-    !hasEnoughTokens ||
     (selectedMode === 'improve' && !parsedResumeText) ||
     isCreating ||
     isParsing
@@ -253,19 +236,6 @@ export function InterviewEntryClient({
           </div>
         )}
 
-        {/* Token balance warning */}
-        {!hasEnoughTokens && (
-          <div
-            className="mb-4 rounded-xl px-4 py-3 text-sm"
-            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}
-          >
-            Недостаточно токенов (у вас {tokenBalance}, нужно {requiredTokens}).{' '}
-            <a href="/tokens" style={{ color: '#a78bfa', textDecoration: 'underline' }}>
-              Пополнить
-            </a>
-          </div>
-        )}
-
         {/* Error message */}
         {error && (
           <div
@@ -289,18 +259,7 @@ export function InterviewEntryClient({
           {isCreating ? 'Создаём сессию...' : 'Начать интервью'}
         </button>
 
-        {/* Token balance display */}
-        <div className="mt-4 text-center text-sm" style={{ color: '#475569' }}>
-          Баланс: {tokenBalance} токенов
-        </div>
       </div>
-
-      <InsufficientTokensModal
-        open={showInsufficientModal}
-        onClose={() => setShowInsufficientModal(false)}
-        needed={insufficientNeeded}
-        balance={tokenBalance}
-      />
     </div>
   )
 }
