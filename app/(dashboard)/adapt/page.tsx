@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { reachGoal } from "@/lib/metrika";
+import { PaywallModal } from "@/components/paywall-modal";
 
 type Step = "input" | "parsing" | "review" | "adapting" | "error";
 type DetailLevel = "full" | "short" | "remove";
@@ -38,6 +39,7 @@ export default function AdaptPage() {
   const [vacancyText, setVacancyText] = useState("");
   const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState<string | null>(null);
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   const [resumeText, setResumeText] = useState("");
   const [finalVacancyText, setFinalVacancyText] = useState("");
@@ -117,6 +119,7 @@ export default function AdaptPage() {
         }),
       });
       const adaptData = await adaptRes.json();
+      if (adaptRes.status === 402) { setPaywallOpen(true); setStep("input"); return; }
       if (!adaptRes.ok) throw new Error(adaptData.error || "Ошибка адаптации");
       reachGoal('adapt_finish');
       router.push(`/result/${adaptData.id}`);
@@ -203,6 +206,7 @@ export default function AdaptPage() {
             Назад
           </button>
         </div>
+        <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
       </div>
     );
   }
@@ -380,6 +384,7 @@ export default function AdaptPage() {
           {isLoading ? "Обработка..." : "Далее — настроить адаптацию"}
         </button>
       </form>
+      <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
     </div>
   );
 }

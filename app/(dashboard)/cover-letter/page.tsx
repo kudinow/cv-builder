@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { reachGoal } from "@/lib/metrika"
+import { PaywallModal } from "@/components/paywall-modal"
 
 type ResumeSource = "select" | "upload"
 type VacancySource = "url" | "text"
@@ -43,6 +44,7 @@ export default function CoverLetterPage() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   // Load saved resumes for dropdown
   useEffect(() => {
@@ -133,6 +135,7 @@ export default function CoverLetterPage() {
       })
 
       const data = await res.json()
+      if (res.status === 402) { setPaywallOpen(true); setLoading(false); return; }
       if (!res.ok) throw new Error(data.error || "Ошибка генерации")
 
       reachGoal("cover_letter_generated")
@@ -355,9 +358,10 @@ export default function CoverLetterPage() {
           }}
           disabled={loading || !isFormValid}
         >
-          {loading ? "Генерация..." : "Написать письмо — 20 токенов"}
+          {loading ? "Генерация..." : "Написать письмо"}
         </button>
       </form>
+      <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
     </div>
   )
 }

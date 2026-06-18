@@ -21,13 +21,13 @@ interface SidebarProps {
 function SidebarContent({ userEmail, onNavigate }: SidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [balance, setBalance] = useState<number | null>(null)
+  const [accessUntil, setAccessUntil] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch("/api/tokens/balance")
+    fetch("/api/access")
       .then((r) => r.json())
-      .then((data) => setBalance(data.balance ?? 0))
-      .catch(() => setBalance(null))
+      .then((d) => setAccessUntil(d.accessUntil ?? null))
+      .catch(() => {})
   }, [])
 
   async function handleLogout() {
@@ -93,7 +93,9 @@ function SidebarContent({ userEmail, onNavigate }: SidebarProps & { onNavigate?:
             className="block text-xs font-medium mb-0.5 hover:opacity-80"
             style={{ color: "#a78bfa" }}
           >
-            ✦ {balance !== null ? `${balance} токенов` : "—"}
+            {accessUntil && new Date(accessUntil).getTime() > Date.now()
+            ? `✦ Доступ до ${new Date(accessUntil).toLocaleDateString("ru-RU")}`
+            : "✦ Купить доступ"}
           </Link>
           <div className="flex items-center justify-between">
             <span className="text-[11px] truncate" style={{ color: "#64748b" }}>

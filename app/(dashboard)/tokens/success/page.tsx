@@ -5,19 +5,18 @@ import Link from "next/link"
 import { reachGoal } from "@/lib/metrika"
 
 export default function TokensSuccessPage() {
-  const [balance, setBalance] = useState<number | null>(null)
+  const [accessUntil, setAccessUntil] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Small delay to allow webhook to process before we fetch balance
+    reachGoal('purchase_success')
     const timer = setTimeout(() => {
-      fetch("/api/tokens/balance")
-        .then((r) => (r.ok ? r.json() : { balance: null }))
+      fetch("/api/access")
+        .then((r) => (r.ok ? r.json() : { accessUntil: null }))
         .then((data) => {
-          setBalance(data.balance ?? null)
-          reachGoal('purchase_success')
+          setAccessUntil(data.accessUntil ?? null)
         })
-        .catch(() => setBalance(null))
+        .catch(() => {})
         .finally(() => setLoading(false))
     }, 1500)
 
@@ -51,21 +50,17 @@ export default function TokensSuccessPage() {
 
         {/* Heading */}
         <h1 className="mb-2 text-2xl font-bold" style={{ color: "#f1f5f9" }}>
-          Токены успешно зачислены!
+          Оплата прошла успешно!
         </h1>
         <p className="text-sm" style={{ color: "#94a3b8" }}>
-          Платёж подтверждён. Токены уже на вашем счёте.
+          Платёж подтверждён. Доступ открыт.
         </p>
 
-        {/* Balance display */}
+        {/* Access display */}
         <div
           className="mt-8 rounded-xl p-5"
           style={{ backgroundColor: "#0f172a", border: "1px solid #334155" }}
         >
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest" style={{ color: "#64748b" }}>
-            Текущий баланс
-          </p>
-
           {loading ? (
             <div className="flex items-center justify-center gap-2">
               <div
@@ -76,19 +71,13 @@ export default function TokensSuccessPage() {
                 Загрузка...
               </span>
             </div>
-          ) : balance !== null ? (
-            <div className="flex items-center justify-center gap-2">
-              <span style={{ color: "#a78bfa", fontSize: "1.4rem" }}>◈</span>
-              <span className="text-3xl font-bold" style={{ color: "#f1f5f9" }}>
-                {balance.toLocaleString("ru-RU")}
-              </span>
-              <span className="text-sm" style={{ color: "#94a3b8" }}>
-                токенов
-              </span>
-            </div>
+          ) : accessUntil && new Date(accessUntil).getTime() > Date.now() ? (
+            <p className="text-sm font-medium" style={{ color: "#a78bfa" }}>
+              Доступ до {new Date(accessUntil).toLocaleDateString("ru-RU")}
+            </p>
           ) : (
             <p className="text-sm" style={{ color: "#94a3b8" }}>
-              Баланс обновится в течение нескольких секунд
+              Доступ будет активирован в течение нескольких секунд
             </p>
           )}
         </div>
@@ -101,13 +90,6 @@ export default function TokensSuccessPage() {
             style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)", display: "block" }}
           >
             Перейти к резюме
-          </Link>
-          <Link
-            href="/tokens"
-            className="w-full rounded-xl py-3 text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ color: "#94a3b8", display: "block" }}
-          >
-            Купить ещё токены
           </Link>
         </div>
       </div>
