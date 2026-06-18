@@ -131,14 +131,8 @@ export function InterviewEntryClient({
           >
             <div className="text-2xl mb-2">✨</div>
             <div className="font-semibold mb-1" style={{ color: '#f1f5f9' }}>С нуля</div>
-            <div className="text-sm mb-3" style={{ color: '#94a3b8' }}>
+            <div className="text-sm" style={{ color: '#94a3b8' }}>
               AI задаст вопросы и создаст резюме с нуля
-            </div>
-            <div
-              className="inline-block text-xs px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(99,102,241,0.15)', color: '#a78bfa' }}
-            >
-              100 токенов
             </div>
           </button>
 
@@ -154,14 +148,8 @@ export function InterviewEntryClient({
           >
             <div className="text-2xl mb-2">⚡</div>
             <div className="font-semibold mb-1" style={{ color: '#f1f5f9' }}>Улучшить резюме</div>
-            <div className="text-sm mb-3" style={{ color: '#94a3b8' }}>
+            <div className="text-sm" style={{ color: '#94a3b8' }}>
               Загрузите PDF — AI проведёт интервью с учётом вашего опыта
-            </div>
-            <div
-              className="inline-block text-xs px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(99,102,241,0.15)', color: '#a78bfa' }}
-            >
-              80 токенов
             </div>
           </button>
         </div>

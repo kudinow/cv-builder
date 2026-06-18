@@ -69,7 +69,7 @@ export function ResumeViewClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeData, resumeId: resume.id }),
       })
-      if (res.status === 402) { setPaywallOpen(true); return }
+      if (res.status === 402) { setPaywallOpen(true); setIsDownloading(false); return }
       if (!res.ok) throw new Error('Ошибка генерации PDF')
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)

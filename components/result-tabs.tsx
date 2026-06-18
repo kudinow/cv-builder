@@ -105,7 +105,7 @@ export function ResultTabs({
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: editedLetter, name: "cover-letter", position: "" }),
+        body: JSON.stringify({ text: editedLetter, name: "cover-letter", position: "", resumeId }),
       });
       if (res.status === 402) { setPaywallOpen(true); return; }
       if (!res.ok) throw new Error("Ошибка генерации PDF");

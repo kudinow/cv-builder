@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { PaywallModal } from "@/components/paywall-modal"
 
 const cardStyle = {
   backgroundColor: "#1e293b",
@@ -20,6 +21,7 @@ export default function CoverLetterResultPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
+  const [paywallOpen, setPaywallOpen] = useState(false)
   const [sourceData, setSourceData] = useState<{
     resume_id: string | null
     resume_text: string
@@ -68,6 +70,7 @@ export default function CoverLetterResultPage() {
         }),
       })
       const data = await res.json()
+      if (res.status === 402) { setPaywallOpen(true); setRegenerating(false); return }
       if (!res.ok) throw new Error(data.error || "Ошибка генерации")
       router.push(`/cover-letter/${data.id}`)
     } catch (err) {
@@ -193,9 +196,11 @@ export default function CoverLetterResultPage() {
             color: "#94a3b8",
           }}
         >
-          {regenerating ? "Генерация..." : "Сгенерировать заново — 20 токенов"}
+          {regenerating ? "Генерация..." : "Сгенерировать заново"}
         </button>
       </div>
+
+      <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
     </div>
   )
 }

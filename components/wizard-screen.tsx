@@ -93,17 +93,6 @@ export function WizardScreen({ hasMasterResumes }: WizardScreenProps) {
               {option.description}
             </p>
 
-            {/* Cost badge */}
-            <div
-              className="mt-1 rounded-full px-3 py-1 text-xs font-semibold"
-              style={{
-                background: "rgba(99, 102, 241, 0.15)",
-                color: "#a78bfa",
-                border: "1px solid rgba(99, 102, 241, 0.3)",
-              }}
-            >
-              {option.cost} токенов
-            </div>
           </button>
         ))}
       </div>
