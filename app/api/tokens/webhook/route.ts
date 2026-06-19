@@ -6,28 +6,66 @@ import { notifyAdmin } from '@/lib/telegram-bot'
 interface YooKassaEvent {
   type: string
   event: string
-  object: {
-    id: string
-    status: string
-    metadata?: {
-      user_id?: string
-      product?: string
-      resume_id?: string
-    }
+  object: { id: string }
+}
+
+interface YooKassaPayment {
+  id: string
+  status: string
+  metadata?: {
+    user_id?: string
+    product?: string
+    resume_id?: string
   }
 }
+
+const YOOKASSA_API = 'https://api.yookassa.ru/v3/payments'
 
 export async function POST(req: NextRequest) {
   try {
     const event = await req.json() as YooKassaEvent
 
-    if (event.event !== 'payment.succeeded' || event.object?.status !== 'succeeded') {
+    // Cheap filter on the claimed event type before doing any work.
+    if (event.event !== 'payment.succeeded') {
       return NextResponse.json({ ok: true })
     }
 
-    const payment = event.object
-    const meta = payment.metadata
+    const paymentId = event.object?.id
+    if (!paymentId) {
+      console.error('Webhook: no payment id in event')
+      return NextResponse.json({ ok: true })
+    }
 
+    // SECURITY: never trust the webhook body. Re-fetch the payment from YooKassa
+    // and use only the authoritative status + metadata it returns. A forged
+    // notification with a bogus id cannot be made to return status=succeeded.
+    const shopId = process.env.YOKASSA_SHOP_ID
+    const secretKey = process.env.YOKASSA_SECRET_KEY
+    if (!shopId || !secretKey) {
+      console.error('Webhook: YooKassa credentials not configured')
+      return NextResponse.json({ error: 'Платёжный сервис не настроен' }, { status: 500 })
+    }
+
+    const credentials = Buffer.from(`${shopId}:${secretKey}`).toString('base64')
+    const verifyRes = await fetch(`${YOOKASSA_API}/${encodeURIComponent(paymentId)}`, {
+      headers: { Authorization: `Basic ${credentials}` },
+    })
+
+    if (!verifyRes.ok) {
+      // Unknown/forged id (404) or transient YooKassa error (5xx) — reject with 500.
+      // Genuine notifications are retried by YooKassa; forged ones never get fulfilled.
+      console.error('Webhook: payment verification failed', paymentId, verifyRes.status)
+      return NextResponse.json({ error: 'Не удалось проверить платёж' }, { status: 500 })
+    }
+
+    const payment = await verifyRes.json() as YooKassaPayment
+
+    // Trust only the verified status.
+    if (payment.status !== 'succeeded') {
+      return NextResponse.json({ ok: true })
+    }
+
+    const meta = payment.metadata
     if (!meta?.user_id || !isProductId(meta.product)) {
       console.error('Webhook: missing user_id or invalid product', payment.id, meta?.product)
       return NextResponse.json({ ok: true })
