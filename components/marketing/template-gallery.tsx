@@ -86,7 +86,7 @@ export function TemplateGallery() {
               Создайте уникальное резюме с AI — за 15 минут
             </div>
             <div className="mt-4 text-xs font-medium text-indigo-300">
-              50 токенов бесплатно →
+              Создать бесплатно →
             </div>
           </Link>
         </div>

@@ -16,7 +16,7 @@ const PAGE_URL = "https://cv-builder.ru/obrazec-rezume";
 export const metadata: Metadata = {
   title: "Образец резюме 2026 — 8 примеров под разные профессии + AI-генератор",
   description:
-    "Готовые образцы резюме под профессии: разработчик, бухгалтер, дизайнер, маркетолог. Структура и формулы достижений + AI-генератор за 15 минут. 50 токенов бесплатно.",
+    "Готовые образцы резюме под профессии: разработчик, бухгалтер, дизайнер, маркетолог. Структура и формулы достижений + AI-генератор за 15 минут. Создание и просмотр бесплатно.",
   alternates: { canonical: "/obrazec-rezume" },
   openGraph: {
     title: "Образец резюме 2026 — 8 примеров + AI-генератор",
@@ -103,7 +103,7 @@ export default function ObrazecRezumePage() {
               href="/auth?utm_source=seo_obrazec&utm_medium=hero_cta"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-500/30 transition-all hover:from-indigo-600 hover:to-purple-600 hover:-translate-y-0.5"
             >
-              Создать своё резюме — 50 токенов бесплатно →
+              Создать своё резюме бесплатно →
             </Link>
             <a
               href="#gallery"
@@ -115,7 +115,7 @@ export default function ObrazecRezumePage() {
           </div>
 
           <div className="mt-6 text-xs text-slate-600">
-            Без карты. Никакого автосписания. 50 токенов хватит на адаптацию под первую вакансию.
+            Без карты. Никакого автосписания. Создание и просмотр резюме — бесплатно.
           </div>
         </div>
       </section>

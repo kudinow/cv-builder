@@ -41,7 +41,7 @@ const softwareAppJsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "RUB",
-    description: "50 токенов бесплатно при регистрации",
+    description: "Создание резюме и предпросмотр бесплатно. Скачивание от 390₽.",
   },
 };
 

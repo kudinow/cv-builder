@@ -13,7 +13,7 @@ import { adaptaciyaResumeFaq } from "@/lib/seo/faq";
 const PAGE_URL = "https://cv-builder.ru/adaptaciya-resume";
 
 export const metadata: Metadata = {
-  title: "Адаптация резюме под вакансию с AI — за 1 минуту, 50 токенов",
+  title: "Адаптация резюме под вакансию с AI — за 1 минуту",
   description:
     "Зачем адаптировать резюме под каждый отклик, что меняется при адаптации, и как AI делает это автоматически за минуту. Конверсия в ответ вырастает с 3% до 15-25%.",
   alternates: { canonical: "/adaptaciya-resume" },
@@ -71,7 +71,7 @@ export default function AdaptaciyaPage() {
             <Breadcrumb items={[{ label: "Главная", href: "/" }, { label: "Адаптация резюме" }]} />
           </div>
           <div className="mb-5 inline-flex rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-sm text-emerald-300">
-            50 токенов · 1 минута · конверсия в ответ ×5
+            Адаптации — в доступе на 30 дней (890₽) · 1 минута · конверсия в ответ ×5
           </div>
           <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl">
             Адаптация резюме под вакансию —{" "}

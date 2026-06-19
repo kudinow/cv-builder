@@ -208,7 +208,7 @@ export default function KakSostavitRezumePage() {
               href="/auth?utm_source=seo_kak_sostavit&utm_medium=short_path"
               className="mt-4 inline-flex items-center text-sm font-semibold text-white underline decoration-indigo-400 underline-offset-4 hover:text-indigo-200"
             >
-              Попробовать AI бесплатно — 50 токенов при регистрации →
+              Попробовать AI бесплатно — создание и просмотр без оплаты →
             </Link>
           </div>
         </div>
