@@ -2,55 +2,47 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
-const packages = [
+const plans = [
   {
-    name: "Малый",
-    tokens: 500,
-    price: 499,
-    pricePerToken: "~1₽",
+    name: "Бесплатно",
+    price: "0₽",
+    subtitle: null,
     popular: false,
     features: [
-      "5 адаптаций резюме",
-      "или 1 создание с нуля + 1 адаптация",
-      "Сопроводительные письма включены",
-      "Скачивание PDF",
+      "AI-интервью полностью",
+      "Готовое резюме на экране",
+      "Просмотр результата",
     ],
+    cta: "Начать бесплатно",
+    href: "/auth",
   },
   {
-    name: "Средний",
-    tokens: 1500,
-    price: 1199,
-    pricePerToken: "~0.8₽",
+    name: "Резюме",
+    price: "390₽",
+    subtitle: "разово",
+    popular: false,
+    features: [
+      "Чистый PDF и DOCX",
+      "Одного резюме — навсегда",
+      "Без подписки",
+    ],
+    cta: "Создать резюме",
+    href: "/auth",
+  },
+  {
+    name: "Доступ на 30 дней",
+    price: "890₽",
+    subtitle: "разовый платёж",
     popular: true,
     features: [
-      "15 адаптаций резюме",
-      "или 3 создания с нуля + 6 адаптаций",
-      "Сопроводительные письма включены",
-      "Скачивание PDF",
-      "Улучшение существующих резюме",
+      "Безлимит скачиваний",
+      "Адаптации под вакансии",
+      "Сопроводительные письма",
+      "Все ваши резюме",
     ],
+    cta: "Получить доступ",
+    href: "/auth",
   },
-  {
-    name: "Большой",
-    tokens: 4000,
-    price: 2499,
-    pricePerToken: "~0.6₽",
-    popular: false,
-    features: [
-      "40 адаптаций резюме",
-      "или 10+ созданий с нуля",
-      "Сопроводительные письма включены",
-      "Скачивание PDF",
-      "Улучшение существующих резюме",
-      "Самый выгодный токен",
-    ],
-  },
-];
-
-const costTable = [
-  { operation: "Создание резюме с нуля (интервью)", tokens: 100 },
-  { operation: "Улучшение существующего резюме", tokens: 80 },
-  { operation: "Адаптация под вакансию", tokens: 50 },
 ];
 
 export function PricingSection() {
@@ -63,52 +55,51 @@ export function PricingSection() {
             Тарифы
           </div>
           <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-            Пакеты токенов
+            Простые цены
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
             Без подписок. Платите за результат.
           </p>
         </div>
 
-        {/* Free tokens badge */}
+        {/* Free preview badge */}
         <div className="mb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 px-5 py-2 text-sm font-medium text-indigo-300">
             <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-            50 бесплатных токенов при регистрации — хватит на первую адаптацию
+            Создание и просмотр резюме — бесплатно. Оплата только за скачивание.
           </div>
         </div>
 
-        {/* Packages */}
+        {/* Plans */}
         <div className="grid gap-6 md:grid-cols-3">
-          {packages.map((pkg) => (
+          {plans.map((plan) => (
             <div
-              key={pkg.name}
+              key={plan.name}
               className={cn(
                 "relative rounded-2xl p-8 transition-all",
-                pkg.popular
+                plan.popular
                   ? "border-2 border-indigo-500/50 bg-gradient-to-b from-indigo-500/10 to-purple-500/5 shadow-xl shadow-indigo-500/10"
                   : "border border-white/10 bg-white/5"
               )}
             >
-              {pkg.popular && (
+              {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-indigo-500/30">
                   Популярный
                 </div>
               )}
 
               <div className="mb-6">
-                <div className="text-sm text-slate-400">{pkg.name}</div>
+                <div className="text-sm text-slate-400">{plan.name}</div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-extrabold text-white">{pkg.price}₽</span>
+                  <span className="text-3xl sm:text-4xl font-extrabold text-white">{plan.price}</span>
                 </div>
-                <div className="mt-1 flex items-center gap-3 text-sm">
-                  <span className="font-semibold text-white">{pkg.tokens.toLocaleString()} токенов</span>
-                  <span className="text-slate-500">{pkg.pricePerToken} за токен</span>
-                </div>
+                {plan.subtitle && (
+                  <div className="mt-1 text-sm text-slate-500">{plan.subtitle}</div>
+                )}
               </div>
 
               <ul className="mb-8 space-y-3">
-                {pkg.features.map((f) => (
+                {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-sm text-slate-400">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" />
                     {f}
@@ -117,49 +108,18 @@ export function PricingSection() {
               </ul>
 
               <Link
-                href="/auth"
+                href={plan.href}
                 className={cn(
                   "inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-semibold transition-all",
-                  pkg.popular
+                  plan.popular
                     ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-600 hover:to-purple-600"
                     : "border border-white/20 text-slate-300 hover:bg-white/5 hover:text-white"
                 )}
               >
-                Купить пакет
+                {plan.cta}
               </Link>
             </div>
           ))}
-        </div>
-
-        {/* Cost table */}
-        <div className="mt-16">
-          <h3 className="mb-6 text-center text-lg font-bold text-white">
-            Стоимость операций
-          </h3>
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/10 bg-white/5">
-                  <th className="px-3 py-3 sm:px-6 sm:py-4 text-left font-semibold text-slate-300">
-                    Операция
-                  </th>
-                  <th className="px-3 py-3 sm:px-6 sm:py-4 text-right font-semibold text-slate-300">
-                    Токены
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {costTable.map((row, i) => (
-                  <tr key={i} className="transition-colors hover:bg-white/5">
-                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-slate-400">{row.operation}</td>
-                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-right font-semibold text-white">
-                      {row.tokens}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </section>

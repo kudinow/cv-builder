@@ -6,7 +6,7 @@ const segments = [
     title: "Нет резюме",
     description:
       "Только начинаете или давно не искали работу? AI-интервью поможет структурировать опыт и создать резюме с нуля — без бланков и шаблонов.",
-    cta: "100 токенов",
+    cta: "Бесплатно",
     color: "from-indigo-500 to-blue-500",
     bgColor: "bg-indigo-500/10",
     borderColor: "border-indigo-500/20",
@@ -16,7 +16,7 @@ const segments = [
     title: "Слабое резюме",
     description:
       "Есть резюме, но оно не даёт отклик? Загрузите его, AI проведёт углублённое интервью и перепишет по методике достижений.",
-    cta: "80 токенов",
+    cta: "Бесплатно",
     color: "from-purple-500 to-pink-500",
     bgColor: "bg-purple-500/10",
     borderColor: "border-purple-500/20",
@@ -26,7 +26,7 @@ const segments = [
     title: "Нужна адаптация",
     description:
       "Хотите откликнуться на конкретную вакансию? Адаптируем резюме под требования работодателя за несколько минут.",
-    cta: "50 токенов",
+    cta: "890₽ / 30 дней",
     color: "from-emerald-500 to-teal-500",
     bgColor: "bg-emerald-500/10",
     borderColor: "border-emerald-500/20",

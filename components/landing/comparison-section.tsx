@@ -11,9 +11,9 @@ const consultantItems = [
 ];
 
 const resumeAiItems = [
-  "от 499₽ за пакет токенов",
+  "от 390₽ за резюме",
   "Результат за 15–20 минут",
-  "Адаптация под каждую вакансию за 50 токенов",
+  "Адаптации и сопроводительные — в доступе на 30 дней (890₽)",
   "Сопроводительное письмо включено",
   "Методика на основе тысяч успешных резюме",
 ];
@@ -64,8 +64,8 @@ export function ComparisonSection() {
             </div>
             <div className="mb-6">
               <div className="mb-1 text-sm text-indigo-400">CV Builder</div>
-              <div className="text-4xl font-extrabold text-white">от 499₽</div>
-              <div className="mt-1 text-sm text-slate-500">пакет токенов</div>
+              <div className="text-4xl font-extrabold text-white">от 390₽</div>
+              <div className="mt-1 text-sm text-slate-500">за резюме</div>
             </div>
             <ul className="space-y-3">
               {resumeAiItems.map((item) => (

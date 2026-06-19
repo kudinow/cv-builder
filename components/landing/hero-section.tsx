@@ -53,9 +53,9 @@ export function HeroSection() {
           </a>
         </div>
 
-        {/* Free tokens note */}
+        {/* Free preview note */}
         <p className="mt-4 text-sm text-slate-500">
-          50 бесплатных токенов при регистрации · Без привязки карты
+          Создание и просмотр резюме — бесплатно · Без привязки карты
         </p>
 
       </div>

@@ -11,10 +11,10 @@ export function FinalCtaSection() {
       </div>
 
       <div className="relative mx-auto max-w-3xl px-4 text-center">
-        {/* Free tokens badge */}
+        {/* Free preview badge */}
         <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-indigo-500/20 border border-indigo-500/30 px-5 py-2 text-sm font-medium text-indigo-300">
           <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-          50 бесплатных токенов при регистрации
+          Бесплатно до готового резюме. Оплата — за скачивание.
         </div>
 
         {/* Headline */}
@@ -22,8 +22,8 @@ export function FinalCtaSection() {
           Начните бесплатно
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-lg text-slate-400 leading-relaxed">
-          Создайте первое резюме прямо сейчас. 50 токенов хватит на адаптацию
-          под первую вакансию — без привязки карты.
+          Пройдите AI-интервью и посмотрите готовое резюме — бесплатно. Скачать
+          PDF — 390₽, или безлимит на 30 дней — 890₽. Без привязки карты.
         </p>
 
         {/* CTA */}

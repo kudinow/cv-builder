@@ -19,7 +19,7 @@ import { LandingFooter } from "@/components/landing/landing-footer";
 export const metadata: Metadata = {
   title: "CV Builder — Создай продающее резюме за 15 минут",
   description:
-    "AI проведёт интервью, извлечёт достижения и соберёт резюме по методике карьерных консультантов. Без шаблонов. 50 токенов бесплатно при регистрации.",
+    "AI проведёт интервью, извлечёт достижения и соберёт резюме по методике карьерных консультантов. Без шаблонов. Создание и просмотр — бесплатно. Скачать PDF — 390₽.",
   alternates: { canonical: "/" },
 };
 
@@ -37,7 +37,7 @@ const softwareApplicationJsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "RUB",
-    description: "50 токенов бесплатно при регистрации",
+    description: "Создание и просмотр резюме — бесплатно. Скачать PDF — 390₽.",
   },
 };
 
