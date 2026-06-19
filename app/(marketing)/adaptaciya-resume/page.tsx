@@ -71,7 +71,7 @@ export default function AdaptaciyaPage() {
             <Breadcrumb items={[{ label: "Главная", href: "/" }, { label: "Адаптация резюме" }]} />
           </div>
           <div className="mb-5 inline-flex rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-sm text-emerald-300">
-            Адаптации — в доступе на 30 дней (890₽) · 1 минута · конверсия в ответ ×5
+            890₽ / 30 дней · 1 минута · конверсия в ответ ×5
           </div>
           <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl">
             Адаптация резюме под вакансию —{" "}
