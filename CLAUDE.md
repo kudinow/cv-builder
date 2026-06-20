@@ -51,7 +51,7 @@ AI-платформа для создания резюме и сопроводи
 
 ```bash
 cd resume-ai && git push origin main
-ssh kudinow@158.160.160.206 "bash ~/deploy.sh"
+ssh kudinow@81.26.183.228 "bash ~/deploy.sh"   # внешний IP VM (старый 158.160.160.206 устарел 2026-06)
 ```
 
 ## Key Directories
