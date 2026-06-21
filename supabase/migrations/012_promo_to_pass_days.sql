@@ -133,3 +133,7 @@ BEGIN
   WHERE id = v_pending.id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 4. Документируем переиспользование колонок под счётчик ДНЕЙ (с миграции 012).
+COMMENT ON COLUMN public.promo_code_uses.tokens_granted       IS 'reused as pass-days count since migration 012 (freemium)';
+COMMENT ON COLUMN public.promo_code_uses.owner_tokens_granted IS 'reused as owner pass-days count since migration 012 (freemium)';
