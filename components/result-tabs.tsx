@@ -37,6 +37,7 @@ export function ResultTabs({
     resumeData ? "structured" : "text"
   );
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   function handlePhotoUpload(file: File) {
     const reader = new FileReader();
@@ -51,6 +52,7 @@ export function ResultTabs({
 
   async function handleDownloadPDF() {
     if (!canDownload) { setPaywallOpen(true); return; }
+    setIsDownloading(true);
     try {
       const body = resumeData
         ? { resumeData, photoBase64: photo, resumeId }
@@ -72,12 +74,15 @@ export function ResultTabs({
       URL.revokeObjectURL(url);
     } catch {
       alert("Ошибка при скачивании PDF");
+    } finally {
+      setIsDownloading(false);
     }
   }
 
   async function handleDownloadDOCX() {
     if (!resumeData) return;
     if (!canDownload) { setPaywallOpen(true); return; }
+    setIsDownloading(true);
     try {
       const res = await fetch("/api/generate-docx", {
         method: "POST",
@@ -96,11 +101,14 @@ export function ResultTabs({
       URL.revokeObjectURL(url);
     } catch {
       alert("Ошибка при скачивании DOCX");
+    } finally {
+      setIsDownloading(false);
     }
   }
 
   async function handleDownloadLetterPDF() {
     if (!canDownload) { setPaywallOpen(true); return; }
+    setIsDownloading(true);
     try {
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
@@ -118,6 +126,8 @@ export function ResultTabs({
       URL.revokeObjectURL(url);
     } catch {
       alert("Ошибка при скачивании PDF");
+    } finally {
+      setIsDownloading(false);
     }
   }
 
@@ -214,18 +224,20 @@ export function ResultTabs({
               )}
               <button
                 onClick={handleDownloadPDF}
+                disabled={isDownloading}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
-                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", opacity: isDownloading ? 0.5 : 1 }}
               >
-                Скачать PDF
+                {isDownloading ? "Генерируем…" : "Скачать PDF"}
               </button>
               {resumeData && (
                 <button
                   onClick={handleDownloadDOCX}
+                  disabled={isDownloading}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
-                  style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                  style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", opacity: isDownloading ? 0.5 : 1 }}
                 >
-                  Скачать DOCX
+                  {isDownloading ? "Генерируем…" : "Скачать DOCX"}
                 </button>
               )}
             </div>
@@ -267,10 +279,11 @@ export function ResultTabs({
               </button>
               <button
                 onClick={handleDownloadLetterPDF}
+                disabled={isDownloading}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
-                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", opacity: isDownloading ? 0.5 : 1 }}
               >
-                Скачать PDF
+                {isDownloading ? "Генерируем…" : "Скачать PDF"}
               </button>
             </div>
           </div>

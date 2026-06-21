@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { reachGoal } from "@/lib/metrika";
 import { PaywallModal } from "@/components/paywall-modal";
@@ -29,6 +29,8 @@ const inputStyle = {
   borderRadius: "8px",
 };
 
+const ADAPT_DRAFT_KEY = "adapt_draft_v1";
+
 export default function AdaptPage() {
   const router = useRouter();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -44,6 +46,22 @@ export default function AdaptPage() {
   const [resumeText, setResumeText] = useState("");
   const [finalVacancyText, setFinalVacancyText] = useState("");
   const [positions, setPositions] = useState<Position[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(ADAPT_DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d?.resumeText && Array.isArray(d?.positions)) {
+        setResumeText(d.resumeText);
+        setFinalVacancyText(d.finalVacancyText ?? "");
+        setVacancyUrl(d.vacancyUrl ?? "");
+        setPositions(d.positions);
+        if (d.photoPreview) setPhotoPreview(d.photoPreview);
+        setStep("review");
+      }
+    } catch { /* ignore corrupt draft */ }
+  }, []);
 
   function handlePhotoChange(file: File | null) {
     setPhotoFile(file);
@@ -61,6 +79,7 @@ export default function AdaptPage() {
     setError(null);
     if (!resumeFile) { setError("Загрузите PDF-файл с резюме"); return; }
     if (!vacancyUrl && !vacancyText) { setError("Укажите ссылку на вакансию или вставьте текст"); return; }
+    sessionStorage.removeItem(ADAPT_DRAFT_KEY);
 
     try {
       setStep("parsing");
@@ -119,9 +138,19 @@ export default function AdaptPage() {
         }),
       });
       const adaptData = await adaptRes.json();
-      if (adaptRes.status === 402) { setPaywallOpen(true); setStep("input"); return; }
+      if (adaptRes.status === 402) {
+        try {
+          sessionStorage.setItem(ADAPT_DRAFT_KEY, JSON.stringify({
+            resumeText, finalVacancyText, vacancyUrl, positions, photoPreview,
+          }));
+        } catch { /* quota/serialization — non-critical */ }
+        setPaywallOpen(true);
+        setStep("review");
+        return;
+      }
       if (!adaptRes.ok) throw new Error(adaptData.error || "Ошибка адаптации");
       reachGoal('adapt_finish');
+      sessionStorage.removeItem(ADAPT_DRAFT_KEY);
       router.push(`/result/${adaptData.id}`);
     } catch (err) {
       setStep("error");
