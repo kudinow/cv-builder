@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 interface ReferralData {
   code: string
   link: string
-  stats: { invited: number; tokensEarned: number }
+  stats: { invited: number; daysEarned: number }
 }
 
 export function ReferralBlock() {
@@ -48,10 +48,10 @@ export function ReferralBlock() {
       style={{ backgroundColor: "#1e293b", border: "1px solid #334155" }}
     >
       <h3 className="text-lg font-semibold mb-1" style={{ color: "#f1f5f9" }}>
-        Приглашайте друзей — получайте токены
+        Приглашайте друзей — получайте дни доступа
       </h3>
       <p className="text-sm mb-5" style={{ color: "#94a3b8" }}>
-        Ваш друг получит 80 токенов при регистрации. Вы получите 30 токенов, когда он создаст первое резюме.
+        Ваш друг получит 3 дня доступа при регистрации. Вы получите 3 дня, когда он создаст первое резюме.
       </p>
 
       {/* Referral link */}
@@ -92,10 +92,10 @@ export function ReferralBlock() {
         </div>
         <div>
           <div className="text-2xl font-bold" style={{ color: "#a78bfa" }}>
-            +{data.stats.tokensEarned}
+            +{data.stats.daysEarned}
           </div>
           <div className="text-xs" style={{ color: "#64748b" }}>
-            токенов заработано
+            дней заработано
           </div>
         </div>
       </div>

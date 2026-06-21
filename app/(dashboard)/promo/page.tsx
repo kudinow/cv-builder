@@ -26,7 +26,7 @@ export default function PromoPage() {
       if (res.ok) {
         setResult({
           success: true,
-          message: `+${data.tokensGranted} токенов начислено!`,
+          message: `+${data.passDaysGranted} дн. доступа активировано!`,
         })
         setCode("")
         reachGoal("promo_activate")
@@ -50,7 +50,7 @@ export default function PromoPage() {
           Активировать промо-код
         </h1>
         <p className="text-sm" style={{ color: "#94a3b8" }}>
-          Введите промо-код чтобы получить бонусные токены
+          Введите промо-код, чтобы получить дни доступа
         </p>
       </div>
 
