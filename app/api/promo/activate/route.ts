@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      tokensGranted: result.tokensGranted,
+      passDaysGranted: result.passDaysGranted,
     })
   } catch (error) {
     if (error instanceof PromoCodeError) {

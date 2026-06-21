@@ -1,5 +1,4 @@
 import { createServerSupabaseClient } from './supabase-server'
-import { addTokens } from './tokens'
 
 export class PromoCodeError extends Error {
   constructor(message: string) {
@@ -21,12 +20,14 @@ interface PromoCode {
   per_user_limit: number
   expires_at: string | null
   active: boolean
+  pass_days: number | null
+  owner_pass_days: number | null
 }
 
 export async function activatePromoCode(
   userId: string,
   rawCode: string
-): Promise<{ tokensGranted: number }> {
+): Promise<{ passDaysGranted: number }> {
   const code = rawCode.trim().toUpperCase()
   const supabase = await createServerSupabaseClient()
 
@@ -76,14 +77,21 @@ export async function activatePromoCode(
     throw new PromoCodeError('Вы уже использовали этот промо-код')
   }
 
-  // 7. Grant tokens
-  await addTokens(userId, pc.bonus_tokens, 'bonus', `Промо-код: ${pc.code}`)
+  // 7. Grant pass days
+  const days = pc.pass_days ?? 0
+  if (days > 0) {
+    const { error: grantError } = await supabase.rpc('grant_pass_days', {
+      p_user_id: userId,
+      p_days: days,
+    })
+    if (grantError) throw new Error(grantError.message)
+  }
 
-  // 8. Record usage
+  // 8. Record usage (tokens_granted reused as day count)
   await supabase.from('promo_code_uses').insert({
     promo_code_id: pc.id,
     user_id: userId,
-    tokens_granted: pc.bonus_tokens,
+    tokens_granted: days,
   })
 
   // 9. Increment uses_count
@@ -92,5 +100,5 @@ export async function activatePromoCode(
     .update({ uses_count: pc.uses_count + 1 })
     .eq('id', pc.id)
 
-  return { tokensGranted: pc.bonus_tokens }
+  return { passDaysGranted: days }
 }
