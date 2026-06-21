@@ -71,5 +71,12 @@ export async function POST(req: NextRequest) {
   // 4. Complete session
   await completeSession(sessionId, resume.id)
 
+  // Реферальный owner-бонус: финализация резюме = «первое действие» в freemium.
+  try {
+    await supabase.rpc('process_referral_bonus', { p_user_id: user.id })
+  } catch {
+    // не критично для основного флоу
+  }
+
   return Response.json({ resumeId: resume.id })
 }

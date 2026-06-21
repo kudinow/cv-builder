@@ -44,8 +44,8 @@ export async function GET() {
           code,
           type: 'referral',
           owner_id: userId,
-          bonus_tokens: 80,
-          owner_bonus_tokens: 30,
+          pass_days: 3,
+          owner_pass_days: 3,
           owner_bonus_on: 'first_action',
           per_user_limit: 1,
         }).select('id').single()
@@ -67,12 +67,12 @@ export async function GET() {
       .eq('promo_code_id', promoId)
 
     const invited = uses?.length ?? 0
-    const tokensEarned = uses?.reduce((sum, u) => sum + (u.owner_tokens_granted ?? 0), 0) ?? 0
+    const daysEarned = uses?.reduce((sum, u) => sum + (u.owner_tokens_granted ?? 0), 0) ?? 0
 
     return NextResponse.json({
       code,
       link: `${process.env.NEXT_PUBLIC_APP_URL}/auth?ref=${code}`,
-      stats: { invited, tokensEarned },
+      stats: { invited, daysEarned },
     })
   } catch (error) {
     console.error('Referral error:', error)
