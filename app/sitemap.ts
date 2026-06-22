@@ -21,6 +21,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/rezume-na-angliyskom`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/konstruktor`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/adaptaciya-resume`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // Segment landing pages
+    { url: `${BASE}/rezume-marketologu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/rezume-it`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/rezume-rukovoditelyu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     // Terms
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
