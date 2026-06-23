@@ -56,6 +56,8 @@ cd resume-ai && git push origin main
 ssh kudinow@81.26.183.228 "bash ~/deploy.sh"   # внешний IP VM (старый 158.160.160.206 устарел 2026-06)
 ```
 
+`~/deploy.sh` (на VM, путь приложения `/home/kudinow/app`) с 2026-06-24 само-восстанавливает Telegram-пин `api.telegram.org` в `/etc/hosts` (теряется при миграции VM → бот/авторизация умирают). Бэкап старого скрипта: `~/deploy.sh.bak.20260624`.
+
 ## Key Directories
 
 - `lib/prompts/` — системные промпты для AI
@@ -66,11 +68,14 @@ ssh kudinow@81.26.183.228 "bash ~/deploy.sh"   # внешний IP VM (стар�
 
 ## Marketing / SEO
 
-15 публичных SEO-страниц в `app/(marketing)/`:
+18 публичных SEO-страниц в `app/(marketing)/`:
 - `obrazec-rezume`, `kak-sostavit-rezume`, `soprovoditelnoe-pismo`, `ai-resume`
 - `rezume` index + 5 programmatic `rezume/[slug]` (buhgalter, menedzher-prodazh, dizayner, razrabotchik, hr)
 - `rezume-na-angliyskom`, `konstruktor`, `adaptaciya-resume`
+- 3 сегментных лендинга: `rezume-marketologu`, `rezume-it`, `rezume-rukovoditelyu`
 - `blog` + статьи `oshibki-v-rezume`, `dostizheniya-v-rezume`
+
+**Сегментные лендинги** — один переиспользуемый `components/landing/segment-landing.tsx` (+ заскоупленный `segment-landing.css` под `.lp`) и серверная обёртка `segment-landing-page.tsx` (metadata + JSON-LD). Весь текст сегментов — в `lib/landing-segments.ts` (`**bold**`-разметка рендерится через `<Rich>`). Интерактив «вставь строчку» зовёт `POST /api/rewrite` (переписывание через `callOpenRouter`; валидация, rate-limit 5/мин по IP, таймаут 10с, фильтр мусора/инъекций, in-memory кэш, фолбэк-примеры из конфига; ключ только в env). Промпт — `lib/prompts/rewrite-line.ts`.
 
 Source of truth для данных: `lib/seo/{faq,professions,blog,pages}.ts`. Шаринг компоненты — `components/marketing/*`. `app/sitemap.ts` динамически собирает URL из `professions` и `blogPosts`.
 
