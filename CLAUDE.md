@@ -19,6 +19,7 @@ AI-платформа для создания резюме и сопроводи
 - **Колонка `tokens`** (не `credits`) — миграция 002 уже применена
 - **Inline styles** — проект использует inline styles для цветов, не Tailwind классы
 - **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
+- **Supabase free-tier авто-пауза** — проект засыпает после ~7 дней неактивности и валит вход обоими способами разом (общий GoTrue), при живом сайте на 200. Тэлл: `xlguerrejryvgwlaygbe.supabase.co` даёт NXDOMAIN на публичном DNS. Профилактика стоит: cron `0 */6 * * *` на VM гоняет `~/supabase-keepalive.sh` (исходник — [scripts/supabase-keepalive.sh](scripts/supabase-keepalive.sh)), лог `~/logs/supabase-keepalive.log`, две неудачи подряд → алерт в TG. Разбудить можно только руками — Restore в дашборде, ~10–25 мин; сразу после Restore PostgREST ещё отдаёт 404 `PGRST205`, пока не подтянет schema cache (~3 мин)
 - **Telegram сеть (РКН-блок, двусторонний)** — подсети Telegram заблокированы и на выход, и на вход. Исходящее: `api.telegram.org` запинен в `/etc/hosts` VM на рабочий IP `149.154.167.220`. Входящее (webhook от Telegram) дропается до nginx — поэтому бот работает НЕ на webhook, а на **long polling**: процесс PM2 `tg-poller` (`scripts/telegram-poller.mjs`) дёргает `getUpdates` и прокидывает апдейты на локальный `/api/telegram/webhook`. Не возвращать `setWebhook`. Если бот замолчал — проверь `pm2 logs tg-poller` и доступность IP `149.154.167.220`
 
 ## Auth
@@ -62,7 +63,7 @@ ssh kudinow@81.26.183.228 "bash ~/deploy.sh"   # внешний IP VM (стар�
 
 - `lib/prompts/` — системные промпты для AI
 - `lib/access.ts` — энтайтлменты (hasActivePass, canDownloadResume); `lib/access-products.ts` — продукты. `lib/tokens.ts` — legacy (не используется для гейтинга)
-- `supabase/migrations/` — SQL миграции (001-007)
+- `supabase/migrations/` — SQL миграции (001-012)
 - `components/dashboard-nav-links.tsx` — сайдбар навигации
 - `components/dashboard-shell.tsx` — layout дашборда
 
