@@ -1,0 +1,76 @@
+# Build on GitHub (the VPS has 1 GB RAM — too little for `next build`) and ship
+# the standalone bundle to the VPS. Runtime secrets stay on the server in
+# ~/shared/.env.local; only public NEXT_PUBLIC_* values are needed at build time.
+#
+# Server layout: ~/releases/<sha> (bundles), ~/current -> active release,
+# ~/shared/{.env.local,ecosystem.config.cjs}. Rollback: point ~/current at an
+# older release and `pm2 startOrReload ~/shared/ecosystem.config.cjs`.
+name: deploy
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+
+      - name: Assemble bundle
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+          mkdir -p .next/standalone/scripts
+          cp scripts/telegram-poller.mjs .next/standalone/scripts/
+
+      - name: Configure SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Upload release
+        run: |
+          rsync -az --delete .next/standalone/ \
+            "kudinow@${{ secrets.DEPLOY_HOST }}:releases/${{ github.sha }}/"
+
+      - name: Activate release
+        run: |
+          ssh "kudinow@${{ secrets.DEPLOY_HOST }}" 'bash -s' <<'EOF'
+          set -euo pipefail
+          REL="$HOME/releases/${{ github.sha }}"
+          ln -sfn "$HOME/shared/.env.local" "$REL/.env.local"
+          ln -sfn "$REL" "$HOME/current"
+          pm2 startOrReload "$HOME/shared/ecosystem.config.cjs" --update-env
+          pm2 save
+
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/ || true)
+            [ "$code" = "200" ] && echo "healthy after ${i}s" && break
+            sleep 1
+          done
+          [ "$code" = "200" ] || { echo "app not healthy (last code: $code)"; pm2 logs resume-ai --lines 30 --nostream; exit 1; }
+
+          # Keep the 3 newest releases.
+          cd "$HOME/releases"
+          ls -1t | tail -n +4 | xargs -r rm -rf
+          EOF
