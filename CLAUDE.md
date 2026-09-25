@@ -9,7 +9,7 @@ AI-платформа для создания резюме и сопроводи
 - Next.js 16.2.1 (App Router), React 19, TypeScript
 - Supabase (PostgreSQL + Auth + RLS)
 - OpenRouter API (Claude Sonnet) for AI
-- PM2 + Nginx on Yandex Cloud VM
+- PM2 + Nginx on VPS 89.19.209.92 (Германия, с 2026-09-23; до этого Yandex Cloud)
 
 ## Critical Rules
 
@@ -19,8 +19,10 @@ AI-платформа для создания резюме и сопроводи
 - **Колонка `tokens`** (не `credits`) — миграция 002 уже применена
 - **Inline styles** — проект использует inline styles для цветов, не Tailwind классы
 - **Middleware path matching** — `lib/supabase-middleware.ts` использует `pathname === p || pathname.startsWith(p + "/")`, не голый `startsWith`. Иначе `/adapt` ловит `/adaptaciya-resume` и др. маркетинг-URL
-- **Supabase free-tier авто-пауза** — проект засыпает после ~7 дней неактивности и валит вход обоими способами разом (общий GoTrue), при живом сайте на 200. Тэлл: `xlguerrejryvgwlaygbe.supabase.co` даёт NXDOMAIN на публичном DNS. Профилактика стоит: cron `0 */6 * * *` на VM гоняет `~/supabase-keepalive.sh` (исходник — [scripts/supabase-keepalive.sh](scripts/supabase-keepalive.sh)), лог `~/logs/supabase-keepalive.log`, две неудачи подряд → алерт в TG. Разбудить можно только руками — Restore в дашборде, ~10–25 мин; сразу после Restore PostgREST ещё отдаёт 404 `PGRST205`, пока не подтянет schema cache (~3 мин)
-- **Telegram сеть (РКН-блок, двусторонний)** — подсети Telegram заблокированы и на выход, и на вход. Исходящее: `api.telegram.org` запинен в `/etc/hosts` VM на рабочий IP `149.154.167.220`. Входящее (webhook от Telegram) дропается до nginx — поэтому бот работает НЕ на webhook, а на **long polling**: процесс PM2 `tg-poller` (`scripts/telegram-poller.mjs`) дёргает `getUpdates` и прокидывает апдейты на локальный `/api/telegram/webhook`. Не возвращать `setWebhook`. Если бот замолчал — проверь `pm2 logs tg-poller` и доступность IP `149.154.167.220`
+- **Supabase free-tier авто-пауза** — проект засыпает после ~7 дней неактивности и валит вход обоими способами разом (общий GoTrue), при живом сайте на 200. Тэлл: `xlguerrejryvgwlaygbe.supabase.co` даёт NXDOMAIN на публичном DNS. Профилактика стоит: cron `0 */6 * * *` на VPS гоняет `~/supabase-keepalive.sh` (с `SUPABASE_KEEPALIVE_ENV=/home/kudinow/shared/.env.local`) (исходник — [scripts/supabase-keepalive.sh](scripts/supabase-keepalive.sh)), лог `~/logs/supabase-keepalive.log`, две неудачи подряд → алерт в TG. Разбудить можно только руками — Restore в дашборде, ~10–25 мин; сразу после Restore PostgREST ещё отдаёт 404 `PGRST205`, пока не подтянет schema cache (~3 мин)
+- **Telegram-бот на long polling** — процесс PM2 `tg-poller` (`scripts/telegram-poller.mjs`) дёргает `getUpdates` и прокидывает апдейты на локальный `/api/telegram/webhook`. Исторически из-за РКН-блока на российской VM; на зарубежном VPS Telegram доступен напрямую, пины в `/etc/hosts` не нужны. `setWebhook` не возвращать без отдельного решения. Поллер должен быть **ровно один** — второй экземпляр даёт `Conflict: terminated by other getUpdates request`. Если бот замолчал — `pm2 logs tg-poller`
+- **Лимиты интервью** (`INTERVIEW_LIMITS` в `lib/token-costs.ts`) — `ai_tokens_used` копит prompt+completion **каждого** хода, а история пересылается целиком → счётчик растёт квадратично (50k кончались на ~13-м ходу, 2026-09). Сверх лимита пропускается только финализация: `finalize: true` + сообщение заканчивается `INTERVIEW_FINALIZE_INSTRUCTION`. Упор в лимит логируется `[interview] Session limit hit` в `pm2 logs resume-ai`; диагностика — строка сессии в `interview_sessions` (`message_count`, `ai_tokens_used`)
+- **Гео-блок western API** — OpenRouter режет российские IP (403 «Access denied by security policy»). Поэтому прод на зарубежном VPS; при переезде в РФ интервью и все AI-функции умрут
 
 ## Auth
 
@@ -54,10 +56,14 @@ AI-платформа для создания резюме и сопроводи
 
 ```bash
 cd resume-ai && git push origin main
-ssh kudinow@81.26.183.228 "bash ~/deploy.sh"   # внешний IP VM (старый 158.160.160.206 устарел 2026-06)
+gh workflow run deploy -R kudinow/cv-builder   # или кнопка Run workflow в Actions
 ```
 
-`~/deploy.sh` (на VM, путь приложения `/home/kudinow/app`) с 2026-06-24 само-восстанавливает Telegram-пин `api.telegram.org` в `/etc/hosts` (теряется при миграции VM → бот/авторизация умирают). Бэкап старого скрипта: `~/deploy.sh.bak.20260624`.
+Сборка идёт в GitHub Actions ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) — на VPS (1 ГБ RAM) `next build` не влезает. Workflow rsync-ает standalone-бандл в `~/releases/<sha>`, переключает `~/current`, делает `pm2 startOrReload ~/shared/ecosystem.config.cjs` и health-check; хранит 3 релиза.
+
+- VPS `89.19.209.92` **общий** (там же tukan.su, tezis.fun и др.) — nginx/ufw/certbot менять только аддитивно. SSH: `kudinow@` (приложение, без sudo), `root@` (админ).
+- Рантайм-секреты — только на сервере в `~/shared/.env.local`; в GitHub лишь `DEPLOY_*` secrets и 3 публичных `NEXT_PUBLIC_*` в Variables. Новая `NEXT_PUBLIC_*` переменная → добавить и в Variables, и в `env:` шага build.
+- Откат: `ln -sfn ~/releases/<старый sha> ~/current && pm2 startOrReload ~/shared/ecosystem.config.cjs`.
 
 ## Key Directories
 
