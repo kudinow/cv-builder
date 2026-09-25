@@ -67,6 +67,12 @@ export async function POST(req: NextRequest) {
       // (with a bounded grace) so the user always gets a resume out of the session.
       if (shouldForceFinalize({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used })
         && !(isFinalizeRequest && canFinalizeOverLimit({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used }))) {
+        console.warn('[interview] Session limit hit:', {
+          sessionId,
+          messageCount: session.message_count,
+          aiTokensUsed: session.ai_tokens_used,
+          finalize: isFinalizeRequest,
+        })
         return new Response(
           JSON.stringify({ error: 'Лимит сообщений исчерпан', forceFinalize: true }),
           { status: 429, headers: { "Content-Type": "application/json" } }
