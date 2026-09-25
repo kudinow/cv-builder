@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { INTERVIEW_LIMITS } from '@/lib/token-costs'
+import { INTERVIEW_LIMITS, INTERVIEW_FINALIZE_INSTRUCTION as FINALIZE_INSTRUCTION } from '@/lib/token-costs'
 import { reachGoal } from '@/lib/metrika'
 
 interface Message {
@@ -221,13 +221,11 @@ export function InterviewChatV2({
         'Завершить интервью досрочно? AI сгенерирует резюме из собранных данных.'
       )
     ) {
-      sendMessage(
-        'Завершай интервью — у меня больше данных нет. Сгенерируй лучшее возможное резюме из того, что есть.'
-      )
+      sendMessage(FINALIZE_INSTRUCTION, false, true)
     }
   }
 
-  async function sendMessage(text: string, isInitial = false) {
+  async function sendMessage(text: string, isInitial = false, finalize = false) {
     if (!text.trim() || isStreaming || isFinalizing) return
 
     // Client-side length validation
@@ -243,7 +241,7 @@ export function InterviewChatV2({
     }
 
     const userMessage: Message = { role: 'user', content: text.trim() }
-    const newMessages = isInitial ? [userMessage] : [...messages, userMessage]
+    let newMessages = isInitial ? [userMessage] : [...messages, userMessage]
 
     setMessages(newMessages)
     setInput('')
@@ -256,24 +254,39 @@ export function InterviewChatV2({
       setShowLimitWarning(true)
     }
 
-    try {
-      const res = await fetch('/api/interview', {
+    const postInterview = (msgs: Message[], fin: boolean) =>
+      fetch('/api/interview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+          messages: msgs.map((m) => ({ role: m.role, content: m.content })),
           sessionId,
+          finalize: fin,
         }),
       })
 
+    try {
+      let res = await postInterview(newMessages, finalize)
+
       if (!res.ok) {
         const errData = await res.json()
-        if (errData.forceFinalize) {
-          // Trigger finish early automatically
-          handleFinishEarly()
-          return
+        if (errData.forceFinalize && !finalize) {
+          // Session limit hit: keep the user's answer and ask AI to finalize
+          // right away (server lets a finalize request through the limit).
+          const merged: Message = {
+            role: 'user',
+            content: `${userMessage.content}\n\n${FINALIZE_INSTRUCTION}`,
+          }
+          newMessages = [...newMessages.slice(0, -1), merged]
+          setMessages(newMessages)
+          res = await postInterview(newMessages, true)
+          if (!res.ok) {
+            const retryErr = await res.json()
+            throw new Error(retryErr.error || 'Ошибка соединения')
+          }
+        } else {
+          throw new Error(errData.error || 'Ошибка соединения')
         }
-        throw new Error(errData.error || 'Ошибка соединения')
       }
 
       const reader = res.body?.getReader()

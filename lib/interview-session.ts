@@ -168,6 +168,18 @@ export function shouldForceFinalize(session: {
   )
 }
 
+// Grace window for the finalize request after a limit is hit: enough for a couple
+// of finalize attempts, but not an unlimited bypass of the session caps.
+export function canFinalizeOverLimit(session: {
+  messageCount: number
+  aiTokensUsed: number
+}): boolean {
+  return (
+    session.messageCount < INTERVIEW_LIMITS.MAX_MESSAGES_PER_SESSION + 4 &&
+    session.aiTokensUsed <= INTERVIEW_LIMITS.MAX_AI_TOKENS_PER_SESSION * 1.5
+  )
+}
+
 export function isSessionExpired(expiresAt: string): boolean {
   return new Date(expiresAt).getTime() <= Date.now()
 }

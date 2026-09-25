@@ -7,11 +7,18 @@ export const TOKEN_COSTS = {
 
 export const INTERVIEW_LIMITS = {
   MAX_MESSAGES_PER_SESSION: 80,
-  MAX_AI_TOKENS_PER_SESSION: 50_000,
+  // Cumulative prompt+completion tokens (each turn re-sends the whole history,
+  // so this grows quadratically; 50k ran out after ~13 turns).
+  MAX_AI_TOKENS_PER_SESSION: 500_000,
   SESSION_TTL_HOURS: 72,
   MAX_MESSAGE_LENGTH: 2000,
   SOFT_WARNING_AT_MESSAGE: 60,
 } as const
+
+// Sent by the client to ask AI for the final resume. The server lets a request
+// through the session limits only if the user message ends with this text.
+export const INTERVIEW_FINALIZE_INSTRUCTION =
+  'Завершай интервью — у меня больше данных нет. Сгенерируй лучшее возможное резюме из того, что есть.'
 
 export const TOKEN_PACKAGES = [
   { name: 'Малый', tokens: 500, priceKopeks: 49_900 },

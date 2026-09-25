@@ -5,8 +5,8 @@ import {
   type ChatMessage,
 } from "@/lib/openrouter";
 import { INTERVIEW_SYSTEM_PROMPT } from "@/lib/prompts/interview-system";
-import { INTERVIEW_LIMITS } from '@/lib/token-costs'
-import { addMessage, shouldForceFinalize } from '@/lib/interview-session'
+import { INTERVIEW_LIMITS, INTERVIEW_FINALIZE_INSTRUCTION } from '@/lib/token-costs'
+import { addMessage, shouldForceFinalize, canFinalizeOverLimit } from '@/lib/interview-session'
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,14 +23,23 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { messages, sessionId } = (await req.json()) as {
+    const { messages, sessionId, finalize } = (await req.json()) as {
       messages: ChatMessage[];
       sessionId?: string;
+      finalize?: boolean;
     };
 
     // Validate message length
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage?.role === 'user' && lastMessage.content.length > INTERVIEW_LIMITS.MAX_MESSAGE_LENGTH) {
+    // Trust the finalize flag only when the message actually asks to finalize:
+    // then the reply is the resume and the session gets completed.
+    const isFinalizeRequest =
+      finalize === true &&
+      lastMessage?.role === 'user' &&
+      lastMessage.content.trimEnd().endsWith(INTERVIEW_FINALIZE_INSTRUCTION);
+    // Finalize request may carry the user's answer + the finalize instruction
+    const maxLength = INTERVIEW_LIMITS.MAX_MESSAGE_LENGTH + (isFinalizeRequest ? 200 : 0);
+    if (lastMessage?.role === 'user' && lastMessage.content.length > maxLength) {
       return new Response(
         JSON.stringify({ error: 'Сообщение слишком длинное', maxLength: INTERVIEW_LIMITS.MAX_MESSAGE_LENGTH }),
         { status: 400, headers: { "Content-Type": "application/json" } }
@@ -54,8 +63,10 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      // Check if session has exceeded limits
-      if (shouldForceFinalize({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used })) {
+      // Check if session has exceeded limits. A finalize request is let through
+      // (with a bounded grace) so the user always gets a resume out of the session.
+      if (shouldForceFinalize({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used })
+        && !(isFinalizeRequest && canFinalizeOverLimit({ messageCount: session.message_count, aiTokensUsed: session.ai_tokens_used }))) {
         return new Response(
           JSON.stringify({ error: 'Лимит сообщений исчерпан', forceFinalize: true }),
           { status: 429, headers: { "Content-Type": "application/json" } }
@@ -78,7 +89,7 @@ export async function POST(req: NextRequest) {
     // Stream response from OpenRouter
     const openRouterResponse = await streamOpenRouterChat({
       messages: fullMessages,
-      maxTokens: 2048,
+      maxTokens: 4096,
     });
 
     // Transform the SSE stream from OpenRouter to our client
